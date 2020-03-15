@@ -1,5 +1,5 @@
 module BioMakie
 
-using BioSequences, BioStructures, MIToS, JLD2, Makie, MakieLayout, MakieRecipes, TensorCast
+using BioSequences, BioStructures, MIToS, JLD2, Makie, MakieLayout, TensorCast
 
 end # module
