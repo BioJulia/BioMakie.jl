@@ -11,6 +11,59 @@ resletters = ["R", "M", "N", "E", "F",
 	"G", "C", "W", "Y", "K",
 	"P", "T", "S", "V", "H",
 	"B", "Z", "X", "J", "-", ".", "*"]
+resCharsDict = OrderedDict(
+							"ALA" => "A",
+							"ARG" => "R",
+							"ASN" => "N",
+							"ASP" => "D",
+							"ASX" => "B",
+							"CYS" => "C",
+							"GLN" => "Q",
+							"GLU" => "E",
+							"GLX" => "Z",
+							"GLY" => "G",
+							"HIS" => "H",
+							"ILE" => "I",
+							"LEU" => "L",
+							"LYS" => "K",
+							"MET" => "M",
+							"PHE" => "F",
+							"PRO" => "P",
+							"SER" => "S",
+							"THR" => "T",
+							"TRP" => "W",
+							"TYR" => "Y",
+							"VAL" => "V",
+							"XAA" => "X",
+							"XLE" => "J",
+							"*" => "*",
+							"-" => "-",
+							"." => ".",
+							"A" => "ALA",
+							"R" => "ARG",
+							"N" => "ASN",
+							"D" => "ASP",
+							"B" => "ASX",
+							"C" => "CYS",
+							"Q" => "GLN",
+							"E" => "GLU",
+							"Z" => "GLX",
+							"G" => "GLY",
+							"H" => "HIS",
+							"I" => "ILE",
+							"L" => "LEU",
+							"K" => "LYS",
+							"M" => "MET",
+							"F" => "PHE",
+							"P" => "PRO",
+							"S" => "SER",
+							"T" => "THR",
+							"W" => "TRP",
+							"Y" => "TYR",
+							"V" => "VAL",
+							"X" => "XAA",
+							"J" => "XLE"
+)
 atomicmasses = Dict("C" => 12.0107,
                     "N" => 14.0067,
                     "H" => 1.0079,
@@ -32,6 +85,13 @@ elecolors = Dict( "C" => :darkgreen,
                   "S" => :yellow,
 				  "X" => :gray
 )
+function reversekv(dict::AbstractDict{K,V}; print = false) where {K,V}
+	vkdict = [x[2].=>x[1] for x in dict]
+	if print == true
+		println.(vkdict)
+	end
+	return OrderedDict{V,K}(vkdict)
+end
 df(x) = DataFrame(x)
 df(xs...) = DataFrame(xs...)
 import Base.convert
@@ -283,3 +343,6 @@ _g!(arr::AbstractArray) = try
 
 	    end
 end
+_v(arr::AbstractArray) = reverse(arr; dims = 1)
+_h(arr::AbstractArray) = reverse(arr; dims = 2)
+_t(arr::AbstractArray) = transposed(arr)
