@@ -6,6 +6,7 @@ version = "0.1.0"
 [deps]
 BioSequences = "7e6ae17a-c86d-528c-b3b9-7f778a29fe59"
 BioStructures = "de9282ab-8554-53be-b2d6-f6c222edabfc"
+CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
 JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
 MIToS = "51bafb47-8a16-5ded-8b04-24ef4eede0b5"
 Makie = "ee78f7c6-11fb-53f2-987a-cfe4a2b5a57a"
