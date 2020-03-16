@@ -283,66 +283,6 @@ _g(arr::AbstractArray) = try
 			arr
 	    end
 end
-function gluearray!(arr::AbstractArray{T,N}) where {T,N}
-	if T <: Vector{M} where M
-		return @cast arr[i,j] := arr[i][j]
-	elseif T <: Vector{Vector{Vector{M}}} where M
-		@cast arr[i,j] := arr[i][j]
-		arr = arr |> combinedims
-		return Array{Array{M},4}(arr)
-	end
-	arr = gluearray!(arr)
-	if N == 3
-		try
-			arr = arr[:,:,:]
-		catch
-			@show arr
-		end
-	elseif N == 4
-		try
-			arr = arr[:,:,:,:]
-		catch
-			try
-				arr = arr[:,:,:]
-			catch
-				@show arr
-			end
-		end
-	end
-	return arr
-end
-function gluearray2!(arr::AbstractArray)
-    try
-        @cast arr[i,j] := arr[i][j]
-        @cast arr[i,j,k,g] := arr[i,j][k,g]
-    catch
-        try
-            @cast arr[i,j,k] := arr[i][j,k]
-        catch
-
-        end
-    end
-    try
-        @cast arr[i,j] := arr[i][j]
-        @cast arr[i,j,k,g] := arr[i,j][k,g]
-    catch
-        try
-            @cast arr[i,j,k] := arr[i][j,k]
-        catch
-
-        end
-    end
-    return arr
-end
-_g!(arr::AbstractArray) = try
-	    gluearray!(arr)
-	catch
-	    try
-	        gluearray2!(arr)
-	    catch
-
-	    end
-end
 _v(arr::AbstractArray) = reverse(arr; dims = 1)
 _h(arr::AbstractArray) = reverse(arr; dims = 2)
 _t(arr::AbstractArray) = transposed(arr)
