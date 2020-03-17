@@ -6,7 +6,7 @@
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/kool7d/BioMakie.jl?svg=true)](https://ci.appveyor.com/project/kool7d/BioMakie-jl)
 [![Codecov](https://codecov.io/gh/kool7d/BioMakie.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/kool7d/BioMakie.jl)
 
-This package is a biological interactive visualization set with Makie at its core.
+This package is an interactive biological visualization set with Makie at its core.
 
 ```julia
 julia> 
