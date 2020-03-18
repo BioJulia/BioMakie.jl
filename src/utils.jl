@@ -8,6 +8,18 @@ function reversekv(dict::AbstractDict{K,V}; print = false) where {K,V}
 end
 df(x) = DataFrame(x)
 df(xs...) = DataFrame(xs...)
+function transposed(arr::AbstractArray)
+	try
+        @cast arr[j,i] := arr[i,j]
+        arr2 = arr |> df |> Array
+    catch
+        arr2 = permutedims(arr[:,1])
+        for i = 2:size(arr,2)
+            arr2 = vcat(arr2, permutedims(arr[:,i]))
+        end
+    end
+    return arr2
+end
 import Base.convert
 function convert(::Type{T}, arr::Array{T,1}) where {T<:Number}
     if size(arr,1) > 1
