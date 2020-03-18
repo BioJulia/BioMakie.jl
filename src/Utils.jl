@@ -32,6 +32,19 @@ function varcall(name::String,body::Any)
     name=Symbol(name)
     @eval (($name) = ($body))
 end
+
+function transposed(arr::AbstractArray)
+	try
+        @cast arr[j,i] := arr[i,j]
+        arr2 = arr |> df |> Array
+    catch
+        arr2 = permutedims(arr[:,1])
+        for i = 2:size(arr,2)
+            arr2 = vcat(arr2, permutedims(arr[:,i]))
+        end
+    end
+    return arr2
+end
 function tryint(number)
     return (try
         Int64(number)
