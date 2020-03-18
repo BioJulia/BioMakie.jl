@@ -150,8 +150,7 @@ hresbonds = Dict(
 #                 "HIS" => [["OXT","HXT"]],
 # )
 
-# types #
-abstract type AbstractTether <:StructuralElement end
+# types/structs #
 struct Bond{T} <:AbstractTether where {T}
 	atoms::T
 end

@@ -6,4 +6,6 @@ using DelimitedFiles, JLD2, TensorCast,
         BioSequences, BioStructures, MIToS
 include("utils.jl")
 
-end # module
+abstract type AbstractTether <:StructuralElement end
+
+end
