@@ -12,8 +12,8 @@ using DelimitedFiles, Makie, MakieLayout
 							for i = 1:size(doublemutantlabels,1)]
 
 	# create layout/scene for plot #
-	scene, layout = layoutscene(resolution = (800, 800));
-	ax1 = layout[1:3,1:2] = LAxis(scene);
+	scene, layout = layoutscene(resolution = (800, 800))
+	ax1 = layout[1:3,1:2] = LAxis(scene)
 	tightlimits!(ax1)
 
 	# add plot and other objects #
@@ -25,7 +25,7 @@ using DelimitedFiles, Makie, MakieLayout
 	ax1.xlabel = "Property"
 	ax1.ylabel = "Double Mutation"
 	ax1.attributes.yticks = ManualTicks([0.5:39.5...], [doublemutantlabels...])	   # for setting custom tick labels
-	ax1.attributes.xticks = ManualTicks([0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5], string.([1:10...]))
+	ax1.attributes.xticks = ManualTicks([0.5:9.5...], string.([1:10...]))
 	ax1.yticklabelfont = :Consolas   # this font lines up the letters, since they are all approximately equal width
 
 	# tweak sizes of things to my liking #
