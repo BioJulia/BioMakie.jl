@@ -135,68 +135,96 @@ function (D::AbstractDict)(is...)
     end
     return D(indices...)
 end
-function gluearray(arr::AbstractArray{T,N}) where {T,N}
-	temparr = copy(arr)
-	if T <: Vector{M} where M
-		return @cast temparr[i,j] := temparr[i][j]
-	elseif T <: Vector{Vector{Vector{M}}} where M
-		@cast temparr[i,j] := temparr[i][j]
-		temparr = temparr |> combinedims
-		return Array{Array{M},4}(temparr)
-	end
-	temparr = gluearray(temparr)
-	if N == 3
-		try
-			temparr = temparr[:,:,:]
-		catch
-			@show temparr
-		end
-	elseif N == 4
-		try
-			temparr = temparr[:,:,:,:]
-		catch
-			try
-				temparr = temparr[:,:,:]
-			catch
-				@show temparr
-			end
-		end
-	end
-	return temparr
-end
-function gluearray2(arr::AbstractArray)
-	temparr = copy(arr)
+function _gluearray(arr::AbstractArray)
+	cparr = copy(arr)
 	try
-        @cast temparr[i,j] := temparr[i][j]
-        @cast temparr[i,j,k,g] := temparr[i,j][k,g]
+        @cast cparr[i,j] := cparr[i][j]
+        @cast cparr[i,j,k,g] := cparr[i,j][k,g]
     catch
         try
-            @cast temparr[i,j,k] := temparr[i][j,k]
+            @cast cparr[i,j,k] := cparr[i][j,k]
         catch
 
         end
     end
     try
-        @cast temparr[i,j] := temparr[i][j]
-        @cast temparr[i,j,k,g] := temparr[i,j][k,g]
+        @cast cparr[i,j] := cparr[i][j]
+        @cast cparr[i,j,k,g] := cparr[i,j][k,g]
     catch
         try
-            @cast temparr[i,j,k] := temparr[i][j,k]
+            @cast cparr[i,j,k] := cparr[i][j,k]
         catch
 
         end
     end
-    return temparr
+    return cparr
 end
-_g(arr::AbstractArray) = try
+function gluearray(arr::AbstractArray{T,N}) where {T,N}
+	cparr = copy(arr)
+	if T <: Vector{Vector{Vector{M}}} where M
+		@cast cparr[i,j] := cparr[i][j]
+		cparr = cparr |> combinedims
+		return Array{Array{M},4}(cparr)
+	end
+	cparr = _gluearray(cparr)
+	if N == 3
+		try
+			cparr = cparr[:,:,:]
+		catch
+			try
+				cparr = _gluearray(cparr)
+			catch
+				println("shape: $(size(cparr))")
+				return cparr
+			end
+		end
+	elseif N == 4
+		try
+			cparr = cparr[:,:,:,:]
+		catch
+			try
+				cparr = cparr[:,:,:]
+			catch
+				try
+					cparr = _gluearray(cparr)
+				catch
+					println("shape: $(size(cparr))")
+					return cparr
+				end
+			end
+		end
+	end
+	return cparr
+end
+_g(arr::AbstractArray) =
+	try
 	    gluearray(arr)
 	catch
-	    try
-	        gluearray2(arr)
-	    catch
-			arr
-	    end
-end
+		arr
+	end
 _v(arr::AbstractArray) = reverse(arr; dims = 1)
 _h(arr::AbstractArray) = reverse(arr; dims = 2)
 _t(arr::AbstractArray) = transposed(arr)
+_shuffledims(arr::AbstractArray{Any,1}) = arr
+_shuffledims(arr::AbstractArray{Any,2}) = @cast arr[j,i] := arr[i,j]
+_shuffledims(arr::AbstractArray{Any,3}, d = 1) =
+	if d == 1
+		@cast arr[i,k,j] := arr[i,j,k] # d==1 => index 1 is held
+	elseif d == 2
+		@cast arr[k,j,i] := arr[i,j,k] # d==2 => index 2 is held
+	elseif d == 3
+		@cast arr[j,i,k] := arr[i,j,k] # d==3 => index 3 is held
+	elseif d == 0
+		@cast arr[i,j,k] := arr[i,j,k] # d==0 => identity
+	elseif d == 4 || d == +1
+		@cast arr[k,i,j] := arr[i,j,k] # d==4 => move indices forward +1 ( index 3(+1) -> index 4 -> index 1 )
+	elseif d == 5 || d == -1
+		@cast arr[j,k,i] := arr[i,j,k] # d==5 => move indices backward -1 ( index 1(-1) -> index 0 -> index 3 )
+	else
+		@cast arr[i,j,k] := arr[i,j,k] # else => identity
+end
+function _stripkeys(dict::AbstractDict)
+    ks = string.(strip.(keys(dict)))
+    return ks
+end
+_stripallkeys(dicts::AbstractArray) =  _stripkeys.(dicts)
