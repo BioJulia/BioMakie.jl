@@ -123,6 +123,28 @@ function internaldistances(vals::AbstractArray{Number})
     end
     return internaldists
 end
+function resmass(res::BioStructures.Residue)
+    total = 0.0
+    for atm in res
+        total+=atomicmasses["$(element(atm, strip=true))"]
+    end
+    return total
+end
+function resvdw(res::BioStructures.Residue)
+    total = 0.0
+    for atm in res
+        total+=vdw["$(element(atm, strip=true))"]
+    end
+    return total
+end
+function makeclrgrad(vec::AbstractArray{T}, colrmap::AbstractArray) where T<:Real
+    softmaxvec = Flux.softmax(vec)
+    scalefactor = size(colrmap,1) / maximum(softmaxvec)
+    middlevec = (maximum(softmaxvec) + minimum(softmaxvec)) / 2
+    colorindices = round.(Int64, softmaxvec .* scalefactor)
+    indexedcolors = colrmap[colorindices]
+    return indexedcolors
+end
 ∑(x) = sum(x)
 (D::Dict)(i::Int) = Dict([keys(D)...][i] => [values(D)...][i])
 (D::OrderedDict)(i::Int) = OrderedDict([keys(D)...][i] => [values(D)...][i])

@@ -6,8 +6,8 @@ using DelimitedFiles, Makie, MakieLayout
 
 	"""
 	# load data #
-	doublemutantchanges = readdlm("data\\dcchanges.csv")
-	doublemutantlabels = readdlm("data\\dclabels.csv")
+	doublemutantchanges = readdlm("examples\\dcchanges.csv")
+	doublemutantlabels = readdlm("examples\\dclabels.csv")
 	doublemutantlabels = [.*(doublemutantlabels[i,1]," ", doublemutantlabels[i,2])
 							for i = 1:size(doublemutantlabels,1)]
 
