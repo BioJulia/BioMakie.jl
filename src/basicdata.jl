@@ -75,7 +75,7 @@ vanderwaals = Dict( "C" => 1.70,
             		"S" => 1.85,
 					"X" => 1.20
 )
-elecolors = Dict( "C" => :darkgreen,
+elecolors = Dict( "C" => :gray,
                   "N" => :blue,
                   "H" => :white,
                   "O" => :red,

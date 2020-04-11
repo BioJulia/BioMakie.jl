@@ -8,18 +8,6 @@ function reversekv(dict::AbstractDict{K,V}; print = false) where {K,V}
 end
 df(x) = DataFrame(x)
 df(xs...) = DataFrame(xs...)
-function transposed(arr::AbstractArray)
-	try
-        @cast arr[j,i] := arr[i,j]
-        arr2 = arr |> df |> Array
-    catch
-        arr2 = permutedims(arr[:,1])
-        for i = 2:size(arr,2)
-            arr2 = vcat(arr2, permutedims(arr[:,i]))
-        end
-    end
-    return arr2
-end
 import Base.convert
 function convert(::Type{T}, arr::Array{T,1}) where {T<:Number}
     if size(arr,1) > 1
@@ -78,9 +66,6 @@ function steprange(arr::AbstractArray{T,1}; step = 1) where {T<:Integer}
         if arr[i]-arr[i-1] != step
             notseq = 1
         end
-        if i == size(arr,1)
-            break
-        end
     end
     if notseq == 0
         return StepRange(min_value,step,max_value)
@@ -100,26 +85,43 @@ function unitrange(arr::AbstractArray{T,1}) where {T<:Integer}
         if arr[i]-arr[i-1] != 1
             notseq = 1
         end
-        if i == size(arr,1)
-            break
-        end
     end
     if notseq == 0
         return UnitRange(min_value,max_value)
     end
     throw(ErrorException("cannot make this into a unit range"))
 end
-function splatrange(range)
-    return [(range)...]
-end
+splatrange(range) = [(range...)]
 function splatranges(ranges...)
     splattedrange = []
-
     for range in ranges
         splattedrange = vcat(splattedrange, splatrange(range))
     end
-
     return eval([Int64.(splattedrange)...])
+end
+carbonselector(at) = element(at) in ("C","CA","CB")
+nitroselector(at) = element(at) == "N"
+nothydrogenselector(at) = element(at) != "H"
+fullbbselector(at) = atomname(at) ∈ ("N","CA","C","O")
+sidechainselector(at) = !fullbbselector(at)
+resselector(at, res = "GLY") = resname(at) == "$res"
+function internaldistances(atms::AbstractVector{AbstractAtom})
+    internaldists = zeros(Float64, (size(atms,1),size(atms,1)))
+    for (i,x) in enumerate(atms)
+        for (j,y) in enumerate(atms)
+            internaldists[i,j] = Distances.euclidean(BioStructures.coords(x),BioStructures.coords(y))
+        end
+    end
+    return internaldists
+end
+function internaldistances(vals::AbstractArray{Number})
+    internaldists = zeros(Float64, (size(vals,1),size(vals,1)))
+    for (i,x) in enumerate(vals)
+        for (j,y) in enumerate(vals)
+            internaldists[i,j] = Distances.euclidean(x,y)
+        end
+    end
+    return internaldists
 end
 ∑(x) = sum(x)
 (D::Dict)(i::Int) = Dict([keys(D)...][i] => [values(D)...][i])
@@ -146,6 +148,56 @@ function (D::AbstractDict)(is...)
         end
     end
     return D(indices...)
+end
+function centerofpoints(points::AbstractArray{T}) where T <: Number
+    xs = points[:,1]
+    ys = points[:,2]
+    zs = points[:,3]
+    return centerofpoints = [ ∑(xs)/size(xs,1), ∑(ys)/size(ys,1), ∑(zs)/size(zs,1) ] |> _g
+end
+function centerofmass(atms::AbstractArray{AbstractAtom})
+    masses = []
+    positions = coordarray(atms)
+    xs = positions[1,:]
+    ys = positions[2,:]
+    zs = positions[3,:]
+    totalmass = 0.0
+
+    for i = 1:length(atms)
+        if element(atms[i]) == "C"
+            push!(masses, 12.0107)
+            totalmass += 12.0107
+        elseif element(atms[i]) == "N"
+            push!(masses, 14.0067)
+            totalmass += 14.0067
+        elseif element(atms[i]) == "H"
+            push!(masses,1.0079)
+            totalmass += 1.0079
+        elseif element(atms[i]) == "O"
+            push!(masses, 15.9994)
+            totalmass += 15.9994
+        elseif element(atms[i]) == "S"
+            push!(masses, 32.065)
+            totalmass += 32.065
+        else
+            push!(masses, 0.0)
+            totalmass += 0.0
+        end
+    end
+    return centerofmass = [ ∑(masses.*xs)/totalmass, ∑(masses.*ys)/totalmass, ∑(masses.*zs)/totalmass ]
+end
+function transposed(arr::AbstractArray)
+	arr2 = arr
+    try
+        @cast arr[j,i] := arr[i,j]
+        arr2 = arr |> df |> Array
+    catch
+        arr2 = permutedims(arr[:,1])
+        for i = 2:size(arr,2)
+            arr2 = vcat(arr2, permutedims(arr[:,i]))
+        end
+    end
+    return arr2
 end
 function _gluearray(arr::AbstractArray)
 	cparr = copy(arr)
@@ -217,9 +269,9 @@ _g(arr::AbstractArray) =
 _v(arr::AbstractArray) = reverse(arr; dims = 1)
 _h(arr::AbstractArray) = reverse(arr; dims = 2)
 _t(arr::AbstractArray) = transposed(arr)
-_shuffledims(arr::AbstractArray{Any,1}) = arr
-_shuffledims(arr::AbstractArray{Any,2}) = @cast arr[j,i] := arr[i,j]
-_shuffledims(arr::AbstractArray{Any,3}, d = 1) =
+_shuffledims(arr::AbstractArray{T,1}) where T = arr
+_shuffledims(arr::AbstractArray{T,2}) where T = @cast arr[j,i] := arr[i,j]
+_shuffledims(arr::AbstractArray{T,3}, d::Int64 = 1) where T =
 	if d == 1
 		@cast arr[i,k,j] := arr[i,j,k] # d==1 => index 1 is held
 	elseif d == 2

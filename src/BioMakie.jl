@@ -2,7 +2,7 @@ module BioMakie
 
 using DelimitedFiles, JLD2, TensorCast,
         MacroTools, Lazy, Distances, Distributed, DataStructures,
-        CairoMakie, GLFW, GLMakie, Makie, MakieLayout,
+        GLFW, GLMakie, Makie, MakieLayout,
         BioSequences, BioStructures, MIToS
 abstract type AbstractTether <:StructuralElement end
 abstract type AbstractBond <:AbstractTether end

@@ -43,42 +43,12 @@ hresbonds = Dict(
                 "VAL" => [["N","HN1"],["N","HN2"],["CA","HA"],["CB","HB"],["CG1","HG11"],["CG1","HG12"],["CG1","HG13"],["CG2","HG21"],["CG2","HG22"],["CG2","HG23"]],
                 "HIS" => [["N","HN1"],["N","HN2"],["CA","HA"],["CB","HB1"],["CB","HB2"],["ND1","HD1"],["CD2","HD2"],["CE1","HE1"]],
 )
-# nonbonds = Dict(
-#                 "ARG" => [["OXT"]],
-#                 "MET" => [["OXT","HXT"]],
-#                 "ASN" => [["OXT","HXT"]],
-#                 "GLU" => [["OXT","HXT"]],
-#                 "PHE" => [["OXT","HXT"]],
-#                 "ILE" => [["OXT","HXT"]],
-#                 "ASP" => [["OXT","HXT"]],
-#                 "LEU" => [["OXT","HXT"]],
-#                 "ALA" => [["OXT","HXT"]],
-#                 "GLN" => [["OXT","HXT"]],
-#                 "GLY" => [["OXT","HXT"]],
-#                 "CYS" => [["OXT","HXT"]],
-#                 "TRP" => [["OXT","HXT"]],
-#                 "TYR" => [["OXT","HXT"]],
-#                 "LYS" => [["OXT","HXT"]],
-#                 "PRO" => [["OXT","HXT"]],
-#                 "THR" => [["OXT","HXT"]],
-#                 "SER" => [["OXT","HXT"]],
-#                 "VAL" => [["OXT","HXT"]],
-#                 "HIS" => [["OXT","HXT"]],
-# )
-
 mutable struct Tether{T} <:AbstractTether where {T<:StructuralElementOrList}
 	points::T
 end
-mutable struct Bond <:AbstractTether
+mutable struct Bond <:AbstractBond
 	points::StructuralElementOrList
 end
-# mutable struct ResBonds2
-# 	parent
-# 	atoms::Vector{AbstractAtom}
-# 	bonds::Vector{Bond}
-# 	missingbonds::Vector{Bond}
-# 	extrabonds::Vector{Bond}
-# end
 mutable struct ResBonds
 	parent
 	atoms::Union{AbstractDict,AbstractArray}
@@ -89,13 +59,11 @@ end
 Bond(x1::StructuralElement, x2::StructuralElement) = Bond([x1,x2])
 atoms(bond::Bond) = bond.points
 points(tether::AbstractTether) = tether.points
-
 function bonds(res::AbstractResidue; hres = false)
 	bonds = []
 	missingbonds = []
 	resatoms = res.atoms
 	resatomkeys = _stripkeys(resatoms)
-
 	for heavybond in heavyresbonds[res.name]
 		firstatomname = "$(heavybond[1])"
 		secondatomname = "$(heavybond[2])"
@@ -155,5 +123,18 @@ function bonds(res::AbstractResidue; hres = false)
 	new_bonds = ResBonds(res,resatoms,bonds,missingbonds,[])
 	return new_bonds
 end
+function bondshape(twoatms::AbstractArray{T}) where {T<:AbstractAtom}
+    pnt1 = Point3f0(coords(twoatms[1])[1], coords(twoatms[1])[2], coords(twoatms[1])[1])
+    pnt2 = Point3f0(coords(twoatms[2])[1], coords(twoatms[2])[2], coords(twoatms[2])[1])
+    cyl = GeometryTypes.Cylinder(pnt1,pnt2,Float32(0.1))
+    cylresolution = 10
+    vertices = decompose(Point3f0, cyl, cylresolution)
+    faces = decompose(Face{3, Int}, cyl, cylresolution)
+    coordinates = [vertices[i][j] for i = 1:length(vertices), j = 1:3]
+    connectivity = [faces[i][j] for i = 1:length(faces), j = 1:3]
+    return Float32.(coordinates), Int64.(connectivity)
+end
+bondshape(bond::AbstractBond) = bondshape(atoms(bond))
 
-# bonds(residues[][1])
+# res1bonds = bonds(residues[][1])
+# bondshape(res1bonds.bonds[1])
