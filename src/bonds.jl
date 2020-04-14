@@ -43,6 +43,7 @@ hresbonds = Dict(
                 "VAL" => [["N","HN1"],["N","HN2"],["CA","HA"],["CB","HB"],["CG1","HG11"],["CG1","HG12"],["CG1","HG13"],["CG2","HG21"],["CG2","HG22"],["CG2","HG23"]],
                 "HIS" => [["N","HN1"],["N","HN2"],["CA","HA"],["CB","HB1"],["CB","HB2"],["ND1","HD1"],["CD2","HD2"],["CE1","HE1"]],
 )
+
 mutable struct Tether{T} <:AbstractTether where {T<:StructuralElementOrList}
 	points::T
 end
@@ -53,7 +54,7 @@ mutable struct ResBonds
 	parent
 	atoms::Union{AbstractDict,AbstractArray}
 	bonds::Vector{Bond}
-	missingbonds::Vector{Bond}
+	missingbonds::Vector{Union{Bond,AbstractArray}}
 	extrabonds::Vector{Bond}
 end
 Bond(x1::StructuralElement, x2::StructuralElement) = Bond([x1,x2])
@@ -67,7 +68,7 @@ function bonds(res::AbstractResidue; hres = false)
 	for heavybond in heavyresbonds[res.name]
 		firstatomname = "$(heavybond[1])"
 		secondatomname = "$(heavybond[2])"
-		if heavybond[1] in resatomkeys && heavybond[2] in resatomkeys
+		if firstatomname in resatomkeys && secondatomname in resatomkeys
 			if length(heavybond[1]) == 1
 				firstatomname = " $(heavybond[1])  "
 			elseif length(heavybond[1]) == 2
@@ -88,14 +89,14 @@ function bonds(res::AbstractResidue; hres = false)
 			end
 			push!(bonds, Bond(resatoms[firstatomname], resatoms[secondatomname]))
 		else
-			push!(missingbonds, Bond(resatoms[firstatomname], resatoms[secondatomname]))
+			push!(missingbonds, [firstatomname, secondatomname])
 		end
 	end
 	if hres == true
 		for hresbond in hresbonds[res.name]
 			firstatomname = "$(hresbond[1])"
 			secondatomname = "$(hresbond[2])"
-			if hresbond[1] in resatomkeys && hresbond[2] in resatomkeys
+			if firstatomname in resatomkeys && secondatomname in resatomkeys
 				if length(hresbond[1]) == 1
 					firstatomname = " $(hresbond[1])  "
 				elseif length(hresbond[1]) == 2
@@ -116,7 +117,7 @@ function bonds(res::AbstractResidue; hres = false)
 				end
 				push!(bonds, Bond(resatoms[firstatomname], resatoms[secondatomname]))
 			else
-				push!(missingbonds, Bond(resatoms[firstatomname], resatoms[secondatomname]))
+				push!(missingbonds, [firstatomname, secondatomname])
 			end
 		end
 	end
@@ -124,17 +125,74 @@ function bonds(res::AbstractResidue; hres = false)
 	return new_bonds
 end
 function bondshape(twoatms::AbstractArray{T}) where {T<:AbstractAtom}
-    pnt1 = Point3f0(coords(twoatms[1])[1], coords(twoatms[1])[2], coords(twoatms[1])[1])
-    pnt2 = Point3f0(coords(twoatms[2])[1], coords(twoatms[2])[2], coords(twoatms[2])[1])
-    cyl = GeometryTypes.Cylinder(pnt1,pnt2,Float32(0.1))
-    cylresolution = 10
-    vertices = decompose(Point3f0, cyl, cylresolution)
-    faces = decompose(Face{3, Int}, cyl, cylresolution)
-    coordinates = [vertices[i][j] for i = 1:length(vertices), j = 1:3]
-    connectivity = [faces[i][j] for i = 1:length(faces), j = 1:3]
-    return Float32.(coordinates), Int64.(connectivity)
+    pnt1 = Point3f0(coords(twoatms[1])[1], coords(twoatms[1])[2], coords(twoatms[1])[3])
+    pnt2 = Point3f0(coords(twoatms[2])[1], coords(twoatms[2])[2], coords(twoatms[2])[3])
+    cyl = GeometryTypes.Cylinder(pnt1,pnt2,Float32(0.15))
+    # cylresolution = 10
+    # vertices = decompose(Point3f0, cyl, cylresolution)
+    # faces = decompose(Face{3, Int}, cyl, cylresolution)
+    # coordinates = [vertices[i][j] for i = 1:length(vertices), j = 1:3]
+    # connectivity = [faces[i][j] for i = 1:length(faces), j = 1:3]
+    return cyl #[Float32.(coordinates), Int64.(connectivity)]
 end
 bondshape(bond::AbstractBond) = bondshape(atoms(bond))
+bondshape(bondlist::AbstractArray{Bond,1}) = bondshape.(bondlist)
+bondshape(resbonds::ResBonds) = bondshape.(resbonds.bonds)
 
-# res1bonds = bonds(residues[][1])
-# bondshape(res1bonds.bonds[1])
+allresbonds = bonds.(residues[])
+bondshapes = bondshape.([allresbonds[i].bonds for i = 1:size(allresbonds,1)])
+
+function collectbondshapes(arr::AbstractArray)
+	shapes = []
+	for i = 1:size(arr,1)
+		for j = 1:size(arr[i],1)
+			push!(shapes,arr[i][j])
+		end
+	end
+	return shapes
+end
+shapes = collectbondshapes(bondshapes) |> Vector{Cylinder{3,Float32}}
+
+# function bondmesh(res::AbstractResidue)
+# 	resbonds = bonds(res)
+# 	bondshapes = bondshape.(resbonds.bonds)
+# 	shapes =
+# 	return bondshapes
+# end
+# bondmesh(residues[][1])
+# function allbondmesh(residues::AbstractArray{AbstractResidue})
+# 	allcoords = []
+# 	allconnects = []
+# 	allresbonds = bonds.(residues)
+# 	bondshapes = bondshape.([allresbonds[i].bonds for i = 1:size(allresbonds,1)])
+# 	for i in 1:size(bondshapes,1)
+# 		for j in 1:size(bondshapes[i],1)
+# 			push!(allcoords, bondshapes[i][j][1])
+# 			push!(allconnects, bondshapes[i][j][2])
+# 		end
+# 	end
+# 	allcoords2 = []
+# 	allconnects2 = []
+# 	for k = 1:size(allcoords,1)
+# 		for g in 1:size(allcoords[k],1)
+# 			push!(allcoords2,allcoords[k][g,1:3])
+# 		end
+# 		for h in 1:size(allconnects[k],1)
+# 			push!(allconnects2,.+(allconnects[k][h,1:3],(k-1)*12))
+# 		end
+# 	end
+# 	return allcoords2 |> _g, allconnects2 |> _g
+# end
+
+scene, layout = layoutscene(resolution = (700,700))
+sc_mol = layout[1:3,1:3] = LScene(scene)
+
+meshscatter!(sc_scene, atmcoords, markersize = atmradii[]./4, color = atmcolors, show_axis = false)
+
+# in this block, I have some problems
+mesh!(shapes[1], color = Makie.RGBAf0(0.5,0.5,0.5,0.0)) # for some reason the first mesh I plot always has a weird plane connected to it, so I make this invisible
+for i = 1:size(shapes,1)
+	mesh!(sc_scene, shapes[i], color = Makie.RGBAf0(0.5,0.5,0.5,0.8)) # can this mesh loop be merged into a single mesh?
+end
+
+scene

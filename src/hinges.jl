@@ -1,8 +1,9 @@
+# another person in the lab I'm in published a hinge prediction method, so I wanted to incorporate it.
+
 struct Hinge <: AbstractHinge
-    parent::Any
-    pdbpositions::AbstractRange
-    msapositions::AbstractRange
-    sequence::Any
+    parent
+    positions::Union{AbstractRange, AbstractArray{Int}, Dict}
+    sequence
 end
 function loadhinges(pdbid::String; hingevars = false)
     dirdat = readdir(hingedir())

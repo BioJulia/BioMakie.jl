@@ -1,3 +1,5 @@
+# this file will probably change drastically soon
+
 pdbid = Node("3P08")
 pdbdescript = @lift [getpdbdescription($pdbid) |> keys |> collect, getpdbdescription($pdbid) |> values |> collect] |> combinedims
 prot = @lift begin BioStructures.downloadpdb($pdbid; pdb_dir = "$(pdbdir())"); BioStructures.readpdb($pdbid; pdb_dir = "$(pdbdir())") end
