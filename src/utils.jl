@@ -70,7 +70,7 @@ function steprange(arr::AbstractArray{T,1}; step = 1) where {T<:Integer}
     if notseq == 0
         return StepRange(min_value,step,max_value)
     end
-    throw(ErrorException("cannot make this into a step range"))
+    throw(ErrorException("inconsistent step for step range"))
 end
 function unitrange(arr::AbstractArray{T,1}) where {T<:Integer}
     notseq = 0
@@ -89,7 +89,7 @@ function unitrange(arr::AbstractArray{T,1}) where {T<:Integer}
     if notseq == 0
         return UnitRange(min_value,max_value)
     end
-    throw(ErrorException("cannot make this into a unit range"))
+    throw(ErrorException("inconsistent step for unit range"))
 end
 splatrange(range) = [(range...)]
 function splatranges(ranges...)
