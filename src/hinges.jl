@@ -1,5 +1,3 @@
-# another person in the lab I'm in published a hinge prediction method, so I wanted to incorporate it.
-
 struct Hinge <: AbstractHinge
     parent
     positions::Union{AbstractRange, AbstractArray{Int}, Dict}

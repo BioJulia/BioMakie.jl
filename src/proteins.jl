@@ -1,21 +1,78 @@
-# this file will probably change drastically soon
-
-pdbid = Node("3P08")
-pdbdescript = @lift [getpdbdescription($pdbid) |> keys |> collect, getpdbdescription($pdbid) |> values |> collect] |> combinedims
-prot = @lift begin BioStructures.downloadpdb($pdbid; pdb_dir = "$(pdbdir())"); BioStructures.readpdb($pdbid; pdb_dir = "$(pdbdir())") end
-chainn = Node("A")
-atms = @lift collectatoms($prot[$chainn], standardselector)
-internaldists = @lift internaldistances($atms)
-contacts = @lift ContactMap($atms, 8.0).data
-atmcolors = @lift [aquacolors[element(x)] for x in $atms]
-# kfcolors = @lift [elecolors2[element(x)] for x in $atms]
-atmradii = @lift [vanderwaals[element(x)] for x in $atms]
-atmcoords = @lift coordarray($atms) |> _t
-residues = @lift collectresidues($atms)
-resids = @lift resid.($residues)
-atmdicts = @lift BioStructures.atoms.($residues)
-
-scene, layout = layoutscene(resolution = (1000,1000))
-sc_left = layout[1:24,1:8] = GridLayout(24,8)
-sc_middle = layout[1:24,9:16] = GridLayout(24,8)
-sc_right = layout[1:24,17:24] = GridLayout(24,8)
+mutable struct ProteinView
+	pdbid::Node
+	protein::Node
+	chains::Node
+	atoms::Node
+	coords::Node
+	internaldistances::Node
+	atomcolors::Node
+	atomradii::Node
+	residues::Node
+	resids::Node
+	resatoms::Node
+	description::Node
+	bonds::Node
+	bondshapes::Node
+end
+import BioStructures: chains, coords, resids
+import LLVM.description
+for f in (	:pdbid,
+			:protein,
+			:chains,
+			:atoms,
+			:coords,
+			:internaldistances,
+			:atomcolors,
+			:atomradii,
+			:residues,
+			:resids,
+			:resatoms,
+			:description,
+			:bonds,
+			:bondshapes )
+  @eval $(f)(pv::ProteinView) = pv.$(f)[]
+end
+function loadpdb(str::String)
+	pdbid = uppercase(str)
+	protein = begin BioStructures.downloadpdb(pdbid; pdb_dir = "$(pdbdir())"); BioStructures.readpdb(pdbid; pdb_dir = "$(pdbdir())") end
+	chainss = BioStructures.chains(protein)
+	atoms = collectatoms(protein[collect(keys(chainss(1)))[1]])
+	coords = coordarray(atoms) |> _t
+	internaldists = internaldistances(atoms)
+	atomcolors = [elecolors[element(x)] for x in atoms]
+	atomradii = [vanderwaals[element(x)] for x in atoms]
+	residues = collectresidues(atoms)
+	resids = resid.(residues)
+	resatoms = BioStructures.atoms.(residues)
+	description = [getpdbdescription(pdbid) |> keys |> collect, getpdbdescription(pdbid) |> values |> collect] |> combinedims
+	bonds = resbonds.(residues; hres = true)
+	bondshapes = bondshape.([bonds[i].bonds for i = 1:size(bonds,1)]) |> collectbondshapes
+	return ProteinView( map(X->Node(X), [ pdbid,
+										  protein,
+										  chainss,
+										  atoms,
+										  coords,
+										  internaldistances,
+										  atomcolors,
+										  atomradii,
+										  residues,
+										  resids,
+										  resatoms,
+										  description,
+										  bonds,
+										  bondshapes
+										  ]
+							 )
+						)
+end
+ProteinView(arr::Array{Node,1}) = ProteinView(arr...)
+import AbstractPlotting: plot, plot!
+function plot(pv::ProteinView; res = (900,700))
+	scene, layout = layoutscene(resolution = res)
+	sc_scene = layout[1:16,1:8] = LScene(scene)
+	meshes = normal_mesh.(bondshapes(pv))
+	meshscatter!(sc_scene, pv.coords, markersize = pv.atomradii, color = pv.atomcolors, show_axis = false)
+	mesh!(sc_scene, meshes[1], color = Makie.RGBAf0(0.5,0.5,0.5,0.8))
+	for i = 1:size(meshes,1); mesh!(sc_scene, meshes[i], color = Makie.RGBAf0(0.5,0.5,0.5,0.8)); end
+	scene
+end
