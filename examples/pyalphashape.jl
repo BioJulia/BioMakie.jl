@@ -2,9 +2,9 @@ using PyCall, Conda
 np = pyimport_conda("numpy", "numpy")
 pyimport_conda("scipy","scipy")
 spatial = pyimport_conda("scipy","spatial")
-chull = pyimport_conda("scipy.spatial","ConvexHull")
-pyimport_conda("scikit-learn","scikit-learn")
-skl = pyimport_conda("sklearn", "sklearn")
+# chull = pyimport_conda("scipy.spatial","ConvexHull")
+# pyimport_conda("scikit-learn","scikit-learn")
+# skl = pyimport_conda("sklearn", "sklearn")
 
 py"""
     from scipy.spatial import Delaunay
@@ -63,38 +63,39 @@ end
 
 pv_5LEL = loadpdb("5LEL")
 proteinview = pv_5LEL
-scene, layout = layoutscene()
-sc1 = layout[1,1:3] = LScene(scene, resolution = (800,600))
+scene, layout = layoutscene(resolution = (500,700))
+sc1 = layout[1,1:3] = LScene(scene, resolution = (400,600))
 # meshes = normal_mesh.(bondshapes(proteinview))
 # mesh!(sc1, meshes[1], color = Makie.RGBAf0(0.5,0.5,0.5,0.0), show_axis = false)
 # for i = 1:size(meshes,1); mesh!(sc1, meshes[i], color = Makie.RGBAf0(0.5,0.5,0.5,0.4), show_axis = false); end
-top_sliderrange1 = 1.1:0.1:10.0
-slider1 = layout[3,2] = LSlider(scene, range = top_sliderrange1, startvalue = 2.0)
+slider1 = layout[3,2] = LSlider(scene, range = 1.1:0.1:10.0, startvalue = 2.0)
 txt1 = lift(slider1.value) do s1
     string("alpha = ", round(s1, sigdigits = 2))
 end
 top_text = layout[2,2] = LText(scene, text = txt1)
 as_5LEL = lift(slider1.value) do a
-    fetch(@spawnat :any getalphashape(coords(proteinview),a))
+    getalphashape(coords(proteinview),a) # does this even work
 end
 alphaconnect = lift(as_5LEL) do a1
     a1[3]
 end
-# alphaedges = lift(as_5LEL) do a1
-#     arr = []
-#     push!(arr, coords(proteinview)[a1[2],:])
-# end
-# alphaverts = lift(as_5LEL) do a1
-#     coords(proteinview)[a1[1],:]
-# end
+alphaedges = lift(as_5LEL) do a1
+    coords(proteinview)[a1[2],:]
+end
+alphaverts = lift(as_5LEL) do a1
+    coords(proteinview)[a1[1],:]
+end
 surfarea = @lift surfacearea(coords(proteinview), $(as_5LEL)[3])
 bottom_texts = layout[4,2] = LText(scene, text = lift(X->string("surface area = ", round(Int64, X), ""),surfarea), textsize = 15)
 mesh!(sc1, proteinview.coords, alphaconnect, color = Makie.RGBAf0(0.7,0.2,0.7,1.0), show_axis = false)
-# meshscatter!(sc1, alphaverts, markersize = 0.35, color = :red, show_axis = false)
+meshscatter!(sc1, proteinview.coords, markersize = 0.35, color = :red, show_axis = false)
+linesegments!(sc1, alphaedges)
 
 scene
 
-Makie.record(scene, "alphamov.gif") do io
+nothing # NOTHINGGGGGGG!!!!!
+
+Makie.record(scene, "alphamov.mp4") do io
     for i = 1:40
         slider1.value[] = 2.0 + i*0.2
         recordframe!(io)

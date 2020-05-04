@@ -41,11 +41,11 @@ function loadpdb(str::String)
 	internaldists = internaldistances(atoms)
 	atomcolors = [elecolors[element(x)] for x in atoms]
 	atomradii = [vanderwaals[element(x)] for x in atoms]
-	residues = collectresidues(atoms)
-	resids = resid.(residues)
-	resatoms = BioStructures.atoms.(residues)
+	_residues = collectresidues(atoms)
+	resids = resid.(_residues)
+	resatoms = BioStructures.atoms.(_residues)
 	description = [getpdbdescription(pdbid) |> keys |> collect, getpdbdescription(pdbid) |> values |> collect] |> combinedims
-	bonds = resbonds.(residues; hres = true)
+	bonds = resbonds.(_residues; hres = true)
 	bondshapes = bondshape.([bonds[i].bonds for i = 1:size(bonds,1)]) |> collectbondshapes
 	return ProteinView( map(X->Node(X), [ pdbid,
 										  protein,
@@ -55,7 +55,7 @@ function loadpdb(str::String)
 										  internaldistances,
 										  atomcolors,
 										  atomradii,
-										  residues,
+										  _residues,
 										  resids,
 										  resatoms,
 										  description,

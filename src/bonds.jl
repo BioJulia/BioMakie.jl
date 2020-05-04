@@ -74,13 +74,14 @@ hresbonds = Dict(
                 "HIS" => [["N","H"],["CA","HA"],["CB","HB3"],["CB","HB2"],["ND1","HD1"],
 						["CD2","HD2"],["CE1","HE1"]],
 )
+
 mutable struct Tether{T} <:AbstractTether where {T<:StructuralElementOrList}
 	points::T
 end
 mutable struct Bond <:AbstractBond
 	points::StructuralElementOrList
 end
-mutable struct ResBonds{R} <:AbstractResidue where {R<:Symbol}
+mutable struct ResBonds{Symbol}
 	parent
 	atoms::Union{AbstractDict,AbstractArray}
 	bonds::Vector{Bond}
@@ -106,7 +107,6 @@ function resbonds(res::AbstractResidue; hres = false)
 			elseif length(heavybond[1]) == 2
 				firstatomname = " $(heavybond[1]) "
 			elseif length(heavybond[1]) == 3
-
 				firstatomname = " $(heavybond[1])"
 			elseif length(heavybond[1]) == 4
 				firstatomname = "$(heavybond[1])"
@@ -185,8 +185,8 @@ function resbonds(res::AbstractResidue; hres = false)
 		# end
 	end
 	restype = res.name
-	restype = Symbol("$(restype)")
-	new_bonds = eval(ResBonds{restype}(res,resatoms,bonds,missingbonds,[]))
+	restype2 = Symbol("$(restype)")
+	new_bonds = eval(ResBonds{restype2}(res,resatoms,bonds,missingbonds,[]))
 	return new_bonds
 end
 function bondshape(twoatms::AbstractArray{T}) where {T<:AbstractAtom}
