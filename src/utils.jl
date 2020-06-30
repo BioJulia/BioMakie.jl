@@ -1,13 +1,3 @@
-GLFW.WindowHint(GLFW.FLOATING, 1)
-function reversekv(dict::AbstractDict{K,V}; print = false) where {K,V}
-	vkdict = [x[2].=>x[1] for x in dict]
-	if print == true
-		println.(vkdict)
-	end
-	return OrderedDict{V,K}(vkdict)
-end
-df(x) = DataFrame(x)
-df(xs...) = DataFrame(xs...)
 import Base.convert
 function convert(::Type{T}, arr::Array{T,1}) where {T<:Number}
     if size(arr,1) > 1
@@ -28,9 +18,20 @@ convert(::Type{String}, i::Int) = "$i"
 function convert(::Type{String}, f::T) where T<:Union{Float16,Float32,Float64}
 	"$f"
 end
+GLFW.WindowHint(GLFW.FLOATING, 1)
+function reversekv(dict::AbstractDict{K,V}; print = false) where {K,V}
+	vkdict = [x[2].=>x[1] for x in dict]
+	if print == true
+		println.(vkdict)
+	end
+	return OrderedDict{V,K}(vkdict)
+end
+dfr(x) = DataFrame(x)
+dfr(xs...) = DataFrame(xs...)
 function varcall(name::String,body::Any)
     name=Symbol(name)
     @eval (($name) = ($body))
+	return Symbol(name)
 end
 function tryint(number)
     return (try
@@ -140,7 +141,7 @@ end
 function makeclrgrad(vec::AbstractArray{T}, colrmap::AbstractArray) where T<:Real
     softmaxvec = Flux.softmax(vec)
     scalefactor = size(colrmap,1) / maximum(softmaxvec)
-    middlevec = (maximum(softmaxvec) + minimum(softmaxvec)) / 2
+    # middlevec = (maximum(softmaxvec) + minimum(softmaxvec)) / 2
     colorindices = round.(Int64, softmaxvec .* scalefactor)
     indexedcolors = colrmap[colorindices]
     return indexedcolors
@@ -212,7 +213,7 @@ function transposed(arr::AbstractArray)
 	arr2 = arr
     try
         @cast arr[j,i] := arr[i,j]
-        arr2 = arr |> df |> Array
+        arr2 = arr |> dfr |> Array
     catch
         arr2 = permutedims(arr[:,1])
         for i = 2:size(arr,2)
@@ -286,7 +287,11 @@ _g(arr::AbstractArray) =
 	try
 	    gluearray(arr)
 	catch
-		arr
+		try
+			_gluearray(arr)
+		catch
+			arr
+		end
 	end
 _v(arr::AbstractArray) = reverse(arr; dims = 1)
 _h(arr::AbstractArray) = reverse(arr; dims = 2)

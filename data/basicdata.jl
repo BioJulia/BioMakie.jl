@@ -82,10 +82,10 @@ elecolors = Dict( "C" => :gray,
                   "S" => :yellow,
 				  "X" => :gray
 )
-aquacolors = Dict("C" => RGB{Float64}(0.5,0.5,0.5),
-                  "N" => RGB{Float64}(0.472,0.211,0.499),
-                  "H" => RGB{Float64}(0.43,0.710,0.579),
-                  "O" => RGB{Float64}(0.111,0.37,0.999),
-                  "S" => RGB{Float64}(0.992,0.753,0.525),
-				  "X" => RGB{Float64}(0.5,0.5,0.5)
+aquacolors = Dict("C" => RGB{Float32}(0.5,0.5,0.5),
+                  "N" => RGB{Float32}(0.472,0.211,0.499),
+                  "H" => RGB{Float32}(0.43,0.710,0.579),
+                  "O" => RGB{Float32}(0.111,0.37,0.999),
+                  "S" => RGB{Float32}(0.992,0.753,0.525),
+				  "X" => RGB{Float32}(0.5,0.5,0.5)
 )

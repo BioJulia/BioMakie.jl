@@ -31,7 +31,9 @@ heavyresbonds = Dict(
                 "PRO" => [["C","O"],["C","CA"],["CA","N"],["CA","CB"],["N","CD"],["CB","CG"],["CG","CD"]],
                 "THR" => [["C","O"],["C","CA"],["CA","N"],["CA","CB"],["CB","OG1"],["CB","CG2"]],
                 "SER" => [["C","O"],["C","CA"],["CA","N"],["CA","CB"],["CB","OG"]],
-                "VAL" => [["C","O"],["C","CA"],["CA","N"],["CA","CB"],["CB","CG1"],["CB","CG2"]],
+				"VAL" => [["C","O"],["C","CA"],["CA","N"],["CA","CB"],["CB","CG1"],["CB","CG2"]],
+				"NAG" => [],
+				"HOH" => [],
                 "HIS" => [["C","O"],["C","CA"],["CA","N"],["CA","CB"],["CB","CG"],
 						["CG","ND1"],["CG","CD2"],["ND1","CE1"],["CD2","NE2"],["NE2","CE1"]]
 )
@@ -73,14 +75,17 @@ hresbonds = Dict(
 						["CG1","HG13"],["CG2","HG21"],["CG2","HG22"],["CG2","HG23"]],
                 "HIS" => [["N","H"],["CA","HA"],["CB","HB3"],["CB","HB2"],["ND1","HD1"],
 						["CD2","HD2"],["CE1","HE1"]],
+				"NAG" => [],
+				"HOH" => [],
 )
+
 mutable struct Tether{T} <:AbstractTether where {T<:StructuralElementOrList}
 	points::T
 end
 mutable struct Bond <:AbstractBond
 	points::StructuralElementOrList
 end
-mutable struct ResBonds{R} <:AbstractResidue where {R<:Symbol}
+mutable struct Residue{Symbol} <:AbstractResidue
 	parent
 	atoms::Union{AbstractDict,AbstractArray}
 	bonds::Vector{Bond}
@@ -106,7 +111,6 @@ function resbonds(res::AbstractResidue; hres = false)
 			elseif length(heavybond[1]) == 2
 				firstatomname = " $(heavybond[1]) "
 			elseif length(heavybond[1]) == 3
-
 				firstatomname = " $(heavybond[1])"
 			elseif length(heavybond[1]) == 4
 				firstatomname = "$(heavybond[1])"
@@ -185,8 +189,8 @@ function resbonds(res::AbstractResidue; hres = false)
 		# end
 	end
 	restype = res.name
-	restype = Symbol("$(restype)")
-	new_bonds = eval(ResBonds{restype}(res,resatoms,bonds,missingbonds,[]))
+	restype2 = Symbol("$(restype)")
+	new_bonds = eval(Residue{restype2}(res,resatoms,bonds,missingbonds,[]))
 	return new_bonds
 end
 function bondshape(twoatms::AbstractArray{T}) where {T<:AbstractAtom}
@@ -197,7 +201,7 @@ function bondshape(twoatms::AbstractArray{T}) where {T<:AbstractAtom}
 end
 bondshape(bond::AbstractBond) = bondshape(atoms(bond))
 bondshape(bondlist::AbstractArray{Bond}) = bondshape.(bondlist)
-bondshape(resbonds::ResBonds) = bondshape.(resbonds.bonds)
+bondshape(resbonds::Residue{Symbol}) = bondshape.(resbonds.bonds)
 function collectbondshapes(arr)
 	shapes = []
 	for i = 1:size(arr,1)
