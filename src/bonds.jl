@@ -89,8 +89,8 @@ mutable struct Residue{Symbol} <:AbstractResidue
 	parent
 	atoms::Union{AbstractDict,AbstractArray}
 	bonds::Vector{Bond}
-	missingbonds::Vector{Union{Bond,AbstractArray}}
-	extrabonds::Vector{Bond}
+	# missingbonds::Vector{Union{Bond,AbstractArray}}
+	# extrabonds::Vector{Bond}
 end
 Bond(x1::StructuralElement, x2::StructuralElement) = Bond([x1,x2])
 atoms(bond::Bond) = bond.points
