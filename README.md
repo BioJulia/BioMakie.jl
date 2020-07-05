@@ -8,6 +8,7 @@
 
 This package is a set of interactive biological visualizations with Makie at its core.
 
+To view a PDB structure, use the `viewstruc` function with a PDB ID:
 ```julia
-julia> 
+julia> viewstruc("6LZG") # plots the structure using GLMakie and returns a StructureView
 ```

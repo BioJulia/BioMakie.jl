@@ -35,7 +35,8 @@ heavyresbonds = Dict(
 				"NAG" => [],
 				"HOH" => [],
                 "HIS" => [["C","O"],["C","CA"],["CA","N"],["CA","CB"],["CB","CG"],
-						["CG","ND1"],["CG","CD2"],["ND1","CE1"],["CD2","NE2"],["NE2","CE1"]]
+						["CG","ND1"],["CG","CD2"],["ND1","CE1"],["CD2","NE2"],["NE2","CE1"]],
+				" ZN" => []
 )
 hresbonds = Dict(
                 "ARG" => [["N","H"],["CA","HA"],["CA","HA2"],["CB","HB3"],["CB","HB2"],
@@ -77,6 +78,7 @@ hresbonds = Dict(
 						["CD2","HD2"],["CE1","HE1"]],
 				"NAG" => [],
 				"HOH" => [],
+				" ZN" => []
 )
 
 mutable struct Tether{T} <:AbstractTether where {T<:StructuralElementOrList}
@@ -190,7 +192,7 @@ function resbonds(res::AbstractResidue; hres = false)
 	end
 	restype = res.name
 	restype2 = Symbol("$(restype)")
-	new_bonds = eval(Residue{restype2}(res,resatoms,bonds,missingbonds,[]))
+	new_bonds = eval(Residue{restype2}(res,resatoms,bonds))
 	return new_bonds
 end
 function bondshape(twoatms::AbstractArray{T}) where {T<:AbstractAtom}
