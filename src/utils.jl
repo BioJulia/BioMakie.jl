@@ -1,3 +1,4 @@
+GLFW.WindowHint(GLFW.FLOATING, 1)
 import Base.convert
 function convert(::Type{T}, arr::Array{T,1}) where {T<:Number}
     if size(arr,1) > 1
@@ -18,87 +19,10 @@ convert(::Type{String}, i::Int) = "$i"
 function convert(::Type{String}, f::T) where T<:Union{Float16,Float32,Float64}
 	"$f"
 end
-GLFW.WindowHint(GLFW.FLOATING, 1)
-function reversekv(dict::AbstractDict{K,V}; print = false) where {K,V}
-	vkdict = [x[2].=>x[1] for x in dict]
-	if print == true
-		println.(vkdict)
-	end
-	return OrderedDict{V,K}(vkdict)
-end
-dfr(x) = DataFrame(x)
-dfr(xs...) = DataFrame(xs...)
 function varcall(name::String,body::Any)
     name=Symbol(name)
     @eval (($name) = ($body))
 	return Symbol(name)
-end
-function tryint(number)
-    return (try
-        Int64(number)
-    catch
-        number
-    end)
-end
-function tryfloat(number)
-    return (try
-        Float64(number)
-    catch
-        number
-    end)
-end
-function tryfloat32(number)
-    return (try
-        Float32(number)
-    catch
-        number
-    end)
-end
-function steprange(arr::AbstractArray{T,1}; step = 1) where {T<:Integer}
-    notseq = 0
-    min_value = arr[1]
-    max_value = arr[end]
-    @assert max_value > min_value
-    for i in 1:size(arr,1)
-        if i == 1
-            step = arr[i+1] - arr[i]
-            continue
-        end
-        if arr[i]-arr[i-1] != step
-            notseq = 1
-        end
-    end
-    if notseq == 0
-        return StepRange(min_value,step,max_value)
-    end
-    throw(ErrorException("inconsistent step for step range"))
-end
-function unitrange(arr::AbstractArray{T,1}) where {T<:Integer}
-    notseq = 0
-    min_value = arr[1]
-    max_value = arr[end]
-    @assert max_value > min_value
-    for i in 1:size(arr,1)
-        if i == 1
-            step = arr[i+1] - arr[i]
-            continue
-        end
-        if arr[i]-arr[i-1] != 1
-            notseq = 1
-        end
-    end
-    if notseq == 0
-        return UnitRange(min_value,max_value)
-    end
-    throw(ErrorException("inconsistent step for unit range"))
-end
-splatrange(range) = [(range...)]
-function splatranges(ranges...)
-    splattedrange = []
-    for range in ranges
-        splattedrange = vcat(splattedrange, splatrange(range))
-    end
-    return eval([Int64.(splattedrange)...])
 end
 carbonselector(at) = element(at) in ("C","CA","CB")
 nitroselector(at) = element(at) == "N"
@@ -141,7 +65,6 @@ end
 function makeclrgrad(vec::AbstractArray{T}, colrmap::AbstractArray) where T<:Real
     softmaxvec = Flux.softmax(vec)
     scalefactor = size(colrmap,1) / maximum(softmaxvec)
-    # middlevec = (maximum(softmaxvec) + minimum(softmaxvec)) / 2
     colorindices = round.(Int64, softmaxvec .* scalefactor)
     indexedcolors = colrmap[colorindices]
     return indexedcolors
@@ -209,111 +132,8 @@ function centerofmass(atms::AbstractArray{AbstractAtom})
     end
     return centerofmass = [ ∑(masses.*xs)/totalmass, ∑(masses.*ys)/totalmass, ∑(masses.*zs)/totalmass ]
 end
-function transposed(arr::AbstractArray)
-	arr2 = arr
-    try
-        @cast arr[j,i] := arr[i,j]
-        arr2 = arr |> dfr |> Array
-    catch
-        arr2 = permutedims(arr[:,1])
-        for i = 2:size(arr,2)
-            arr2 = vcat(arr2, permutedims(arr[:,i]))
-        end
-    end
-    return arr2
-end
-function _gluearray(arr::AbstractArray)
-	cparr = copy(arr)
-	try
-        @cast cparr[i,j] := cparr[i][j]
-        @cast cparr[i,j,k,g] := cparr[i,j][k,g]
-    catch
-        try
-            @cast cparr[i,j,k] := cparr[i][j,k]
-        catch
-
-        end
-    end
-    try
-        @cast cparr[i,j] := cparr[i][j]
-        @cast cparr[i,j,k,g] := cparr[i,j][k,g]
-    catch
-        try
-            @cast cparr[i,j,k] := cparr[i][j,k]
-        catch
-
-        end
-    end
-    return cparr
-end
-function gluearray(arr::AbstractArray{T,N}) where {T,N}
-	cparr = copy(arr)
-	if T <: Vector{Vector{Vector{M}}} where M
-		@cast cparr[i,j] := cparr[i][j]
-		cparr = cparr |> combinedims
-		return Array{Array{M},4}(cparr)
-	end
-	cparr = _gluearray(cparr)
-	if N == 3
-		try
-			cparr = cparr[:,:,:]
-		catch
-			try
-				cparr = _gluearray(cparr)
-			catch
-				println("shape: $(size(cparr))")
-				return cparr
-			end
-		end
-	elseif N == 4
-		try
-			cparr = cparr[:,:,:,:]
-		catch
-			try
-				cparr = cparr[:,:,:]
-			catch
-				try
-					cparr = _gluearray(cparr)
-				catch
-					println("shape: $(size(cparr))")
-					return cparr
-				end
-			end
-		end
-	end
-	return cparr
-end
-_g(arr::AbstractArray) =
-	try
-	    gluearray(arr)
-	catch
-		try
-			_gluearray(arr)
-		catch
-			arr
-		end
-	end
 _v(arr::AbstractArray) = reverse(arr; dims = 1)
 _h(arr::AbstractArray) = reverse(arr; dims = 2)
-_t(arr::AbstractArray) = transposed(arr)
-_shuffledims(arr::AbstractArray{T,1}) where T = arr
-_shuffledims(arr::AbstractArray{T,2}) where T = @cast arr[j,i] := arr[i,j]
-_shuffledims(arr::AbstractArray{T,3}, d::Int64 = 1) where T =
-	if d == 1
-		@cast arr[i,k,j] := arr[i,j,k] # d==1 => index 1 is held
-	elseif d == 2
-		@cast arr[k,j,i] := arr[i,j,k] # d==2 => index 2 is held
-	elseif d == 3
-		@cast arr[j,i,k] := arr[i,j,k] # d==3 => index 3 is held
-	elseif d == 0
-		@cast arr[i,j,k] := arr[i,j,k] # d==0 => identity
-	elseif d == 4 || d == +1
-		@cast arr[k,i,j] := arr[i,j,k] # d==4 => move indices forward +1 ( index 3(+1) -> index 4 -> index 1 )
-	elseif d == 5 || d == -1
-		@cast arr[j,k,i] := arr[i,j,k] # d==5 => move indices backward -1 ( index 1(-1) -> index 0 -> index 3 )
-	else
-		@cast arr[i,j,k] := arr[i,j,k] # else => identity
-end
 function _stripkeys(dict::AbstractDict)
     ks = string.(strip.(keys(dict)))
     return ks

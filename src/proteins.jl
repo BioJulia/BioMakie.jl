@@ -30,7 +30,7 @@ bondshapes(bonds) = bondshape.([bonds[i].bonds for i = 1:size(bonds,1)]) |> coll
 
 function structureview(str::String; select = :standardselector, color = :element)
 	id = uppercase(str)
-	prot = retrievepdb(id)
+	prot = retrievepdb(id; dir = "../data/PDB")
 	models1 = BioStructures.models(prot)
 	chains1 = BioStructures.chains(prot)
 	residues1 = BioStructures.collectresidues(prot, eval(select))
@@ -46,14 +46,15 @@ end
 
 function viewstruc(str::String; kwargs...)
 	sv = structureview(str)
-	scene, layout = layoutscene(resolution = (900,700))
-	sc_scene = layout[1:16,1:8] = LScene(scene)
+	scene, layout = layoutscene(16, 8; resolution = (900,700))
+	sc_scene = layout[1:14,1:6] = LScene(scene)
+	markersize1 = layout[3:4,7:8] = LSlider(scene, range = 0:0.01:3.0, startvalue = 0.5)
 
 	meshes = normal_mesh.(bondshapes(bonds(residues(sv))))
-	meshscatter!(sc_scene, lift(atomcoords,sv.atoms); markersize = 0.5, color = lift(atomcolors,sv.atoms), show_axis = false, kwargs...) # sv.atomradii
+	meshscatter!(sc_scene, lift(atomcoords,sv.atoms); markersize = markersize1.value, color = lift(atomcolors,sv.atoms), show_axis = false, kwargs...) # sv.atomradii
 	mesh!(sc_scene, meshes[1], color = Makie.RGBAf0(0.5,0.5,0.5,0.8))
 	for i = 1:size(meshes,1); mesh!(sc_scene, meshes[i], color = Makie.RGBAf0(0.5,0.5,0.5,0.8)); end
 
-	@eval display(scene)
-	return sv
+	display(scene)
+	return sv, scene, layout
 end
