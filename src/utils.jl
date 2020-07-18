@@ -1,5 +1,6 @@
 GLFW.WindowHint(GLFW.FLOATING, 1)
 import Base.convert
+indexshift(args,int=1) = args.+=int
 function convert(::Type{T}, arr::Array{T,1}) where {T<:Number}
     if size(arr,1) > 1
         return T.(arr)
@@ -132,6 +133,22 @@ function centerofmass(atms::AbstractArray{AbstractAtom})
     end
     return centerofmass = [ ∑(masses.*xs)/totalmass, ∑(masses.*ys)/totalmass, ∑(masses.*zs)/totalmass ]
 end
+function surfacearea(coordinates, connectivity)
+    totalarea = 0.0
+    for i = 1:size(connectivity,1)
+        totalarea += area(GeometryBasics.Point3f0.(coordinates[connectivity[i,1],:], coordinates[connectivity[i,2],:], coordinates[connectivity[i,3],:]))
+    end
+    return totalarea
+end
+function linesegs(arrN23::AbstractArray{Float64,3})
+    new_arr::AbstractArray{Point3f0} = []
+    for N in 1:size(arrN23,1)
+        push!(new_arr, Makie.Point3f0(arrN23[N,1,:]))
+        push!(new_arr, Makie.Point3f0(arrN23[N,2,:]))
+    end
+    return new_arr |> combinedims |> transpose |> collect
+end
+
 _v(arr::AbstractArray) = reverse(arr; dims = 1)
 _h(arr::AbstractArray) = reverse(arr; dims = 2)
 function _stripkeys(dict::AbstractDict)
@@ -139,3 +156,4 @@ function _stripkeys(dict::AbstractDict)
     return ks
 end
 _stripallkeys(dicts::AbstractArray) =  _stripkeys.(dicts)
+AbstractPlotting.inline!(false)
