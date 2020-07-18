@@ -74,7 +74,8 @@ vanderwaals = Dict( "C" => 1.70,
             		"O" => 1.52,
             		"S" => 1.85,
 					"X" => 1.20,
-					"ZN" => 1.20
+					"ZN" => 1.20,
+  				  	"CL" => 1.85
 )
 elecolors = Dict( "C" => :gray,
                   "N" => :blue,
@@ -82,7 +83,8 @@ elecolors = Dict( "C" => :gray,
                   "O" => :red,
                   "S" => :yellow,
 				  "X" => :gray,
-				  "ZN" => :gray
+				  "ZN" => :gray,
+				  "CL" => :gray
 )
 aquacolors = Dict("C" => RGB{Float32}(0.5,0.5,0.5),
                   "N" => RGB{Float32}(0.472,0.211,0.499),
@@ -90,5 +92,6 @@ aquacolors = Dict("C" => RGB{Float32}(0.5,0.5,0.5),
                   "O" => RGB{Float32}(0.111,0.37,0.999),
                   "S" => RGB{Float32}(0.992,0.753,0.525),
 				  "X" => RGB{Float32}(0.5,0.5,0.5),
-				  "ZN" => RGB{Float32}(0.5,0.5,0.5)
+				  "ZN" => RGB{Float32}(0.5,0.5,0.5),
+				  "CL" => RGB{Float32}(0.5,0.5,0.5)
 )

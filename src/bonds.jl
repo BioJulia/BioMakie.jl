@@ -195,6 +195,18 @@ function resbonds(res::AbstractResidue; hres = false)
 	new_bonds = eval(Residue{restype2}(res,resatoms,bonds))
 	return new_bonds
 end
+# function resbonds(resz::AbstractArray{AbstractResidue}; hres = false)
+# 	bonds = []
+# 	# missingbonds = []
+# 	resatoms = res.atoms
+# 	resatoms2 = collectatoms(res)
+# 	atmkeys = keys(resatoms2) |> collect
+# 	resatomkeys = _stripkeys(resatoms)
+# 	for i = 1:size()
+#
+# 	end
+# 	push!(bonds, Bond(resatoms[firstatomname], resatoms[secondatomname]))
+# end
 function bondshape(twoatms::AbstractArray{T}) where {T<:AbstractAtom}
     pnt1 = GeometryBasics.Point3f0(coords(twoatms[1])[1], coords(twoatms[1])[2], coords(twoatms[1])[3])
     pnt2 = GeometryBasics.Point3f0(coords(twoatms[2])[1], coords(twoatms[2])[2], coords(twoatms[2])[3])
@@ -204,12 +216,3 @@ end
 bondshape(bond::AbstractBond) = bondshape(atoms(bond))
 bondshape(bondlist::AbstractArray{Bond}) = bondshape.(bondlist)
 bondshape(resbonds::Residue{Symbol}) = bondshape.(resbonds.bonds)
-function collectbondshapes(arr)
-	shapes = []
-	for i = 1:size(arr,1)
-		for j = 1:size(arr[i],1)
-			push!(shapes,arr[i][j])
-		end
-	end
-	return shapes |> Vector{GeometryBasics.Cylinder{3,Float32}}
-end
