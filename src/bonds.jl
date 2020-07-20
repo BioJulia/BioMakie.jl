@@ -195,7 +195,7 @@ function resbonds(res::AbstractResidue; hres = false)
 	new_bonds = eval(Residue{restype2}(res,resatoms,bonds))
 	return new_bonds
 end
-# function resbonds(resz::AbstractArray{AbstractResidue}; hres = false)
+# function backbonebonds(resz::AbstractArray{AbstractResidue}; hres = false)
 # 	bonds = []
 # 	# missingbonds = []
 # 	resatoms = res.atoms
