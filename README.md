@@ -9,7 +9,8 @@
 This package is a set of interactive biological visualizations with Makie at its core.
 
 To view a PDB structure, use the `viewstruc` function with a PDB ID. The following code
-plots the structure then returns a StructureView, a Scene, and a GridLayout to work with.
+plots the structure then returns a StructureView with relevant Nodes, the scene, and the layout
+for convenience.
 ```julia
-julia> sv = viewstruc("6LZG") # plots the structure, returns a StructureView, Scene, and a GridLayout
+julia> sv = viewstruc("2VB1") # plots the structure and returns a StructureView
 ```
