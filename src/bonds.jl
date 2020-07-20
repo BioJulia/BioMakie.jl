@@ -216,3 +216,12 @@ end
 bondshape(bond::AbstractBond) = bondshape(atoms(bond))
 bondshape(bondlist::AbstractArray{Bond}) = bondshape.(bondlist)
 bondshape(resbonds::Residue{Symbol}) = bondshape.(resbonds.bonds)
+function collectbondshapes(arr)
+	shapes = []
+	for i = 1:size(arr,1)
+		for j = 1:size(arr[i],1)
+			push!(shapes,arr[i][j])
+		end
+	end
+	return shapes |> Vector{GeometryBasics.Cylinder{3,Float32}}
+end

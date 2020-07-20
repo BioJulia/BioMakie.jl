@@ -13,9 +13,7 @@ for f in (	:protein,
 			:models,
 			:chains,
 			:residues,
-			:atoms,
-			:scenes,
-			:layout
+			:atoms
 			)
   @eval $(f)(sv::StructureView) = sv.$(f)[]
 end
@@ -70,6 +68,15 @@ function viewstruc(str::String; dir = "../data/PDB", showbonds = true)
 	sv.scenes = [scene,sc_scene]
 	sv.layout = layout
 	return sv
+end
+function collectbondshapes(arr)
+	shapes = []
+	for i = 1:size(arr,1)
+		for j = 1:size(arr[i],1)
+			push!(shapes,arr[i][j])
+		end
+	end
+	return shapes |> Vector{GeometryBasics.Cylinder{3,Float32}}
 end
 # # using Pkg
 # # Pkg.add.(["PyCall", "Conda"])
