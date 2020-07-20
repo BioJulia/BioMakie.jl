@@ -13,10 +13,13 @@
 This package is **in development** and will **break often**.  As it is currently unregistered, you can install it from the REPL like so:
 ```julia
 ]add https://github.com/kool7d/BioMakie.jl
+```
 
+## Usage
 To view a PDB structure, use the `viewstruc` function with a PDB ID. The following code
 plots the structure then returns a StructureView with relevant Nodes, the scene, and the layout
 for convenience.
+
 ```julia
 julia> sv = viewstruc("2VB1") # plots the structure and returns a StructureView
 ```
