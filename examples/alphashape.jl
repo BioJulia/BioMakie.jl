@@ -46,7 +46,7 @@ end
 function viewalphashape(str::String; dir = "../data/PDB")
 	sv = structureview(str; dir = dir)
 	scene, layout = layoutscene(16, 8; resolution = (900,900))
-	sc_scene = layout[1:14,1:6] = LScene(scene, show_axis = false)
+	sc_scene = layout[1:14,1:6] = LScene(scene)
 	alpha1 = layout[3,7:8] = LSlider(scene, range = 1.5:0.01:9.0, startvalue = 2.5)
 	txt1 = Makie.lift(alpha1.value) do s1; string("alpha = ", round(s1, sigdigits = 2)); end
 	top_text = layout[2,7:8] = LText(scene, text = txt1)
@@ -61,7 +61,7 @@ function viewalphashape(str::String; dir = "../data/PDB")
 	bottom_texts = layout[8,7:8] = LText(scene, text = lift(X->string("surface area = ", round(Int64, X), "  Å"), surfarea), textsize = 15)
 
 	# mesh!(sc_scene, alphaverts, alphaconnect)
-	scatter!(sc_scene, alphaverts, markersize = 0.5,  color = :green, show_axis = false)
+	scatter!(sc_scene, alphaverts, markersize = 0.5, color = :green, show_axis = false)
 	linesegments!(sc_scene, alphaedges, color = :green, show_axis = false)
 
 	display(scene)

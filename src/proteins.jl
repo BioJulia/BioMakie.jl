@@ -22,7 +22,7 @@ atomcoords(atoms) = coordarray(atoms) |> transpose |> collect
 atomcoords(sv::StructureView) = coordarray(sv.atoms[]) |> transpose |> collect
 atomcolors(atoms; color = :element) =
 					if color == :ele || color == :element
-						[elecolors[element(x)] for x in atoms]
+						[aquacolors[element(x)] for x in atoms]
 					else
 						[aquacolors[element(x)] for x in atoms]
 					end
@@ -52,10 +52,13 @@ end
 
 function viewstruc(str::String; dir = "../data/PDB", showbonds = true)
 	sv = structureview(str; dir = dir)
-	scene, layout = layoutscene(16, 9; resolution = (900,900))
-	sc_scene = layout[1:14,1:6] = LScene(scene)
-	markersize1 = layout[4,7:9] = LSlider(scene, range = 0:0.01:3.0, startvalue = 0.5)
-	markersizetext1 = layout[3,7:9] = LText(scene, lift(X->"atom size = $(string(X))", markersize1.value))
+	scene, layout = layoutscene(16, 9; resolution = (1000,900))
+	sc_scene = layout[1:14,1:7] = LScene(scene)
+	markersize1 = layout[4,8:9] = LSlider(scene, range = 0:0.01:3.0, startvalue = 0.5)
+	markersizetext1 = layout[3,8:9] = LText(scene, lift(X->"atom size = $(string(X)) Å", markersize1.value))
+	menu1 = layout[7,8:9] = LMenu(scene, options = ["element", "aqua"])
+	menutext1 = layout[6,8:9] = LText(scene, "colors:")
+	title1 = layout[0,1:7] = LText(scene, str; textsize = 35)
 	meshscatter!(sc_scene, lift(atomcoords,sv.atoms); markersize = markersize1.value, color = lift(atomcolors,sv.atoms), show_axis = false) # sv.atomradii
 	if showbonds == true
 		bonds1 = normal_mesh.(bondshapes(bonds(residues(sv))))
@@ -69,5 +72,3 @@ function viewstruc(str::String; dir = "../data/PDB", showbonds = true)
 	sv.layout = layout
 	return sv
 end
-
-loadalphashape() = include("../examples/alphashape.jl")

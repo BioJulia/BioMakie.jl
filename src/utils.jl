@@ -1,6 +1,6 @@
 GLFW.WindowHint(GLFW.FLOATING, 1)
 import Base.convert
-indexshift(args,int=1) = args.+=int
+indexshift(idxs,int=1) = idxs.+=int
 function convert(::Type{T}, arr::Array{T,1}) where {T<:Number}
     if size(arr,1) > 1
         return T.(arr)
@@ -24,6 +24,9 @@ function varcall(name::String,body::Any)
     name=Symbol(name)
     @eval (($name) = ($body))
 	return Symbol(name)
+end
+async(x) = begin
+	@async(x)
 end
 carbonselector(at) = element(at) in ("C","CA","CB")
 nitroselector(at) = element(at) == "N"
