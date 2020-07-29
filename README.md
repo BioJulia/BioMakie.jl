@@ -8,8 +8,27 @@
 
 This package is a set of interactive biological visualizations with Makie at its core.
 
-To view a PDB structure, use the `viewstruc` function with a PDB ID. The following code
-plots the structure then returns a StructureView, a Scene, and a GridLayout to work with.
+To view a PDB structure, use the `viewstruc` function with a PDB ID. The following code plots the structure then returns a StructureView with the scene and layout.
 ```julia
-julia> sv = viewstruc("6LZG") # plots the structure, returns a StructureView, Scene, and a GridLayout
+julia> sv = viewstruc("2VB1")
+```
+
+To view the alpha shape (a mesh algorithm) of a PDB structure, use the `viewalphashape` function with a PDB ID. The current version requires
+the use of PyCall/Conda, the python interoperation package. The following code imports and attempts to set up PyCall/Conda, then plots the alpha shape and returns a StructureView with the scene and layout.
+```julia
+julia> sa = viewalphashape("2VB1")
+```
+
+An example with additional controls can be loaded with `viewanimation`. This
+example is still a little laggy, but should work to demonstrate a more
+complicated view. It will only work if the previous example works since it
+also shows an alpha shape.
+```julia
+julia> sn = viewanimation()
+```
+
+Another example, `viewmsa`, does basically the same thing but for multiple
+sequence alignments. (from Pfam)
+```julia
+julia> ms = viewmsa("PF00062")
 ```

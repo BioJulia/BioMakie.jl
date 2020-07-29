@@ -25,6 +25,15 @@ function varcall(name::String,body::Any)
     @eval (($name) = ($body))
 	return Symbol(name)
 end
+function reversekv(dict::AbstractDict{K,V}; print = false) where {K,V}
+	vkdict = [x[2].=>x[1] for x in dict]
+	if print == true
+		println.(vkdict)
+	end
+	return OrderedDict{V,K}(vkdict)
+end
+dfr(x) = DataFrame(x)
+dfr(xs...) = DataFrame(xs...)
 function tryint(number)
     return (try
         Int64(number)
@@ -216,7 +225,20 @@ function linesegs(arrN23::AbstractArray{Float64,3})
     end
     return new_arr |> combinedims |> transpose |> collect
 end
-
+function transposed(arr::AbstractArray)
+	arr2 = arr
+    try
+        @cast arr[j,i] := arr[i,j]
+        arr2 = arr |> dfr |> Array
+    catch
+        arr2 = permutedims(arr[:,1])
+        for i = 2:size(arr,2)
+            arr2 = vcat(arr2, permutedims(arr[:,i]))
+        end
+    end
+    return arr2
+end
+_t(arr::AbstractArray) = transposed(arr)
 _v(arr::AbstractArray) = reverse(arr; dims = 1)
 _h(arr::AbstractArray) = reverse(arr; dims = 2)
 function _stripkeys(dict::AbstractDict)
