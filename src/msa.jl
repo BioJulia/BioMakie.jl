@@ -39,19 +39,19 @@ function msaview(str::String; dir = "../data/MSA", filetype = Stockholm)
 end
 
 function viewmsa(str::String)
-	mv = msaview(str)
+	ms = msaview(str)
 	scene, layout = layoutscene(8,16; resolution = (600,900))
-	ms_scene = layout[1:3,1:2] = LAxis(scene)
-	tightlimits!(ms_scene)
-	x_width = size(msa,1)
-	y_height = size(msa,2)
-	Makie.heatmap!(ms_scene, doublemutantchanges; colormap = :RdBu)
-	ms_scene.attributes.yticks = ([0.5:(parse(Float64,"$(y_height).5"))...], [doublemutantlabels...])	   # for setting custom tick labels
-	ms_scene.attributes.xticks = ([0.5:(parse(Float64,"$(x_width).5"))...])
+	# ms_scene = layout[1:3,1:2] = LAxis(scene)
+	# tightlimits!(ms_scene)
+	# x_width = size(matrix(mv),1)
+	# y_height = size(matrix(mv),2)
+	# Makie.heatmap!(ms_scene, mv.; colormap = :RdBu)
+	# ms_scene.attributes.yticks = ([0.5:(parse(Float64,"$(y_height).5"))...])
+	# ms_scene.attributes.xticks = ([0.5:(parse(Float64,"$(x_width).5"))...])
 
 	display(scene)
 
-	sv.scenes = [scene, ms_scene]
-	sv.layout = layout
-	return mv
+	ms.scenes = [scene]
+	ms.layout = layout
+	return ms
 end
