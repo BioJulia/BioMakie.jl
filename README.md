@@ -7,6 +7,12 @@
 [![Codecov](https://codecov.io/gh/kool7d/BioMakie.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/kool7d/BioMakie.jl)
 
 This package is a set of interactive biological visualizations with Makie at its core.
+This package is **in development** and will **break often**.  As it is currently unregistered, you can install it from the REPL like so:
+```julia
+]add https://github.com/kool7d/BioMakie.jl
+```
+
+## Usage
 
 To view a PDB structure, use the `viewstruc` function with a PDB ID. The following code plots the structure then returns a StructureView with the scene and layout.
 ```julia
