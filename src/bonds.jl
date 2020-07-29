@@ -195,9 +195,10 @@ function resbonds(res::AbstractResidue; hres = false)
 	new_bonds = eval(Residue{restype2}(res,resatoms,bonds))
 	return new_bonds
 end
-# function backbonebonds(resz::AbstractArray{AbstractResidue}; hres = false)
+# function backbonebonds(chn::BioStructures.Chain)
 # 	bonds = []
 # 	# missingbonds = []
+# 	chnresz =
 # 	resatoms = res.atoms
 # 	resatoms2 = collectatoms(res)
 # 	atmkeys = keys(resatoms2) |> collect

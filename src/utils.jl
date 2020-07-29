@@ -1,6 +1,6 @@
 GLFW.WindowHint(GLFW.FLOATING, 1)
 import Base.convert
-indexshift(args,int=1) = args.+=int
+indexshift(idxs,int=1) = idxs.+=int
 function convert(::Type{T}, arr::Array{T,1}) where {T<:Number}
     if size(arr,1) > 1
         return T.(arr)
@@ -24,6 +24,73 @@ function varcall(name::String,body::Any)
     name=Symbol(name)
     @eval (($name) = ($body))
 	return Symbol(name)
+end
+function tryint(number)
+    return (try
+        Int64(number)
+    catch
+        number
+    end)
+end
+function tryfloat(number)
+    return (try
+        Float64(number)
+    catch
+        number
+    end)
+end
+function tryfloat32(number)
+    return (try
+        Float32(number)
+    catch
+        number
+    end)
+end
+function steprange(arr::AbstractArray{T,1}; step = 1) where {T<:Integer}
+    notseq = 0
+    min_value = arr[1]
+    max_value = arr[end]
+    @assert max_value > min_value
+    for i in 1:size(arr,1)
+        if i == 1
+            step = arr[i+1] - arr[i]
+            continue
+        end
+        if arr[i]-arr[i-1] != step
+            notseq = 1
+        end
+    end
+    if notseq == 0
+        return StepRange(min_value,step,max_value)
+    end
+    throw(ErrorException("inconsistent step for step range"))
+end
+function unitrange(arr::AbstractArray{T,1}) where {T<:Integer}
+    notseq = 0
+    min_value = arr[1]
+    max_value = arr[end]
+    @assert max_value > min_value
+    for i in 1:size(arr,1)
+        if i == 1
+            step = arr[i+1] - arr[i]
+            continue
+        end
+        if arr[i]-arr[i-1] != 1
+            notseq = 1
+        end
+    end
+    if notseq == 0
+        return UnitRange(min_value,max_value)
+    end
+    throw(ErrorException("inconsistent step for unit range"))
+end
+splatrange(range) = [(range...)]
+function splatranges(ranges...)
+    splattedrange = []
+    for range in ranges
+        splattedrange = vcat(splattedrange, splatrange(range))
+    end
+    return eval([Int64.(splattedrange)...])
 end
 carbonselector(at) = element(at) in ("C","CA","CB")
 nitroselector(at) = element(at) == "N"
@@ -136,7 +203,8 @@ end
 function surfacearea(coordinates, connectivity)
     totalarea = 0.0
     for i = 1:size(connectivity,1)
-        totalarea += area(GeometryBasics.Point3f0.(coordinates[connectivity[i,1],:], coordinates[connectivity[i,2],:], coordinates[connectivity[i,3],:]))
+        totalarea += area(GeometryBasics.Point3f0.(coordinates[connectivity[i,1],:],
+						coordinates[connectivity[i,2],:], coordinates[connectivity[i,3],:]))
     end
     return totalarea
 end

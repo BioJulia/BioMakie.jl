@@ -50,13 +50,17 @@ function structureview(str::String; dir = "../data/PDB", select = :standardselec
 						)
 end
 
-function viewstruc(str::String; dir = "../data/PDB", showbonds = true)
+function viewstruc(str::String; dir = "../data/PDB", showbonds = true, color = :element)
 	sv = structureview(str; dir = dir)
-	scene, layout = layoutscene(16, 9; resolution = (900,900))
-	sc_scene = layout[1:14,1:6] = LScene(scene)
-	markersize1 = layout[4,7:9] = LSlider(scene, range = 0:0.01:3.0, startvalue = 0.5)
-	markersizetext1 = layout[3,7:9] = LText(scene, lift(X->"atom size = $(string(X))", markersize1.value))
-	meshscatter!(sc_scene, lift(atomcoords,sv.atoms); markersize = markersize1.value, color = lift(atomcolors,sv.atoms), show_axis = false) # sv.atomradii
+	scene, layout = layoutscene(8, 8; resolution = (900,900))
+	sc_scene = layout[2:8,1:8] = LScene(scene)
+	pdbtext = layout[1,1:8] = LText(scene, text = uppercase(str); textsize = 35)
+	colors = Node(color)
+
+	meshscatter!(sc_scene, lift(atomcoords,sv.atoms);
+		color = lift(X->atomcolors(X; color = colors[]),sv.atoms),
+		markersize = lift(X->(1/3).*atomradii(X),sv.atoms), show_axis = false)
+
 	if showbonds == true
 		bonds1 = normal_mesh.(bondshapes(bonds(residues(sv))))
 		mesh!(sc_scene, bonds1[1], color = Makie.RGBAf0(0.5,0.5,0.5,0.8))
@@ -69,5 +73,3 @@ function viewstruc(str::String; dir = "../data/PDB", showbonds = true)
 	sv.layout = layout
 	return sv
 end
-
-loadalphashape() = include("../examples/alphashape.jl")
