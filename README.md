@@ -38,6 +38,6 @@ julia> sn = viewanimation()
 ```
 
 Another example, `viewmsa`, does basically the same thing but for multiple
-sequence alignments. (from Pfam)
+sequence alignments. (from Pfam) (currently there is a bug in the text display which will be fixed ASAP)
 ```julia
 julia> ms = viewmsa("PF00062")
