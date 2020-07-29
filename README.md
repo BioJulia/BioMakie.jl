@@ -22,12 +22,14 @@ To view a PDB structure, use the `viewstruc` function with a PDB ID. The followi
 ```julia
 julia> sv = viewstruc("2VB1")
 ```
+![Image of struc](https://github.com/kool7d/BioMakie.jl/blob/master/examples/2vb1.png)
 
 To view the alpha shape (a mesh algorithm) of a PDB structure, use the `viewalphashape` function with a PDB ID. The current version requires
 the use of PyCall/Conda, the python interoperation package. The following code imports and attempts to set up PyCall/Conda, then plots the alpha shape and returns a StructureView with the scene and layout.
 ```julia
 julia> sa = viewalphashape("2VB1")
 ```
+![Image of ashape](https://github.com/kool7d/BioMakie.jl/blob/master/examples/2vb1alpha.png)
 
 An example with additional controls can be loaded with `viewanimation`. This
 example is still a little laggy, but should work to demonstrate a more
@@ -36,8 +38,10 @@ also shows an alpha shape.
 ```julia
 julia> sn = viewanimation()
 ```
+![Image of animation](https://github.com/kool7d/BioMakie.jl/blob/master/examples/2vb1anim.png)
 
 Another example, `viewmsa`, does basically the same thing but for multiple
 sequence alignments. (from Pfam) (currently there is a bug in the text display which will be fixed ASAP)
 ```julia
 julia> ms = viewmsa("PF00062")
+
