@@ -1,5 +1,7 @@
 module BioMakie
 
+export viewstruc, viewmsa, StructureView, MSAView
+
 using JLD2, MacroTools, Lazy, Distances, DataStructures, Distributed,
         SplitApplyCombine, GeometryBasics, Makie, MakieLayout, Colors,
         ColorSchemes, GLFW, FileIO, DelimitedFiles, TensorCast,

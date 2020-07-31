@@ -1,4 +1,4 @@
-using MIToS, MIToS.MSA
+using MIToS
 
 mutable struct MSAView
 	msa::Node#{AbstractMultipleSequenceAlignment}
