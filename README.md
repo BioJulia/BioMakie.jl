@@ -11,10 +11,7 @@
 ## Installation
 
 This package is a set of interactive biological visualizations with Makie at its core.
-This package is **in development** and will **break often**.  As it is currently unregistered, you can install it from the REPL like so:
-```julia
-]add https://github.com/kool7d/BioMakie.jl
-```
+This package is **in development** and will **break often**. 
 
 ## Usage
 
@@ -25,7 +22,7 @@ julia> sv = viewstruc("2VB1")
 ![Image of struc](https://github.com/kool7d/BioMakie.jl/blob/master/examples/2vb1.png)
 
 To view the alpha shape (a mesh algorithm) of a PDB structure, use the `viewalphashape` function with a PDB ID. The current version requires
-the use of PyCall/Conda, the python interoperation package. The following code imports and attempts to set up PyCall/Conda, then plots the alpha shape and returns a StructureView with the scene and layout.
+the use of PyCall/Conda, the python interoperation package. **The following code imports and attempts to set up PyCall/Conda**, then plots the alpha shape and returns a StructureView with the scene and layout.
 ```julia
 julia> sa = viewalphashape("2VB1")
 ```
