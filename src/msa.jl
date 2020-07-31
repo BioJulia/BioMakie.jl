@@ -1,38 +1,29 @@
-using MIToS
-
+using MIToS.MSA: AbstractMultipleSequenceAlignment
 mutable struct MSAView
-	msa::Node#{AbstractMultipleSequenceAlignment}
-	matrix::Node#{AbstractArray{MIToS.MSA.Residue,2}}
-	sequences::Node#{Dict{Tuple{String,String},String}}
-	residues::Node#{Dict{Tuple{String,String},String}}
-	annotations::Node#{Tuple{OrderedDict{String,Int64}}}
+	msa::Node{AbstractMultipleSequenceAlignment}
+	annotations::Node{OrderedDict{String,String}}
+	matrix::Node{AbstractArray{MIToS.MSA.Residue,2}}
 	scenes
 	layout
 end
 MSAView(xs::AbstractArray{Node}) = MSAView(xs..., [], [])
 
 for f in (	:msa,
-			:matrix,
-			:sequences,
-			:residues,
 			:annotations,
+			:matrix,
 			)
   @eval $(f)(mv::MSAView) = mv.$(f)[]
 end
 
-function msaview(str::String; dir = "../data/MSA", filetype = Stockholm)
+function msaview(str::String; dir = "../data/MSA", filetype = MSA.Stockholm)
 	id = uppercase(str)
 	msa1 = read("http://pfam.xfam.org/family/$(id)/alignment/full", filetype)
-	matrix1 = msa1.matrix
-	sequences1 = msa1.annotations.sequences
-	residues1 = msa1.annotations.residues
-	annotations1 = msa1.matrix.dicts
+	annotations1 = msa1.annotations.file
+	matrix1 = Matrix(msa1)
 	return MSAView(  map( X->Node(X),
 								[ msa1,
-								  matrix1,
-							  	  sequences1,
-							  	  residues1,
 								  annotations1,
+								  matrix1
 								]
 							  )
 						)
@@ -69,7 +60,7 @@ function viewmsa(str::String)
 	menutext1 = layout[1,9:10] = LText(scene, "colors:")
 	menutext2 = layout[3,9:10] = LText(scene, "colorscheme:")
 
-	title1 = layout[0,1:2] = LText(scene, uppercase("$(str)"))
+	title1 = layout[0,1:2] = LText(scene, uppercase("$(str): $(ms.annotations.file["DE"])"))
 
 	labelshow = lift(X->labels[][(X+19:-1:X)],sl2.value)
 	numsshow = lift(X->nums[][(X:1:X+39)],sl1.value)
