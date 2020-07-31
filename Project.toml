@@ -50,6 +50,7 @@ TableTraitsUtils = "1.0"
 GLFW = "3.2"
 JLD2 = "0.1"
 DataStructures = "0.17"
+MakieLayout = "0.9"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
