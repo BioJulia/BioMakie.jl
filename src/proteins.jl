@@ -63,8 +63,8 @@ function viewstruc(str::String; dir = "../data/PDB", showbonds = true, color = :
 
 	if showbonds == true
 		bonds1 = normal_mesh.(bondshapes(bonds(residues(sv))))
-		mesh!(sc_scene, bonds1[1], color = Makie.RGBAf0(0.5,0.5,0.5,0.8))
-		for i = 1:size(bonds1,1); mesh!(sc_scene, bonds1[i], color = Makie.RGBAf0(0.5,0.5,0.5,0.8)); end
+		mesh!(sc_scene, bonds1[1], color = RGBAf0(0.5,0.5,0.5,0.8))
+		for i = 1:size(bonds1,1); mesh!(sc_scene, bonds1[i], color = RGBAf0(0.5,0.5,0.5,0.8)); end
 	end
 	display(scene)
 	sc_scene.scene.center = false

@@ -1,4 +1,3 @@
-using MIToS.MSA: AbstractMultipleSequenceAlignment
 mutable struct MSAView
 	msa::Node{AbstractMultipleSequenceAlignment}
 	annotations::Node{OrderedDict{String,String}}
@@ -42,8 +41,8 @@ function viewmsa(str::String)
 	menu2 = layout[4,9:10] = LMenu(scene, options = ["size", "hydrophobicity"], startvalue = "size")
 	menu2.selection = "size"
 	fixtmsa = lift(X->replace(strmsavals2[clrscheme[X],:,:], nothing => 0.0),menu2.selection)
-	labels = matrix(ms).dicts[1] |> keys |> collect |> Node
-	nums = matrix(ms).dicts[2] |> keys |> collect |> Node
+	labels = ms.msa[].matrix.dicts[1] |> keys |> collect |> Node
+	nums = ms.msa[].matrix.dicts[2] |> keys |> collect |> Node
 	labelssize = @lift size($labels,1) - 19
 	labelsrange = @lift $labelssize:-1:1
 	numssize = @lift size($nums,1) - 39
@@ -59,16 +58,14 @@ function viewmsa(str::String)
 	menu1.selection = "viridis"
 	menutext1 = layout[1,9:10] = LText(scene, "colors:")
 	menutext2 = layout[3,9:10] = LText(scene, "colorscheme:")
-
-	title1 = layout[0,1:2] = LText(scene, uppercase("$(str): $(ms.annotations.file["DE"])"))
-
+	title1 = layout[0,1:2] = LText(scene, uppercase("$(str): $(ms.msa[].annotations.file["DE"])"))
 	labelshow = lift(X->labels[][(X+19:-1:X)],sl2.value)
 	numsshow = lift(X->nums[][(X:1:X+39)],sl1.value)
 	labelshow2 = lift(X->(X:1:X+19),sl2.value)
 	numsshow2 = lift(X->(X:1:X+39),sl1.value)
 	msashow = @lift $fixtmsa[$labelshow2,$numsshow2] |> _t
 
-	Makie.heatmap!(ax1, msashow; show_grid = true, show_axis = true,
+	heatmap!(ax1, msashow; show_grid = true, show_axis = true,
 	                colormap = lift(X->clrdict[X],menu1.selection))
 
 	ax1.yticks = ([0.5:(parse(Float64,"$(19).5"))...], labelshow[])
