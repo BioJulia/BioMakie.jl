@@ -16,7 +16,7 @@ using GLFW, GLMakie
 using JLD2
 using Lazy
 using MIToS
-using MIToS.MSA: AbstractMultipleSequenceAlignment
+using MIToS.MSA: AbstractMultipleSequenceAlignment, Stockholm
 using MakieLayout
 using MacroTools
 using SplitApplyCombine
