@@ -1,3 +1,5 @@
+# BioMakie.Protein = 
+
 mutable struct StructureView
 	protein::Node{ProteinStructure}
 	models::Node{Dict{Int,Model}}
@@ -20,10 +22,10 @@ end
 
 atomcoords(atoms) = coordarray(atoms) |> transpose |> collect
 atomcoords(sv::StructureView) = coordarray(sv.atoms[]) |> transpose |> collect
-atomcolors(atoms; color = :element) =
-					if color == :ele || color == :element
+atomcolors(atoms; color = "element") =
+					if color == "ele" || color == "element"
 						[elecolors[element(x)] for x in atoms]
-					else
+					elseif color == "aqua"
 						[aquacolors[element(x)] for x in atoms]
 					end
 atomradii(atoms) = [vanderwaals[element(x)] for x in atoms]
@@ -32,7 +34,11 @@ resatoms(residues) = BioStructures.atoms.(residues)
 bonds(residus) = resbonds.(residus; hres = true)
 bondshapes(bonds) = bondshape.([bonds[i].bonds for i = 1:size(bonds,1)]) |> collectbondshapes
 
-function structureview(str::String; dir = "../data/PDB", select = :standardselector, color = :element)
+function structureview(str::String;
+						dir = "../data/PDB",
+						select = :standardselector,
+						color = :element)
+
 	id = uppercase(str)
 	prot = retrievepdb(id; dir = dir)
 	models1 = BioStructures.models(prot)
@@ -45,12 +51,14 @@ function structureview(str::String; dir = "../data/PDB", select = :standardselec
 							  	  chains1,
 							  	  residues1,
 							  	  atoms1
-								]
-							  )
-						)
+								]))
 end
 
-function viewstruc(str::String; dir = "../data/PDB", showbonds = true, color = :element)
+function viewstruc(str::String;
+					dir = "../data/PDB",
+					showbonds = true,
+					color = :element)
+
 	sv = structureview(str; dir = dir)
 	scene, layout = layoutscene(8, 8; resolution = (900,900))
 	sc_scene = layout[2:8,1:8] = LScene(scene)

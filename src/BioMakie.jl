@@ -19,11 +19,10 @@ using MIToS
 using MIToS.MSA: AbstractMultipleSequenceAlignment, Stockholm
 using MakieLayout
 using MacroTools
+using Phylo
 using SplitApplyCombine
 using TensorCast
-
-abstract type AbstractTether <:StructuralElement end
-abstract type AbstractBond <:AbstractTether end
+Node = AbstractPlotting.Node
 
 include("../data/basicdata.jl")
 include("utils.jl")
