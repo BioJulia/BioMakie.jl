@@ -1,3 +1,5 @@
+abstract type AbstractTether <:StructuralElement end
+abstract type AbstractBond <:AbstractTether end
 heavyresbonds = Dict(
                 "ARG" => [["C","O"],["C","CA"],["CA","N"],["CA","CB"],["CB","CG"],
 						["CG","CD"],["CD","NE"],["NE","CZ"],["CZ","NH1"],["CZ","NH2"]],
@@ -81,18 +83,16 @@ hresbonds = Dict(
 				" ZN" => []
 )
 
-mutable struct Tether{T} <:AbstractTether where {T<:StructuralElementOrList}
+mutable struct Tether{T} <:AbstractTether where {T}
 	points::T
 end
 mutable struct Bond <:AbstractBond
-	points::StructuralElementOrList
+	points
 end
 mutable struct Residue{Symbol} <:AbstractResidue
 	parent
 	atoms::Union{AbstractDict,AbstractArray}
 	bonds::Vector{Bond}
-	# missingbonds::Vector{Union{Bond,AbstractArray}}
-	# extrabonds::Vector{Bond}
 end
 Bond(x1::StructuralElement, x2::StructuralElement) = Bond([x1,x2])
 atoms(bond::Bond) = bond.points

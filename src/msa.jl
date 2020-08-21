@@ -111,5 +111,3 @@ function viewmsa(str::String)
 	ms.layout = layout
 	return ms
 end
-
-viewmsa("Pf01353")
