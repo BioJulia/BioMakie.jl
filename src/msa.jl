@@ -14,7 +14,9 @@ for f in (	:msa,
   @eval $(f)(mv::MSAView) = mv.$(f)[]
 end
 
-function msaview(str::String; dir = "../data/MSA", filetype = Stockholm)
+function msaview(str::String;
+					dir = "../data/MSA",
+					filetype = Stockholm)
 	id = uppercase(str)
 	msa1 = read("http://pfam.xfam.org/family/$(id)/alignment/full", filetype)
 	annotations1 = msa1.annotations.file
@@ -23,16 +25,14 @@ function msaview(str::String; dir = "../data/MSA", filetype = Stockholm)
 								[ msa1,
 								  annotations1,
 								  matrix1
-								]
-							  )
-						)
+								]))
 end
 
 function viewmsa(str::String)
 	ms = msaview(str)
 	scene, layout = layoutscene(resolution = (1500, 600))
 	strmsa = Matrix(msa(ms)) .|> string
-	strmsavals = @. kdict(strmsa)
+	strmsavals = [ kdict(i) for i in strmsa ]
 	strmsavals2 = strmsavals |> combinedims
 	clrdict = Dict("viridis" => :viridis,
 	               "redblue" => :RdBu)
