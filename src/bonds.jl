@@ -1,5 +1,5 @@
-abstract type AbstractTether
-abstract type AbstractBond
+abstract type AbstractTether end
+abstract type AbstractBond end
 heavyresbonds = Dict(
                 "ARG" => [["C","O"],["C","CA"],["CA","N"],["CA","CB"],["CB","CG"],
 						["CG","CD"],["CD","NE"],["NE","CZ"],["CZ","NH1"],["CZ","NH2"]],
