@@ -17,7 +17,7 @@ using JLD2
 using Lazy
 using MIToS
 using MIToS.MSA: AbstractMultipleSequenceAlignment, Stockholm
-using MakieLayout
+using MakieLayout, Makie
 using MacroTools
 using Phylo
 using SplitApplyCombine

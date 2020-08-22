@@ -1,5 +1,5 @@
-abstract type AbstractTether <:StructuralElement end
-abstract type AbstractBond <:AbstractTether end
+abstract type AbstractTether
+abstract type AbstractBond
 heavyresbonds = Dict(
                 "ARG" => [["C","O"],["C","CA"],["CA","N"],["CA","CB"],["CB","CG"],
 						["CG","CD"],["CD","NE"],["NE","CZ"],["CZ","NH1"],["CZ","NH2"]],
@@ -97,7 +97,8 @@ end
 Bond(x1::StructuralElement, x2::StructuralElement) = Bond([x1,x2])
 atoms(bond::Bond) = bond.points
 points(tether::AbstractTether) = tether.points
-function resbonds(res::AbstractResidue; hres = false)
+function resbonds(res::AbstractResidue;
+					hres = false)
 	bonds = []
 	missingbonds = []
 	resatoms = res.atoms
