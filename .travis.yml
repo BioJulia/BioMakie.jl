@@ -18,6 +18,7 @@ addons:
       - cmake
       - xorg-dev
       - mesa-utils
+      - libglfw3
 
 codecov: true
 after_success:
