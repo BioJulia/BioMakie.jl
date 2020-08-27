@@ -1,7 +1,7 @@
 mutable struct MSAView
-	msa::Node{AbstractMultipleSequenceAlignment}
-	annotations::Node{OrderedDict{String,String}}
-	matrix::Node{AbstractArray{MIToS.MSA.Residue,2}}
+	msa
+	annotations
+	matrix
 	scenes
 	layout
 end
@@ -14,7 +14,7 @@ for f in (	:msa,
   @eval $(f)(mv::MSAView) = mv.$(f)[]
 end
 
-function msaview(str::String;
+function msaview(   str::String;
 					dir = "../data/MSA",
 					filetype = Stockholm)
 	id = uppercase(str)

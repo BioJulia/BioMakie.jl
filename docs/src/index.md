@@ -2,7 +2,4 @@
 
 ```@index
 ```
-
-```@autodocs
-Modules = [BioMakie]
-```
+ 

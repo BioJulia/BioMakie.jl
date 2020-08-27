@@ -1,11 +1,9 @@
-# BioMakie.Protein = 
-
 mutable struct StructureView
-	protein::Node{ProteinStructure}
-	models::Node{Dict{Int,Model}}
-	chains::Node{Dict{String,Chain}}
-	residues::Node{Vector{AbstractResidue}}
-	atoms::Node{Vector{AbstractAtom}}
+	protein
+	models
+	chains
+	residues
+	atoms
 	scenes
 	layout
 end
@@ -36,8 +34,7 @@ bondshapes(bonds) = bondshape.([bonds[i].bonds for i = 1:size(bonds,1)]) |> coll
 
 function structureview(str::String;
 						dir = "../data/PDB",
-						select = :standardselector,
-						color = :element)
+						select = :standardselector)
 
 	id = uppercase(str)
 	prot = retrievepdb(id; dir = dir)
@@ -57,7 +54,7 @@ end
 function viewstruc(str::String;
 					dir = "../data/PDB",
 					showbonds = true,
-					color = :element)
+					color = "element")
 
 	sv = structureview(str; dir = dir)
 	scene, layout = layoutscene(8, 8; resolution = (900,900))
@@ -74,7 +71,9 @@ function viewstruc(str::String;
 		mesh!(sc_scene, bonds1[1], color = RGBAf0(0.5,0.5,0.5,0.8))
 		for i = 1:size(bonds1,1); mesh!(sc_scene, bonds1[i], color = RGBAf0(0.5,0.5,0.5,0.8)); end
 	end
-	display(scene)
+
+	AbstractPlotting.display(scene)
+
 	sc_scene.scene.center = false
 
 	sv.scenes = [scene,sc_scene]
