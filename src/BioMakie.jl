@@ -12,7 +12,7 @@ using Distances
 using Distributed
 using FileIO
 using GeometryBasics
-using GLFW, GLMakie
+using GLFW
 using JLD2
 using Lazy
 using MIToS

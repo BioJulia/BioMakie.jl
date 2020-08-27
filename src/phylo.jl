@@ -13,10 +13,11 @@ for f in (	:phylodata,
 end
 
 function phyloview(name::String;
-					dir = "../data/NWK")
+					dir = "../data/NWK",
+					expansion = "")
 	file1 = open(t -> parsenewick(t, NamedPolytomousTree), name)
-    evolve(tree) = Phylo.map_depthfirst((val, node) -> val, 0., tree, Float64)
-	expansion = []
+    evolve(fil) = Phylo.map_depthfirst((val, node) -> val, 0., fil, Float64)
+	expansion = evolve(file1)
 	return PhyloView(  map( X->Node(X),
 								[ file1,
 								  expansion
@@ -26,13 +27,14 @@ end
 # This was borrowed from Phylo.jl
 function viewphylo(name::AbstractString)
 	yv = phyloview(name)
+	exp1 = expansion(yv)
     scene, layout = layoutscene(resolution = (1000, 1000))
     sc2 = layout[1:8,8:11] = LScene(scene)
     scp = recipeplot!(
         sc2,
-        phylodata(yv) |> evolve;
+        exp1;
         treetype = :dendrogram, #:fan :dendrogram
-        line_z = phylodata(yv) |> evolve,
+        line_z = exp1,
         linewidth = 1,
         showtips = false,
         cgrad = :viridis,
@@ -41,11 +43,9 @@ function viewphylo(name::AbstractString)
         show_axis = false
     )
 
-	display(scene)
+	AbstractPlotting.display(scene)
 
 	yv.scenes = [scene,ax1]
 	yv.layout = layout
 	return yv
 end
-
-# viewphylo("C:/Users/kool7/Google Drive/BioMakie/examples/data/covidnewick.txt")
