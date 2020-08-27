@@ -1,9 +1,9 @@
 mutable struct StructureView
-	protein::Node{ProteinStructure}
-	models::Node{Dict{Int,Model}}
-	chains::Node{Dict{String,Chain}}
-	residues::Node{Vector{AbstractResidue}}
-	atoms::Node{Vector{AbstractAtom}}
+	protein
+	models
+	chains
+	residues
+	atoms
 	scenes
 	layout
 end

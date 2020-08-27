@@ -27,7 +27,7 @@ Node = AbstractPlotting.Node
 include("../data/basicdata.jl")
 include("utils.jl")
 include("bonds.jl")
-include("proteins.jl")
+include("structure.jl")
 include("../examples/src/kiderafactors.jl")
 include("msa.jl")
 # # Requires the use of PyCall/Conda, the python interoperation package:
