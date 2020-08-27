@@ -11,8 +11,13 @@ julia:
 before_script:
   - git config --global user.name "GitUser"
   - git config --global user.email "git@us.er"
-  - apt-get -qq update
-  - apt-get install -y cmake xorg-dev mesa-utils # glfw
+
+addons:
+  apt:
+    packages:
+      - cmake
+      - xorg-dev
+      - mesa-utils
 
 codecov: true
 after_success:
