@@ -12,15 +12,6 @@ before_script:
   - git config --global user.name "GitUser"
   - git config --global user.email "git@us.er"
 
-addons:
-  apt:
-    packages:
-      - xvfb
-
-install:
-  - export DISPLAY=':99.0'
-  - Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
-
 codecov: true
 after_success:
   - julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
