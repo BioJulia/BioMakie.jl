@@ -21,24 +21,8 @@ julia> sv = viewstruc("2VB1")
 ```
 ![Image of struc](https://github.com/kool7d/BioMakie.jl/blob/master/examples/2vb1.png)
 
-To view the alpha shape (a mesh algorithm) of a PDB structure, use the `viewalphashape` function with a PDB ID. The current version requires
-the use of PyCall/Conda, the python interoperation package. **The following code imports and attempts to set up PyCall/Conda**, then plots the alpha shape and returns a StructureView with the scene and layout.
+To view a multiple sequence alignment, use the `viewmsa` function with a Pfam ID (fasta coming soon).
 ```julia
-julia> sa = viewalphashape("2VB1")
+julia> mv = viewmsa("PF00062")
 ```
-![Image of ashape](https://github.com/kool7d/BioMakie.jl/blob/master/examples/2vb1alpha.png)
-
-An example with additional controls can be loaded with `viewanimation`. This
-example is still a little laggy, but should work to demonstrate a more
-complicated view. It will only work if the previous example works since it
-also shows an alpha shape.
-```julia
-julia> sn = viewanimation()
-```
-![Image of animation](https://github.com/kool7d/BioMakie.jl/blob/master/examples/2vb1anim.png)
-
-Another example, `viewmsa`, does basically the same thing but for multiple
-sequence alignments. (from Pfam) (currently there is a bug in the text display which will be fixed ASAP)
-```julia
-julia> ms = viewmsa("PF00062")
-
+![Image of msa](https://github.com/kool7d/BioMakie.jl/blob/dev/examples/msatable.png)
