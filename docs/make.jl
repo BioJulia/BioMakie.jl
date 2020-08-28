@@ -3,7 +3,7 @@ Pkg.activate(@__DIR__)
 
 using Documenter, BioMakie
 
-push!(LOAD_PATH, "../Documentation/")
+push!(LOAD_PATH, "../src/")
 const CI = get(ENV, "CI", nothing) == "true"
 
 makedocs(
@@ -11,10 +11,7 @@ makedocs(
     modules = [BioMakie],
     format=Documenter.HTML(prettyurls = CI),
     pages = Any[
-                "Home" => "index.md",
-                "Menu1" => "menu1.md",
-                "Menu2" => "menu2.md",
-                "Menu3" => "menu3.md"
+                "Home" => "index.md"
                 ],
 )
 
