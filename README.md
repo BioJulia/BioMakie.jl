@@ -7,10 +7,15 @@
 [![Build Status](https://travis-ci.com/kool7d/BioMakie.jl.svg?branch=master)](https://travis-ci.com/kool7d/BioMakie.jl)
 [![Codecov](https://codecov.io/gh/kool7d/BioMakie.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/kool7d/BioMakie.jl)
 
-## Installation
+## Installation and Setup
 
-This package is a set of interactive biological visualizations with Makie at its core.
+This package is a set of interactive biological visualizations with Makie.
 This package is **in development** and will **break often**. 
+
+```julia
+julia> ] add BioMakie
+julia> using BioMakie
+```
 
 ## Usage
 
