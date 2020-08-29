@@ -2,19 +2,9 @@
 language: julia
 os:
   - linux
-  - osx
 julia:
-  - 1.0
   - 1.5
-  - nightly
-
-matrix:
-  allow_failures:
-    - julia: nightly
-    - julia: 1.0
-  fast_finish: true
-  
 after_success: 
-    - julia -e 'using Pkg; Pkg.add("Documenter"); using BioMakie; include(joinpath(dirname(pathof(BioMakie)), "..", "docs", "make.jl"))'
+  - julia -e 'using Pkg; Pkg.add("Documenter"); using BioMakie; include(joinpath(dirname(pathof(BioMakie)), "..", "docs", "make.jl"))'
 notifications:
   email: false
