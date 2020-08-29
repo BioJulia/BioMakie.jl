@@ -7,6 +7,7 @@ julia:
   - 1.5
   - nightly
 after_success:
+  - julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
   - julia -e 'using Pkg; Pkg.add("Documenter"); using BioMakie; include(joinpath(dirname(pathof(BioMakie)), "..", "docs", "make.jl"))'
 notifications:
   email: false
