@@ -206,9 +206,9 @@ version = "0.3.0"
 
 [[Compat]]
 deps = ["Base64", "Dates", "DelimitedFiles", "Distributed", "InteractiveUtils", "LibGit2", "Libdl", "LinearAlgebra", "Markdown", "Mmap", "Pkg", "Printf", "REPL", "Random", "SHA", "Serialization", "SharedArrays", "Sockets", "SparseArrays", "Statistics", "Test", "UUIDs", "Unicode"]
-git-tree-sha1 = "083e7e5ec3ef443e9dcb6dd3fbcb815879823bfa"
+git-tree-sha1 = "215f1c81cfd1c5416cd78740bff8ef59b24cd7c0"
 uuid = "34da2185-b29b-5c13-b0c7-acf172513d20"
-version = "3.14.0"
+version = "3.15.0"
 
 [[CompilerSupportLibraries_jll]]
 deps = ["Libdl", "Pkg"]
@@ -519,9 +519,9 @@ version = "0.3.1"
 
 [[ImageCore]]
 deps = ["Colors", "FixedPointNumbers", "Graphics", "MappedArrays", "MosaicViews", "OffsetArrays", "PaddedViews", "Reexport", "Requires"]
-git-tree-sha1 = "a652c05f8f374861580d420b420fddf3e2e84312"
+git-tree-sha1 = "f83c4b1835be5bf6665a1627ec43f964cc19b256"
 uuid = "a09fc81d-aa75-5fe9-8630-4744c3626534"
-version = "0.8.14"
+version = "0.8.15"
 
 [[ImageIO]]
 deps = ["FileIO", "PNGFiles"]
@@ -531,9 +531,9 @@ version = "0.2.0"
 
 [[ImageMagick]]
 deps = ["FileIO", "ImageCore", "ImageMagick_jll", "InteractiveUtils", "Libdl", "Pkg", "Random"]
-git-tree-sha1 = "318342a5099a9c952b4de087344a2db831458c87"
+git-tree-sha1 = "02558f83932fde6ebd3ab007dbff6bd8740a8247"
 uuid = "6218d12a-5da1-5696-b52f-db25d2ecc6d1"
-version = "1.1.5"
+version = "1.1.6"
 
 [[ImageMagick_jll]]
 deps = ["JpegTurbo_jll", "Libdl", "Libtiff_jll", "Pkg", "Zlib_jll", "libpng_jll"]
@@ -867,10 +867,10 @@ uuid = "66fc600b-dfda-50eb-8b99-91cfa97b1301"
 version = "1.1.2"
 
 [[MosaicViews]]
-deps = ["OffsetArrays", "PaddedViews"]
-git-tree-sha1 = "b483b88403ac0ac01667778cbb29462b111b1deb"
+deps = ["MappedArrays", "OffsetArrays", "PaddedViews"]
+git-tree-sha1 = "29d121f9e7a6cf081278029121ed90e1f3b33de8"
 uuid = "e94cdb99-869f-56ef-bcf0-1ae2bcbe0389"
-version = "0.2.2"
+version = "0.2.3"
 
 [[MsgPack]]
 deps = ["Serialization"]
@@ -897,9 +897,9 @@ version = "0.9.4"
 
 [[NamedDims]]
 deps = ["LinearAlgebra", "Pkg", "Requires", "Statistics"]
-git-tree-sha1 = "8a7b3e2ff6f4c5acfe8d9b3309cb1b646e7b47ae"
+git-tree-sha1 = "5d8da88fe21c5f27544693adf422724b5c31c753"
 uuid = "356022a1-0364-5f58-8944-0da4b18d706f"
-version = "0.2.23"
+version = "0.2.24"
 
 [[NearestNeighbors]]
 deps = ["Distances", "StaticArrays"]
@@ -1018,9 +1018,9 @@ uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 
 [[PlotUtils]]
 deps = ["ColorSchemes", "Colors", "Dates", "Printf", "Random", "Reexport", "Statistics"]
-git-tree-sha1 = "e18e0e51ff07bf92bb7e06dcb9c082a4e125e20c"
+git-tree-sha1 = "8d23333aee2e2733a5cd4e1985462df8203f47f7"
 uuid = "995b91a9-d308-5afd-9ec6-746e21dbc043"
-version = "1.0.5"
+version = "1.0.6"
 
 [[PooledArrays]]
 deps = ["DataAPI"]

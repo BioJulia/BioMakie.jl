@@ -64,6 +64,7 @@ RecursiveArrayTools = "2.5"
 SplitApplyCombine = "1.1.1"
 TableTraitsUtils = "1.0"
 TensorCast = "0.3"
+WGLMakie = "0.2"
 julia = "1"
 
 [extras]
