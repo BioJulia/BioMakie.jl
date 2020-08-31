@@ -1,5 +1,4 @@
 abstract type AbstractTether end
-abstract type AbstractBond end
 heavyresbonds = Dict(
                 "ARG" => [["C","O"],["C","CA"],["CA","N"],["CA","CB"],["CB","CG"],
 						["CG","CD"],["CD","NE"],["NE","CZ"],["CZ","NH1"],["CZ","NH2"]],
@@ -86,16 +85,16 @@ hresbonds = Dict(
 mutable struct Tether{T} <:AbstractTether where {T}
 	points::T
 end
-mutable struct Bond <:AbstractBond
+mutable struct Bond <:AbstractTether
 	points
 end
 mutable struct Residue{Symbol} <:AbstractResidue
 	parent
-	atoms::Union{AbstractDict,AbstractArray}
+	atoms
 	bonds::Vector{Bond}
 end
 Bond(x1::StructuralElement, x2::StructuralElement) = Bond([x1,x2])
-atoms(bond::Bond) = bond.points
+atoms(bond::AbstractTether) = bond.points
 points(tether::AbstractTether) = tether.points
 function resbonds(res::AbstractResidue;
 					hres = false)
@@ -215,7 +214,7 @@ function bondshape(twoatms::AbstractArray{T}) where {T<:AbstractAtom}
     cyl = GeometryBasics.Cylinder(pnt1,pnt2,Float32(0.15))
     return cyl
 end
-bondshape(bond::AbstractBond) = bondshape(atoms(bond))
+bondshape(bond::Bond) = bondshape(atoms(bond))
 bondshape(bondlist::AbstractArray{Bond}) = bondshape.(bondlist)
 bondshape(resbonds::Residue{Symbol}) = bondshape.(resbonds.bonds)
 function collectbondshapes(arr)
