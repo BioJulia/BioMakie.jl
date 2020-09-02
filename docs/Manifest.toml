@@ -633,9 +633,9 @@ version = "0.21.0"
 
 [[JSON3]]
 deps = ["Dates", "Mmap", "Parsers", "StructTypes", "UUIDs"]
-git-tree-sha1 = "44c9e48f096015a75386d52cfa83b8607edff257"
+git-tree-sha1 = "18a1a1bcd1070f8e2ef4c5562b7cf74cd1c2607c"
 uuid = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
-version = "1.1.1"
+version = "1.1.2"
 
 [[JSServe]]
 deps = ["AbstractTrees", "Base64", "Colors", "HTTP", "Hyperscript", "JSON3", "LinearAlgebra", "Markdown", "MsgPack", "Observables", "SHA", "Sockets", "Tables", "Test", "UUIDs", "WebSockets", "WidgetsBase"]
@@ -913,9 +913,9 @@ uuid = "510215fc-4207-5dde-b226-833fc4488ee2"
 version = "0.3.1"
 
 [[OffsetArrays]]
-git-tree-sha1 = "2066e16af994955287f2e03ba1d9e890eb43b0dd"
+git-tree-sha1 = "b8500f9d73999cfbab4add5136ec26894081581e"
 uuid = "6fe1bfb0-de20-5000-8ca7-80f57d26f881"
-version = "1.1.2"
+version = "1.1.3"
 
 [[Ogg_jll]]
 deps = ["Libdl", "Pkg"]
@@ -1086,9 +1086,9 @@ version = "0.2.0"
 
 [[Requires]]
 deps = ["UUIDs"]
-git-tree-sha1 = "d37400976e98018ee840e0ca4f9d20baa231dc6b"
+git-tree-sha1 = "8c08d0c7812169e438a8478dae2a529377ad13f7"
 uuid = "ae029012-a4dd-5104-9daa-d747884805df"
-version = "1.0.1"
+version = "1.0.2"
 
 [[Rmath]]
 deps = ["Random", "Rmath_jll"]
