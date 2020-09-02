@@ -25,7 +25,7 @@ jobs:
     - name: Install Julia
       uses: julia-actions/setup-julia@v1
       with:
-        version: 1.4
+        version: 1.5
     # NOTE
     # Adjust the `input=""` on the last line to indicate where
     # the source of the package page is (`page/` by default).
@@ -49,3 +49,13 @@ jobs:
         SSH: true
         BRANCH: gh-pages
         FOLDER: page/__site
+        key: ${{ secrets.FRANKLIN_PRIV }}
+#     - name: Cache
+#       uses: actions/cache@v2.1.1
+#       with:
+#         # A list of files, directories, and wildcard patterns to cache and restore
+#       path: 
+#         # An explicit key for restoring and saving the cache
+#       key: 
+#         # An ordered list of keys to use for restoring the cache if no cache hit occurred for key
+#       restore-keys: # optional   
