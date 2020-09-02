@@ -49,7 +49,7 @@ jobs:
         SSH: true
         BRANCH: gh-pages
         FOLDER: page/__site
-        key: ${{ secrets.FRANKLIN_PUB }}
+        ACCESS_TOKEN: ${{ secrets.FRANKLIN_PUB }}
 #     - name: Cache
 #       uses: actions/cache@v2.1.1
 #       with:
