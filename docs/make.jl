@@ -1,6 +1,3 @@
-using Pkg
-Pkg.activate(@__DIR__)
-
 using Documenter, BioMakie
 
 push!(LOAD_PATH, "../src/")
