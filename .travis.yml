@@ -4,18 +4,10 @@ os:
   - linux
   - osx
 julia:
-  - 1.0
-  - 1.3
+  - 1.4
   - nightly
-matrix:
-  allow_failures:
-    - julia: nightly
-notifications:
-  email: false
-# uncomment the following lines to override the default test script
-#script:
-#  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-#  - julia -e 'Pkg.clone(pwd()); Pkg.build("Observables"); Pkg.test("Observables"; coverage=true)'
 after_success:
   - julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
   - julia -e 'using Pkg; Pkg.add("Documenter"); using BioMakie; include(joinpath(dirname(pathof(BioMakie)), "..", "docs", "make.jl"))'
+notifications:
+  email: false

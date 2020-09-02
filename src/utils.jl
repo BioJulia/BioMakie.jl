@@ -1,6 +1,10 @@
 GLFW.WindowHint(GLFW.FLOATING, 1)
 import Base.convert
-indexshift(idxs,int=1) = idxs.+=int
+indexshift(idxs,shift=1.0) = try
+	float.(idxs).+=shift .|> Int
+catch
+	float.(idxs).+=shift
+end
 function convert(::Type{T}, arr::Array{T,1}) where {T<:Number}
     if size(arr,1) > 1
         return T.(arr)
@@ -55,43 +59,34 @@ function tryfloat32(number)
         number
     end)
 end
-function steprange(arr::AbstractArray{T,1}; step = 1) where {T<:Integer}
-    notseq = 0
-    min_value = arr[1]
-    max_value = arr[end]
-    @assert max_value > min_value
+function steprange(arr::AbstractArray{T,1}; step = 1) where {T<:Real}
+    start_value = arr[1]
+    end_value = arr[end]
+	start_value == end_value && error("the start and end points are the same value")
     for i in 1:size(arr,1)
         if i == 1
             step = arr[i+1] - arr[i]
-            continue
         end
         if arr[i]-arr[i-1] != step
-            notseq = 1
+            error("inconsistent step for step range")
         end
     end
-    if notseq == 0
-        return StepRange(min_value,step,max_value)
-    end
-    throw(ErrorException("inconsistent step for step range"))
+    return StepRange(min_value,step,max_value)
 end
-function unitrange(arr::AbstractArray{T,1}) where {T<:Integer}
-    notseq = 0
+function unitrange(arr::AbstractArray{T,1}) where {T<:Int}
     min_value = arr[1]
     max_value = arr[end]
-    @assert max_value > min_value
+    max_value == min_value && error("the start and end points are the same value")
+	max_value < min_value && error("the last value is lower than the first")
     for i in 1:size(arr,1)
         if i == 1
             step = arr[i+1] - arr[i]
-            continue
         end
         if arr[i]-arr[i-1] != 1
-            notseq = 1
+            error("inconsistent step for unit range")
         end
     end
-    if notseq == 0
-        return UnitRange(min_value,max_value)
-    end
-    throw(ErrorException("inconsistent step for unit range"))
+    return UnitRange(min_value,max_value)
 end
 splatrange(range) = [(range...)]
 function splatranges(ranges...)
@@ -246,4 +241,21 @@ function _stripkeys(dict::AbstractDict)
     return ks
 end
 _stripallkeys(dicts::AbstractArray) =  _stripkeys.(dicts)
-AbstractPlotting.inline!(false)
+_shuffledims!(arr::AbstractArray{T,1}) where T = arr
+_shuffledims!(arr::AbstractArray{T,2}) where T = @cast arr[j,i] := arr[i,j]
+_shuffledims!(arr::AbstractArray{T,3}, d::Int64 = 1) where T =
+	if d == 1
+		@cast arr[i,k,j] := arr[i,j,k] # d==1 => index 1 is held
+	elseif d == 2
+		@cast arr[k,j,i] := arr[i,j,k] # d==2 => index 2 is held
+	elseif d == 3
+		@cast arr[j,i,k] := arr[i,j,k] # d==3 => index 3 is held
+	elseif d == 0
+		@cast arr[i,j,k] := arr[i,j,k] # d==0 => identity
+	elseif d == 4 || d == +1
+		@cast arr[k,i,j] := arr[i,j,k] # d==4 => move indices forward +1 ( index 3(+1) -> index 4 -> index 1 )
+	elseif d == 5 || d == -1
+		@cast arr[j,k,i] := arr[i,j,k] # d==5 => move indices backward -1 ( index 1(-1) -> index 0 -> index 3 )
+	else
+		@cast arr[i,j,k] := arr[i,j,k] # else => identity
+end

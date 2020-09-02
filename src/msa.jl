@@ -105,7 +105,7 @@ function viewmsa(str::String)
 
 	ax1.aspect = AxisAspect(2.3)
 
-	display(scene)
+	AbstractPlotting.display(scene)
 
 	ms.scenes = [scene,ax1]
 	ms.layout = layout

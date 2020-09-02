@@ -12,12 +12,12 @@ using Distances
 using Distributed
 using FileIO
 using GeometryBasics
-using GLFW
+using GLFW, GLMakie
 using JLD2
 using Lazy
 using MIToS
 using MIToS.MSA: AbstractMultipleSequenceAlignment, Stockholm
-using MakieLayout, Makie
+using MakieLayout
 using MacroTools
 using Phylo
 using SplitApplyCombine
