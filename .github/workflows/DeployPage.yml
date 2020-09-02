@@ -49,13 +49,13 @@ jobs:
         SSH: true
         BRANCH: gh-pages
         FOLDER: page/__site
-        key: ${{ secrets.FRANKLIN_PRIV }}
+        key: ${{ secrets.FRANKLIN_PUB }}
 #     - name: Cache
 #       uses: actions/cache@v2.1.1
 #       with:
 #         # A list of files, directories, and wildcard patterns to cache and restore
-#       path: 
+#       path:
 #         # An explicit key for restoring and saving the cache
-#       key: 
+#       key:
 #         # An ordered list of keys to use for restoring the cache if no cache hit occurred for key
-#       restore-keys: # optional   
+#       restore-keys: # optional
