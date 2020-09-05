@@ -1,3 +1,169 @@
 {
-    "julia.environmentPath": "c:\\Users\\kool7\\Google Drive\\BioMakie"
+    "[javascript]": {
+        "editor.defaultFormatter": "lonefy.vscode-JS-CSS-HTML-formatter"
+    },
+    "atomKeymap.promptV3Features": true,
+    "editor.multiCursorModifier": "ctrlCmd",
+    "editor.formatOnPaste": true,
+    "julia.enableTelemetry": true,
+    "julia.execution.resultType": "inline",
+    "julia.usePlotPane": false,
+    "workbench.startupEditor": "newUntitledFile",
+    "workbench.colorTheme": "One Dark Pro",
+    "git.confirmSync": false,
+    "git.autofetch": true,
+    "explorer.confirmDelete": false,
+    "todo-tree.tree.showScanModeButton": false,
+    "editor.suggestSelection": "first",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "git.enableSmartCommit": true,
+    "julia.additionalArgs": [
+        [
+            //         {
+            //             "key": "ctrl+shift+l",
+            //             "command": "workbench.action.editor.changeLanguageMode"
+            //         },
+            //         {
+            //             "key": "ctrl+k m",
+            //             "command": "-workbench.action.editor.changeLanguageMode"
+            //         },
+            //         {
+            //             "key": "ctrl+shift+d",
+            //             "command": "editor.action.duplicateSelection"
+            //         },
+            //         {
+            //             "key": "ctrl+down",
+            //             "command": "editor.action.moveLinesDownAction",
+            //             "when": "editorTextFocus && !editorReadonly"
+            //         },
+            //         {
+            //             "key": "alt+down",
+            //             "command": "-editor.action.moveLinesDownAction",
+            //             "when": "editorTextFocus && !editorReadonly"
+            //         },
+            //         {
+            //             "key": "ctrl+up",
+            //             "command": "editor.action.moveLinesUpAction",
+            //             "when": "editorTextFocus && !editorReadonly"
+            //         },
+            //         {
+            //             "key": "alt+up",
+            //             "command": "-editor.action.moveLinesUpAction",
+            //             "when": "editorTextFocus && !editorReadonly"
+            //         },
+            //         {
+            //             "key": "ctrl+tab",
+            //             "command": "workbench.action.nextEditor",
+            //             "when": "!terminalFocus"
+            //         },
+            //         {
+            //             "key": "ctrl+pagedown",
+            //             "command": "-workbench.action.nextEditor"
+            //         },
+            //         {
+            //             "key": "ctrl+shift+tab",
+            //             "command": "workbench.action.previousEditor",
+            //             "when": "!terminalFocus"
+            //         },
+            //         {
+            //             "key": "ctrl+pageup",
+            //             "command": "-workbench.action.previousEditor"
+            //         },
+            //         {
+            //             "key": "ctrl+tab",
+            //             "command": "workbench.action.terminal.focusNext",
+            //             "when": "terminalFocus"
+            //         },
+            //         {
+            //             "key": "ctrl+shift+tab",
+            //             "command": "workbench.action.terminal.focusPrevious",
+            //             "when": "terminalFocus"
+            //         },
+            //         {
+            //             "key": "ctrl+[Backslash]",
+            //             "command": "editor.action.commentLine",
+            //             "when": "editorTextFocus && !editorReadonly"
+            //         },
+            //         {
+            //             "key": "ctrl+shift+7",
+            //             "command": "-editor.action.commentLine",
+            //             "when": "editorTextFocus && !editorReadonly"
+            //         },
+            {
+                "key": "shift+ctrl+enter",
+                "command": "language-julia.startREPL",
+                "when": "editorLangId == 'julia'"
+            },
+            // {
+            //     "key": "shift+enter",
+            //     "command": "language-julia.executeCodeBlockOrSelectionAndMove",
+            //     "when": "editorTextFocus && editorLangId == 'julia'"
+            // },
+            {
+                "key": "alt+enter",
+                "command": "-language-julia.executeCodeBlockOrSelectionAndMove",
+                "when": "editorTextFocus && editorLangId == 'julia'"
+            },
+            //         {
+            //             "key": "shift+meta+enter",
+            //             "command": "language-julia.executeCellAndMove",
+            //             "when": "editorTextFocus && editorLangId == 'julia'"
+            //         },
+            {
+                "key": "shift+enter",
+                "command": "-language-julia.executeCellAndMove",
+                "when": "editorTextFocus && editorLangId == 'julia'"
+            },
+            {
+                "key": "ctrl+enter",
+                "command": "language-julia.executeCodeBlockOrSelection",
+                "when": "editorTextFocus && editorLangId == 'julia'"
+            },
+            //         {
+            //             "key": "ctrl+shift+alt+enter",
+            //             "command": "language-julia.executeFile",
+            //             "when": "editorTextFocus && editorLangId == 'julia'"
+            //         },
+            //         {
+            //             "key": "meta+enter",
+            //             "command": "language-julia.executeCell",
+            //             "when": "editorTextFocus && editorLangId == 'julia'"
+            //         },
+            //         {
+            //             "key": "ctrl+enter",
+            //             "command": "-language-julia.executeJuliaCodeInREPL",
+            //             "when": "editorTextFocus && editorLangId == 'juliamarkdown'"
+            //         },
+            //         {
+            //             "key": "ctrl+enter",
+            //             "command": "-language-julia.executeJuliaCodeInREPL",
+            //             "when": "editorTextFocus && editorLangId == 'julia'"
+            //         },
+            //         {
+            //             "key": "alt+j alt+p",
+            //             "command": "language-julia.show-plotpane"
+            //         },
+            //         {
+            //             "key": "alt+j alt+w",
+            //             "command": "REPLVariables.focus"
+            //         },
+            //         {
+            //             "key": "escape",
+            //             "command": "language-julia.clearCurrentInlineResult",
+            //             "when": "editorTextFocus && juliaHasInlineResult && !editorHasSelection && !findWidgetVisible && !inSnippetMode && !isInEmbeddedEditor && !markerNavigationVisible && !onTypeRenameInputVisible && !parameterHintsVisible && !renameInputVisible && !suggestWidgetVisible && editorLangId == 'julia'"
+            //         }
+        ]
+    ],
+    "codestream.email": "kool7d@gmail.com",
+    "editor.rulers": [],
+    "julia.executablePath": "C:\\Users\\kool7\\Julia-1.5.1\\bin\\julia.exe",
+    "cSpell.enableFiletypes": [
+        "julia"
+    ],
+    "[julia]": {
+        "editor.quickSuggestions": true
+    },
+    "terminal.integrated.shell.windows": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "julia.enableCrashReporter": false,
+    "julia.format.keywords": null
 }
