@@ -12,7 +12,7 @@ using Distances
 using Distributed
 using FileIO
 using GeometryBasics
-using GLFW, GLMakie
+# using GLFW, GLMakie
 using JLD2
 using Lazy
 using MIToS
@@ -26,8 +26,8 @@ Node = AbstractPlotting.Node
 
 include("../data/basicdata.jl")
 include("utils.jl")
-include("bonds.jl")
-include("structure.jl")
-include("msa.jl")
+# include("bonds.jl")
+# include("structure.jl")
+# include("msa.jl")
 
 end # BioMakie
