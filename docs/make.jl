@@ -7,7 +7,8 @@ makedocs(
     modules = [BioMakie],
     format=Documenter.HTML(),
     pages = Any[
-                "Home" => "index.md"
+                "Home" => "index.md",
+                "Next page" => "index0.md"
                 ],
 )
 
