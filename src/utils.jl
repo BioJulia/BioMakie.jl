@@ -59,6 +59,16 @@ function tryfloat32(number)
         number
     end)
 end
+function kdict(str::String)
+    if length(str) == 3
+        kideradict3["$str"]
+    elseif length(str) == 1
+        kideradict["$str"]
+    else
+        throw(ErrorException("can't do dict for $str"))
+    end
+end
+kdict(c::Char) = kdict(string(c))
 function steprange(arr::AbstractArray{T,1}; step = 1) where {T<:Real}
     start_value = arr[1]
     end_value = arr[end]

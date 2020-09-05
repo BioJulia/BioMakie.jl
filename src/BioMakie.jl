@@ -28,10 +28,6 @@ include("../data/basicdata.jl")
 include("utils.jl")
 include("bonds.jl")
 include("structure.jl")
-include("../examples/src/kiderafactors.jl")
 include("msa.jl")
-### Requires the use of PyCall/Conda, the python interoperation package:
-# include("../examples/alphashape.jl")
-# include("../examples/shapeanimation.jl")
 
 end # BioMakie
