@@ -1,3 +1,0 @@
-# BioMakie.jl
-
-Testing testing
