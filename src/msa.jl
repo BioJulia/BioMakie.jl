@@ -97,7 +97,7 @@ function viewmsa(str::String)
 	scatter!(ax1,
 	        points1,
 	        marker = charvec,
-	        markersize = (0.25,0.4)
+	        markersize = (9.0,10.0)
 	        )
 
 	heatmap!(ax1, msashow, show_grid = true, show_axis = true,
