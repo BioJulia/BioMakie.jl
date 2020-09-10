@@ -4,6 +4,7 @@ makedocs(
     modules = [BioMakie],
     clean = false,
     format = Documenter.HTML(),
+    sitename = "BioMakie",
     pages = Any["Home" => "index.md"],
 )
 
