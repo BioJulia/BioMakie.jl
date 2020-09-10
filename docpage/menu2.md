@@ -6,4 +6,4 @@
 
 @def tags = ["syntax", "code", "image"]
 
-# More goodies
+# Proteins
