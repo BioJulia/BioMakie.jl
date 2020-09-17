@@ -1,8 +1,14 @@
-@def title = "Setup"
+@def title = "Basic Usage"
 @def hascode = true
-@def date = Date(2019, 3, 22)
-@def rss = "A short description of the page which would serve as **blurb** in a `RSS` feed; you can use basic markdown here but the whole description string must be a single line (not a multiline string). Like this one for instance. Keep in mind that styling is minimal in RSS so for instance don't expect maths or fancy styling to work; images should be ok though: ![](https://upload.wikimedia.org/wikipedia/en/3/32/Rick_and_Morty_opening_credits.jpeg)"
+@def rss = "Visual Biology with Julia"
 
-@def tags = ["syntax", "code"]
+# Basic Usage
 
-# Setup
+After the package is imported, you can try it out by loading up a structure
+from the Protein Data Bank like so:
+```julia
+julia> lysozyme1 = viewstruc("2VB1")
+
+```
+
+The first time you load a visualization, it might take a minute. Subsequent load times will be shorter.

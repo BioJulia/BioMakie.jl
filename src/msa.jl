@@ -84,7 +84,17 @@ function viewmsa(str::String)
 	ax1.yzoomlock[] = true
 
 	charvec = @lift SplitApplyCombine.flatten($charshow)
-
+	charsizes = lift(charvec) do cv
+		cs = []
+		for c in cv
+			if c == '-'
+				push!(cs,(1.0,10.0))
+			else
+				push!(cs,(9.0,10.0))
+			end
+		end
+		cs
+	end
 	poly!(ax1,
 	    [FRect2D(x, y, 1, 1) for x in 0:39 for y in 0:19],
 	    color = :transparent,
@@ -97,7 +107,7 @@ function viewmsa(str::String)
 	scatter!(ax1,
 	        points1,
 	        marker = charvec,
-	        markersize = (9.0,10.0)
+	        markersize = zip(charsizes[])
 	        )
 
 	heatmap!(ax1, msashow, show_grid = true, show_axis = true,
