@@ -11,7 +11,7 @@
 ## Installation and Setup
 
 This package is a set of interactive biological visualizations with Makie.
-This package is **in development** and will **break often**. 
+This package is **in development** and will **break often**.
 
 ```julia
 julia> ] add BioMakie
@@ -24,10 +24,10 @@ To view a PDB structure, use the `viewstruc` function with a PDB ID. The followi
 ```julia
 julia> sv = viewstruc("2VB1")
 ```
-![Image of struc](https://github.com/kool7d/BioMakie.jl/blob/master/examples/2vb1.png)
+![Image of struc](https://github.com/kool7d/BioMakie.jl/blob/master/docs/2vb1.png)
 
 To view a multiple sequence alignment, use the `viewmsa` function with a Pfam ID (fasta coming soon).
 ```julia
 julia> mv = viewmsa("PF00062")
 ```
-![Image of msa](https://github.com/kool7d/BioMakie.jl/blob/dev/examples/msatable.png)
+![Image of msa](https://github.com/kool7d/BioMakie.jl/blob/dev/docs/msatable.png)

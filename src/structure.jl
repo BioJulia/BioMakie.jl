@@ -38,13 +38,13 @@ bondshapes(bonds) = bondshape.([bonds[i].bonds for i = 1:size(bonds,1)]) |> coll
 Return a StructureView object with PDB ID `"str"`.
 
 ### Optional Arguments:
-- dir (String)         - Directory of PDB structure, default `"../data/PDB"`
+- dir (String)         - Directory for PDB structure, default `""`
 - showbonds (Boolean)  - To display bonds, default `true`
 - colors (String)      - Color set for atoms, default `"element"`
 
 """
 function structureview(str::String;
-						dir = "../data/PDB",
+						dir = "",
 						select = :standardselector)
 
 	id = uppercase(str)
@@ -68,19 +68,21 @@ end
 Visualize all structures in the array `strs`.
 
 ### Optional Arguments:
-- dir (String)         - Directory of PDB structure, default `"../data/PDB"`
+- dir (String)         - Directory of PDB structure, default `""`
 - showbonds (Boolean)  - To display bonds, default `true`
 - colors (String)      - Color set for atoms, default `"element"`
+- resolution (Tuple{Int})   - Resolution of the scene, default `(1500, 600)`
 
 """
 function viewstrucs(strs::AbstractArray{String};
-					dir = "../data/PDB",
+					dir = "",
 					showbonds = true,
-					colors = "element")
+					colors = "element",
+					resolution = (1200,900))
 
 	len = length(strs)
 	len > 0 || throw("length of input for `viewstrucs` must be > 0")
-    scene, layout = layoutscene(1, 1; resolution = (1200,900))
+    scene, layout = layoutscene(1, 1; resolution = resolution)
     svs = [structureview(string(str); dir = dir) for str in strs]
     sc_scenes = [LScene(scene) for s in strs]
     pdbtexts = [LText(scene, text = uppercase(str); textsize = 35-len) for str in strs]
@@ -96,7 +98,7 @@ function viewstrucs(strs::AbstractArray{String};
             markersize = lift(X->(1/3).*atomradii(X),svs[i].atoms), show_axis = false)
         if showbonds == true
     		bonds1 = normal_mesh.(bondshapes(bonds(residues(svs[i]))))
-    		mesh!(sc, bonds1[1], color = RGBAf0(0.5,0.5,0.5,0.8))
+    		mesh!(sc, bonds1[1], color = RGBAf0(0.5,0.5,0.5,0.0))
     		for i = 1:size(bonds1,1); mesh!(sc, bonds1[i], color = RGBAf0(0.5,0.5,0.5,0.8), backgroundcolor = RGBAf0(0.5,0.5,0.5,0.8)); end
     	end
         svs[i].scenes = [scene,sc]
