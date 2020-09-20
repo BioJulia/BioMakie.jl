@@ -7,6 +7,7 @@ The website_* must be defined for the RSS to work
 @def prepath = "BioMakie.jl"
 
 @def mintoclevel = 2
+@def maxtoclevel = 3
 
 <!--
 Add here files or directories that should be ignored by Franklin, otherwise
