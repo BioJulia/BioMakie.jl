@@ -20,8 +20,8 @@ using MIToS.MSA: AbstractMultipleSequenceAlignment, Stockholm
 using MacroTools
 using SplitApplyCombine
 using TensorCast
-using WGLMakie
-Node = AbstractPlotting.Node
+# using WGLMakie
+# Node = AbstractPlotting.Node
 
 include("../data/basicdata.jl")
 include("utils.jl")

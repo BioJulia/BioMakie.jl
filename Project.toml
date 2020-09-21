@@ -40,7 +40,6 @@ TensorCast = "02d47bb6-7ce6-556a-be16-bb1710789e2b"
 WGLMakie = "276b4fcb-3e11-5398-bf8b-a0c2d153d008"
 
 [compat]
-AbstractPlotting = "0.11, 0.12"
 BioSequences = "2.0"
 BioStructures = "0.11"
 ColorSchemes = "3.9.0"
@@ -70,7 +69,6 @@ RecursiveArrayTools = "2.5"
 SplitApplyCombine = "1.1.1"
 TableTraitsUtils = "1.0"
 TensorCast = "0.3"
-WGLMakie = "0.2"
 julia = "1"
 
 [extras]

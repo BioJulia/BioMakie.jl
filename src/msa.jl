@@ -1,3 +1,13 @@
+"""
+	MSAView is an object to hold visualization data.
+
+	Fields:
+		msa				- The multiple sequence alignment
+		annotations		- Labels and metadata
+		matrix			- The matrix of the alignment
+		scenes			- Holds 2 scenes: scene[1] is everything, scene[2] is the main scene
+		layout			- The Makie Layout containing these scenes and controls
+"""
 mutable struct MSAView
 	msa
 	annotations
@@ -146,7 +156,7 @@ function viewmsa(str::String;
 	        points1,
 	        marker = charvec,
 	        markersize = (10.0,11.0),
-			color = charcolors,
+			color = :black,
 			strokecolor = :transparent
 	        )
 

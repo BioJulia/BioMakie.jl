@@ -1,4 +1,4 @@
-GLFW.WindowHint(GLFW.FLOATING, 1) # keeps window open, should this be default?
+GLFW.WindowHint(GLFW.FLOATING, 1) # keeps window open, should this be default here?
 import Base.convert
 indexshift(idxs,shift=1.0) = try
 	float.(idxs).+=shift .|> Int
