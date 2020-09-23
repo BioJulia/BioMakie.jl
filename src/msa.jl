@@ -1,5 +1,5 @@
 """
-	MSAView is an object to hold visualization data.
+	MSAView is an object/container to hold relevant data for convenience.
 
 	Fields:
 		msa				- The multiple sequence alignment
@@ -137,6 +137,7 @@ function viewmsa(str::String;
 	ax1.yzoomlock[] = true
 	xaxis_top!(ax1)
 	axisaspect = 2.3
+	ax1.yticklabelspace[] = 200
 
 	# plotting
 	poly!(ax1, [FRect2D(x, y, 1, 1) for x in 0:(width1-1) for y in 0:(height1-1)],

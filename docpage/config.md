@@ -4,6 +4,8 @@ website.
 The website_* must be defined for the RSS to work
 -->
 @def website_title = "BioMakie Documentation"
+@def website_descr = "BioMakie Documentation"
+@def website_url = "https://github.com/kool7d/BioMakie.jl"
 @def prepath = "BioMakie.jl"
 
 @def mintoclevel = 2

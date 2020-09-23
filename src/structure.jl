@@ -1,3 +1,15 @@
+"""
+	StructureView is an object/container to hold relevant data for convenience.
+
+	Fields:
+		protein			- The protein structure
+		models			- Structure models
+		chains			- Structure chains
+		residues		- Structure residues
+		atoms			- Structure atoms
+		scenes			- Holds 2 scenes: scene[1] is everything, scene[2] is the main scene
+		layout			- The Makie Layout containing these scenes and controls
+"""
 mutable struct StructureView
 	protein
 	models
