@@ -46,12 +46,12 @@ function getalphashape(coords::AbstractArray, alpha::T) where {T<:Real}
 end
 function viewalphashape(str::String)
 	sv = structureview(str)
-	scene, layout = layoutscene(8, 8; resolution = (1000,1000))
-	sc_scene = layout[2:8,1:6] = LScene(scene, resolution = (900,900))
-	alpha1 = layout[3,7:8] = LSlider(scene, range = 1.5:0.01:9.0, startvalue = 2.5)
+	scene1, layout = layoutscene(8, 8; resolution = (1000,1000))
+	sc_scene = layout[2:8,1:6] = LScene(scene1, resolution = (1000,1000))
+	alpha1 = layout[3,7:8] = LSlider(scene1, range = 1.5:0.01:9.0, startvalue = 2.5)
 	alphatxt1 = Makie.lift(alpha1.value) do s1; string("alpha = ", round(s1, sigdigits = 2)); end
-	pdbtext = layout[1,1:6] = LText(scene, text = uppercase(str); textsize = 35)
-	alphatext = layout[2,7:8] = LText(scene, text = alphatxt1)
+	pdbtext = layout[1,1:6] = LText(scene1, text = uppercase(str); textsize = 35)
+	alphatext = layout[2,7:8] = LText(scene1, text = alphatxt1)
 	atms = atomcoords(sv.atoms[])
 	sliderval = alpha1.value
 	protatms = sv.atoms
@@ -60,19 +60,17 @@ function viewalphashape(str::String)
 	alphaedges = @lift atomcoords(sv)[tryint.($(proteinshape)[2]),:] |> linesegs
 	alphaverts = @lift atomcoords(sv)[tryint.($(proteinshape)[1]),:]
 	surfarea = @lift surfacearea(atomcoords(sv), tryint.($(proteinshape)[3]))
-	surfatext = layout[4,7:8] = LText(scene, text = lift(X->string("surface area = ", round(Int64, X), "  Å"), surfarea), textsize = 15)
+	surfatext = layout[4,7:8] = LText(scene1, text = lift(X->string("surface area = ", round(Int64, X), "  Å"), surfarea), textsize = 15)
 
 	scatter!(sc_scene, alphaverts, markersize = 0.5, color = :blue, show_axis = false)
 	linesegments!(sc_scene, alphaedges, color = :green, show_axis = false)
 
-	display(scene)
+	AbstractPlotting.display(scene1)
 	sc_scene.scene.center = false
 
-	sv.scenes = [scene,sc_scene]
+	sv.scenes = [scene1,sc_scene]
 	sv.layout = layout
 	return sv
 end
 
 asv = viewalphashape("2vb1")
-
-# Makie.save("alphashape.png",asv.scenes[1])

@@ -24,6 +24,17 @@ convert(::Type{String}, i::Int) = "$i"
 function convert(::Type{String}, f::T) where T<:Union{Float16,Float32,Float64}
 	"$f"
 end
+macro lock(l, expr)
+    quote
+        temp = $(esc(l))
+        lock(temp)
+        try
+            $(esc(expr))
+        finally
+            unlock(temp)
+        end
+    end
+end
 function varcall(name::String,body::Any)
     name=Symbol(name)
     @eval (($name) = ($body))

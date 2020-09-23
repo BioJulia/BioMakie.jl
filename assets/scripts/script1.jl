@@ -8,6 +8,7 @@ using Base.Iterators: partition
 # using JSServe.DOM
 using GeometryBasics
 using FileIO
+using BioMakie
 using UnPack
 using OrdinaryDiffEq, DiffEqFlux, AlgebraOfGraphics
 using DiffEqFlux: sciml_train
