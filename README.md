@@ -39,4 +39,5 @@ julia> mv = viewmsa("PF00062")
 ![Image of msa](https://github.com/kool7d/BioMakie.jl/blob/master/assets/pf00062.png)
 
 Animation and more sophisticated visualizations are also possible.
+
 ![Image of anim](https://github.com/kool7d/BioMakie.jl/blob/master/assets/shapeanimation.mp4)
