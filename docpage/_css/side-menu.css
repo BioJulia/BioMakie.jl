@@ -34,12 +34,12 @@ This is the parent `<div>` that contains the menu and the content area.
     padding-left: 0;
 }
     #layout.active #menu {
-        left: 150px;
-        width: 150px;
+        left: 250px;
+        width: 250px;
     }
 
     #layout.active .menu-link {
-        left: 150px;
+        left: 250px;
     }
 /*
 The content `<div>` is where all your content goes.
@@ -85,14 +85,15 @@ appears on the left side of the page.
 */
 
 #menu {
-    margin-left: -150px; /* "#menu" width */
-    width: 150px;
+    margin-left: -250px; /* "#menu" width */
+    width: 250px;
     position: fixed;
     top: 0;
     left: 0;
     bottom: 0;
     z-index: 1000; /* so the menu or its navicon stays above all content */
-    background: #191818;
+    background: #fcfcfc;
+    box-shadow: inset -14px 0px 5px -12px rgb(210,210,210);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
 }
@@ -117,25 +118,18 @@ appears on the left side of the page.
     /*
     Add that light border to separate items into groups.
     */
-    #menu .pure-menu ul,
+    /* #menu .pure-menu ul,
     #menu .pure-menu .menu-item-divided {
-        border-top: 1px solid #333;
-    }
+        border-top: 1px solid lightgray;
+    } */
         /*
         Change color of the anchor links on hover/focus.
         */
-        #menu .pure-menu li a:hover,
-        #menu .pure-menu li a:focus {
-            background: #333;
-        }
+        
 
     /*
     This styles the selected menu item `<li>`.
     */
-    #menu .pure-menu-selected,
-    #menu .pure-menu-heading {
-        background: #2BA72D;
-    }
         /*
         This styles a link within a selected menu item `<li>`.
         */
@@ -221,21 +215,21 @@ Hides the menu at `48em`, but modify this based on your app's needs.
     }
 
     #layout {
-        padding-left: 150px; /* left col width "#menu" */
+        padding-left: 250px; /* left col width "#menu" */
         left: 0;
     }
     #menu {
-        left: 150px;
+        left: 250px;
     }
 
     .menu-link {
         position: fixed;
-        left: 150px;
+        left: 250px;
         display: none;
     }
 
     #layout.active .menu-link {
-        left: 150px;
+        left: 250px;
     }
 }
 
@@ -248,6 +242,6 @@ Hides the menu at `48em`, but modify this based on your app's needs.
     */
     #layout.active {
         position: relative;
-        left: 150px;
+        left: 250px;
     }
 }

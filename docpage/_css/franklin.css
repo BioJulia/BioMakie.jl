@@ -27,12 +27,6 @@ html {
     padding-left: 0;
     border-radius: 10px; }
 
-.franklin-content .footnote {
-    position: relative;
-    top: -0.5em;
-    font-size: 70%;
-}
-
 /* ==================================================================
     FOOT / COPYRIGHT
 ================================================================== */
@@ -117,10 +111,13 @@ html {
     margin-left: auto;
     margin-right: auto;
     border-collapse: collapse;
-    text-align: center;}
+    text-align: center;
+}
+
 .franklin-content th, td{
     padding: 10px;
-    border: 1px solid black;}
+    border: 1px solid black;
+}
 
 .franklin-content blockquote {
     background: #eeeeee;
@@ -148,34 +145,11 @@ html {
     text-decoration: underline; }
 
 /* ==================================================================
-    HYPERREFS AND FOOTNOTES
+    HYPERREFS
 ================================================================== */
 
 .franklin-content .eqref a  { color: green; }
 .franklin-content .bibref a { color: green; }
-
-.franklin-content sup {
-    font-size: 70%;
-    vertical-align: super;
-    line-height: 0; }
-
-.franklin-content table.fndef  {
-    margin: 0;
-    margin-bottom: 10px;}
-.franklin-content .fndef tr, td {
-    padding: 0;
-    border: 0;
-    text-align: left;}
-.franklin-content .fndef tr {
-    border-left: 2px solid lightgray;
-    }
-.franklin-content .fndef td.fndef-backref {
-    vertical-align: top;
-    font-size: 70%;
-    padding-left: 5px;}
-.franklin-content .fndef td.fndef-content {
-    font-size: 80%;
-    padding-left: 10px;}
 
 /* ==================================================================
     IMAGES in CONTENT
@@ -213,31 +187,41 @@ body { counter-reset: eqnum; }
     CODE & HIGHLIGHT.JS
 ================================================================== */
 
-code {
-    background-color: rgba(27,31,35,0.05);
-    padding: 0.1em 0.2em;
-    border-radius: 2px;
-    font-size: 90%;
-}
-
-/* .franklin-content code { */
-    /* background-color: rgba(27,31,35,0.05); */
-    /* padding: 0.1em 0.2em; */
-    /* border-radius: 2px; */
-    /* font-size: 90%; } */
+/*
+NOTE if update `highlight.pack.js`, look for `julia>`, replace by (so that pkg and shell are recognised)
+return{c:[{cN:"metaj",b:/^julia>/,r:10,starts:{e:/^(?![ ]{6})/,sL:"julia"},aliases:["jldoctest"]},{cN:"metas",b:/^shell>/,r:10,starts:{e:/^(?![ ]{6})/,sL:"bash"},aliases:["jldoctest"]},{cN:"metap",b:/^\(.*\)\spkg>/,r:10,starts:{e:/^(?![ ]{6})/,sL:"julia"},aliases:["jldoctest"]}]}
+*/
 
 .hljs {
     font-size: 90%;
     line-height: 1.35em;
     border-radius: 10px; }
 
-.hljs-meta, .hljs-metas, .hljs-metap { font-weight: bold; }
+.hljs-metaj, .hljs-metas, .hljs-metap { font-weight: bold; }
 
-.hljs-meta { color: rgb(25, 179, 51); }
+.hljs-metaj { color: rgb(25, 179, 51); }
 
 .hljs-metas { color: red; }
 
 .hljs-metap { color: rgb(51, 131, 231); }
+
+
+
+/* a bit of restyling of code zones */
+.franklin-content pre code {
+    /* padding: 20px; */
+    border-radius: 5px;
+    background: aliceblue;
+}
+
+.franklin-content pre code.language-plaintext, code.plaintext.hljs {
+    border-radius: 5px;
+    background: rgba(27,31,35,.05);
+    line-height: 1.35em;
+    font-size: 90%;
+    display: block;
+    padding:10px;
+}
 
 /* ==================================================================
     BOXES
