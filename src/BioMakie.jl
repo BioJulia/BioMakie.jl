@@ -3,7 +3,6 @@ module BioMakie
 export viewstruc, viewmsa, StructureView, MSAView
 
 using AbstractPlotting
-using AbstractPlotting.MakieLayout
 using BioSequences
 using BioStructures
 using Colors, ColorSchemes
@@ -13,7 +12,7 @@ using Distances
 using Distributed
 using FileIO
 using GeometryBasics
-using Makie, GLFW
+using GLFW, GLMakie
 using JLD2
 using Lazy
 using MIToS
@@ -21,8 +20,8 @@ using MIToS.MSA: AbstractMultipleSequenceAlignment, Stockholm
 using MacroTools
 using SplitApplyCombine
 using TensorCast
-# using WGLMakie
-# Node = AbstractPlotting.Node
+using AbstractPlotting.MakieLayout
+Node = AbstractPlotting.Node
 
 include("../data/basicdata.jl")
 include("utils.jl")
