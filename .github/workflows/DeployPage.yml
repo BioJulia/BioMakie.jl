@@ -1,37 +1,37 @@
-name: Build and Deploy
-on:
-  push:
-    branches:
-      - master
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        persist-credentials: false
-    - name: Install SSH Client
-      continue-on-error: true
-      uses: webfactory/ssh-agent@v0.2.0
-      with:
-        ssh-private-key: ${{ secrets.FRANKLIN_PRIV }}
+# name: Build and Deploy
+# on:
+#   push:
+#     branches:
+#       - master
+# jobs:
+#   build-and-deploy:
+#     runs-on: ubuntu-latest
+#     steps:
+#     - name: Checkout
+#       uses: actions/checkout@v2
+#       with:
+#         persist-credentials: false
+#     - name: Install SSH Client
+#       continue-on-error: true
+#       uses: webfactory/ssh-agent@v0.2.0
+#       with:
+#         ssh-private-key: ${{ secrets.FRANKLIN_PRIV }}
 
-    - name: Install Julia
-      uses: julia-actions/setup-julia@v1
-      with:
-        version: 1.4
+#     - name: Install Julia
+#       uses: julia-actions/setup-julia@v1
+#       with:
+#         version: 1.4
 
-    - run: julia -e '
-            using Pkg;
-            Pkg.add(["NodeJS", "PkgPage", "DataFrames","Franklin"]);
-            using NodeJS;
-            run(`$(npm_cmd()) install highlight.js purgecss`);
-            import PkgPage;
-            PkgPage.optimize(input="docpage", output="docs", purge=false)'
-    - name: Build and Deploy
-      uses: JamesIves/github-pages-deploy-action@releases/v3
-      with:
-        SSH: true
-        BRANCH: gh-pages
-        FOLDER: docpage/__site
+#     - run: julia -e '
+#             using Pkg;
+#             Pkg.add(["NodeJS", "PkgPage", "DataFrames","Franklin"]);
+#             using NodeJS;
+#             run(`$(npm_cmd()) install highlight.js purgecss`);
+#             import PkgPage;
+#             PkgPage.optimize(input="docpage", output="", purge=false)'
+#     - name: Build and Deploy
+#       uses: JamesIves/github-pages-deploy-action@releases/v3
+#       with:
+#         SSH: true
+#         BRANCH: gh-pages
+#         FOLDER: docpage/__site
