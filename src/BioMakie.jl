@@ -12,7 +12,8 @@ using Distances
 using Distributed
 using FileIO
 using GeometryBasics
-using GLFW, GLMakie
+# using GLFW, GLMakie
+# GLFW.WindowHint(GLFW.FLOATING, 1)
 using JLD2
 using Lazy
 using MIToS
@@ -20,6 +21,7 @@ using MIToS.MSA: AbstractMultipleSequenceAlignment, Stockholm
 using MacroTools
 using SplitApplyCombine
 using TensorCast
+using WGLMakie
 using AbstractPlotting.MakieLayout
 Node = AbstractPlotting.Node
 
