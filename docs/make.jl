@@ -10,5 +10,8 @@ makedocs(
                 "Page1" => "page1.md"],
 )
 
-deploydocs(repo = "github.com/kool7d/BioMakie")
+deploydocs(
+    repo = "github.com/kool7d/BioMakie",
+    target = "docs",
+    branch = "gh-pages")
 # include("make.jl")
