@@ -4,7 +4,6 @@ notifications:
   email: false
 julia:
   - 1.5
-  - julia: nightly
 os:
   - windows
 arch:
@@ -15,7 +14,7 @@ cache:
 jobs:
   include:
   - stage: "Documentation"
-    julia: 1.4
+    julia: 1.5
     os: windows
     env:
       ssh: ${{ secrets.DOCUMENTER_KEY }}
@@ -27,4 +26,3 @@ jobs:
 matrix:
   allow_failures:
     - julia: 1.5
-    - julia: nightly
