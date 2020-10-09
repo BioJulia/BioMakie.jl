@@ -1,12 +1,13 @@
+using Pkg
+Pkg.add("Documenter")
 using Documenter, BioMakie
 
 makedocs(
+    sitename="BioMakie",
     modules = [BioMakie],
     clean = false,
     format = Documenter.HTML(),
-    sitename = "BioMakie",
-    pages = Any["Home" => "index.md",
-                "page1" => "pagel"],
+    pages = Any["Home" => "index.md"],
 )
 
-deploydocs(repo = "github.com/kool7d/BioMakie.jl.git")
+deploydocs(repo = "github.com/kool7d/BioMakie")
