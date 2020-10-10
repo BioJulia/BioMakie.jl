@@ -1,11 +1,15 @@
 ```@meta
+EditURL = "<unknown>/src/index.jl"
+```
+
+```@meta
 CurrentModule = BioMakie
 ```
 # BioMakie
 
 A user interface for bioinformatics.
 
-## Description
+# Description
 
 BioMakie.jl is a package designed to facilitate visual investigation of biological
 data. It aims to provide extra tools to view and measure differences between data
@@ -23,9 +27,9 @@ values and their graphical representations immediately.
 For more examples of what Makie can do, visit the documentation at
 https://makie.juliaplots.org/stable/
 
-## Setup
+# Setup
 
-```julia
+```@example index
 # in the REPL
 ]add BioMakie
 
@@ -37,22 +41,39 @@ Pkg.add("BioMakie")
 using BioMakie
 ```
 
-## Basic Usage
+# Basic Usage
 
 To view a PDB structure, use the `viewstruc` function with a PDB ID. The following code plots the structure then returns a StructureView with the scene and layout.
-```julia
-julia> sv = viewstruc("2VB1")
+
+```@example index
+sv = viewstruc("2VB1")
 ```
-![Image of struc](https://github.com/kool7d/BioMakie.jl/blob/master/assets/2vb1.png)
+
+```@example
+https://github.com/kool7d/BioMakie.jl/blob/master/assets/2vb1.png
+```
 
 You could also look at multiple structures at once.
-```julia
-julia> svs = viewstrucs(["2vb1","1lw3"], colors = ["aqua","ele"])
+
+```@example index
+svs = viewstrucs(["2vb1","1lw3"], colors = ["aqua","ele"])
 ```
-![Image of strucs](https://github.com/kool7d/BioMakie.jl/blob/master/assets/2strucs.png)
+
+```@example
+https://github.com/kool7d/BioMakie.jl/blob/master/assets/2strucs.png
+```
 
 To view a multiple sequence alignment, use the `viewmsa` function with a Pfam ID (fasta coming soon).
-```julia
-julia> mv = viewmsa("PF00062")
+
+```@example index
+mv = viewmsa("PF00062")
 ```
-![Image of msa](https://github.com/kool7d/BioMakie.jl/blob/master/assets/pf00062.png)
+
+```@example
+https://github.com/kool7d/BioMakie.jl/blob/master/assets/pf00062.png
+```
+
+---
+
+*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
+
