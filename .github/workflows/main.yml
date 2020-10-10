@@ -1,5 +1,6 @@
 name: Documentation
-
+notifications:
+  email: false
 on:
   push:
     branches:

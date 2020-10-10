@@ -5,7 +5,7 @@ using Documenter, BioMakie
 makedocs(
     sitename="BioMakie",
     modules = [BioMakie],
-    build = "",
+    build = "./",
     format = Documenter.HTML(),
     pages = Any["Home" => "index.md",
                 "Page1" => "page1.md"])
@@ -13,6 +13,6 @@ makedocs(
 deploydocs(
     repo = "github.com/kool7d/BioMakie",
     target = "docs",
-    build = "",
+    build = "./",
     branch = "gh-pages")
 # include("make.jl")
