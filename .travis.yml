@@ -5,17 +5,19 @@ notifications:
 julia:
   - 1.5
 os:
-  - windows
+  - linux
 arch:
   - x64
 cache:
   directories:
     - ~/.julia/artifacts
 jobs:
+  allow_failures:
+    - julia: 1.5
   include:
   - stage: "Documentation"
     julia: 1.5
-    os: windows
+    os: linux
     env:
       ssh: ${{ secrets.DOCUMENTER_KEY }}
     script:
@@ -23,6 +25,3 @@ jobs:
                                              Pkg.instantiate()'
       - julia --project=docs/ docs/make.jl
     after_success: skip
-matrix:
-  allow_failures:
-    - julia: 1.5
