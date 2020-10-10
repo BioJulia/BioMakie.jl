@@ -1,7 +1,3 @@
-@def title = "Protein Structures"
-@def hascode = true
-@def tags = ["syntax", "code", "image"]
-
 # Proteins
 
 You can load a Protein Structure from the PDB (Protein Data Bank) using its ID like so:

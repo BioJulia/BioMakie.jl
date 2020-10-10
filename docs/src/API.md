@@ -1,6 +1,6 @@
-@def title = "API"
-
 # API
+```@index
+```
 
 ```@autodocs
 Modules = [BioMakie]

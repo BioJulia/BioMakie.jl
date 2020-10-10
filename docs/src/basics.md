@@ -1,7 +1,3 @@
-@def title = "Basic Usage"
-@def hascode = true
-@def rss = "Visual Biology with Julia"
-
 # Basic Usage
 
 After the package is imported, you can try it out by loading up a structure

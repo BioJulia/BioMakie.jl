@@ -1,13 +1,8 @@
 ```@meta
 CurrentModule = BioMakie
 ```
-
 # BioMakie
 
-```@index
-```
-@def title = "BioMakie"
-@def tags = ["syntax", "code"]
 
 # Description
 
@@ -39,4 +34,7 @@ Pkg.add("BioMakie")
 
 # import the package
 using BioMakie
+```
+
+```@index
 ```
