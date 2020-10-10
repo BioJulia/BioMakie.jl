@@ -11,6 +11,4 @@ makedocs(
 
 deploydocs(
     repo = "github.com/kool7d/BioMakie",
-    target = "docs",
     branch = "gh-pages")
-# include("make.jl")
