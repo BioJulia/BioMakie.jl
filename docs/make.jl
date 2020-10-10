@@ -9,7 +9,6 @@ makedocs(
     clean   = true,
     format = Documenter.HTML(),
     pages = ["Home" => "index.md",
-            "Basics" => "basics.md",
             "Proteins" => "proteins.md",
             "API" => "API.md"])
 
