@@ -5,7 +5,7 @@ EditURL = "<unknown>/src/index.jl"
 ```@meta
 CurrentModule = BioMakie
 ```
-# BioMakie
+# # BioMakie
 
 A user interface for bioinformatics.
 
@@ -57,20 +57,13 @@ You could also look at multiple structures at once.
 
 ```@example index
 svs = viewstrucs(["2vb1","1lw3"], colors = ["aqua","ele"])
-```
+display(svs.scenes[1])
+display("https://github.com/kool7d/BioMakie.jl/blob/master/assets/pf00062.png")
+show("https://github.com/kool7d/BioMakie.jl/blob/master/assets/2strucs.png")
 
-```@example
-https://github.com/kool7d/BioMakie.jl/blob/master/assets/2strucs.png
-```
-
-To view a multiple sequence alignment, use the `viewmsa` function with a Pfam ID (fasta coming soon).
-
-```@example index
+To view a multiple sequence alignment, use the `viewmsa` function with a Pfam ID (fasta coming soon)
 mv = viewmsa("PF00062")
-```
-
-```@example
-https://github.com/kool7d/BioMakie.jl/blob/master/assets/pf00062.png
+Literate.markdown("src/index.jl")
 ```
 
 ---

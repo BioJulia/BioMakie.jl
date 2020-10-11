@@ -52,4 +52,4 @@ show("https://github.com/kool7d/BioMakie.jl/blob/master/assets/2strucs.png")
 
 To view a multiple sequence alignment, use the `viewmsa` function with a Pfam ID (fasta coming soon)
 mv = viewmsa("PF00062")
-Literate.markdown("src/index.jl")
+Literate.markdown("src/index.jl","src")
