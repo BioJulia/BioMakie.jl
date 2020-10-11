@@ -21,7 +21,7 @@ using MIToS.MSA: AbstractMultipleSequenceAlignment, Stockholm
 using MacroTools
 using SplitApplyCombine
 using TensorCast
-using WGLMakie
+# using WGLMakie
 using AbstractPlotting.MakieLayout
 Node = AbstractPlotting.Node
 
