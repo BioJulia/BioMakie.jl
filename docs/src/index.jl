@@ -1,7 +1,7 @@
 #md # ```@meta
 #md # CurrentModule = BioMakie
 #md # ```
-# # BioMakie
+# # # BioMakie
 
 # A user interface for bioinformatics.
 
@@ -46,12 +46,10 @@ sv = viewstruc("2VB1")
 
 # You could also look at multiple structures at once.
 svs = viewstrucs(["2vb1","1lw3"], colors = ["aqua","ele"])
-#md # ```@example
-#md # https://github.com/kool7d/BioMakie.jl/blob/master/assets/2strucs.png
-#md # ```
+display(svs.scenes[1])
+display("https://github.com/kool7d/BioMakie.jl/blob/master/assets/pf00062.png")
+show("https://github.com/kool7d/BioMakie.jl/blob/master/assets/2strucs.png")
 
-# To view a multiple sequence alignment, use the `viewmsa` function with a Pfam ID (fasta coming soon).
+To view a multiple sequence alignment, use the `viewmsa` function with a Pfam ID (fasta coming soon)
 mv = viewmsa("PF00062")
-#md # ```@example
-#md # https://github.com/kool7d/BioMakie.jl/blob/master/assets/pf00062.png
-#md # ```
+Literate.markdown("src/index.jl")
