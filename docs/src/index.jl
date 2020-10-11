@@ -49,7 +49,12 @@ svs = viewstrucs(["2vb1","1lw3"], colors = ["aqua","ele"])
 display(svs.scenes[1])
 display("https://github.com/kool7d/BioMakie.jl/blob/master/assets/pf00062.png")
 show("https://github.com/kool7d/BioMakie.jl/blob/master/assets/2strucs.png")
+AbstractPlotting
 
 To view a multiple sequence alignment, use the `viewmsa` function with a Pfam ID (fasta coming soon)
 mv = viewmsa("PF00062")
 Literate.markdown("src/index.jl","src")
+# [docs-img]: https://github.com/kool7d/BioMakie.jl/blob/master/assets/pf00062.png
+import DisplayAs
+img = plot(...)
+img = DisplayAs.PNG("https://github.com/kool7d/BioMakie.jl/blob/master/assets/2strucs.png")

@@ -44,9 +44,9 @@ version = "0.0.4"
 
 [[ArrayInterface]]
 deps = ["LinearAlgebra", "Requires", "SparseArrays"]
-git-tree-sha1 = "a7110d4291700c0d9ddbeb5fa41c3b9c4659c2aa"
+git-tree-sha1 = "40990a6dfd617d2f7d1375e9d4b52d962c8d6dcf"
 uuid = "4fba245c-0d91-5ea0-9b3e-6abc04ee57a9"
-version = "2.13.3"
+version = "2.13.4"
 
 [[Artifacts]]
 deps = ["Pkg"]
@@ -106,9 +106,9 @@ version = "2.0.5"
 
 [[BioStructures]]
 deps = ["BioAlignments", "BioCore", "BioGenerics", "BioSequences", "BioSymbols", "CodecZlib", "DataFrames", "Format", "LightGraphs", "LinearAlgebra", "MMTF", "MetaGraphs", "RecipesBase", "Statistics"]
-git-tree-sha1 = "7d26aff38cf5b3f0f5609726fc7993cf5fea6f6a"
+git-tree-sha1 = "b8ccba376e38a3760be57082e9a86a6e5fca8cd5"
 uuid = "de9282ab-8554-53be-b2d6-f6c222edabfc"
-version = "0.11.4"
+version = "0.11.5"
 
 [[BioSymbols]]
 deps = ["Automa"]
@@ -218,9 +218,9 @@ version = "0.3.0"
 
 [[Compat]]
 deps = ["Base64", "Dates", "DelimitedFiles", "Distributed", "InteractiveUtils", "LibGit2", "Libdl", "LinearAlgebra", "Markdown", "Mmap", "Pkg", "Printf", "REPL", "Random", "SHA", "Serialization", "SharedArrays", "Sockets", "SparseArrays", "Statistics", "Test", "UUIDs", "Unicode"]
-git-tree-sha1 = "cf03b37436c6bc162e7c8943001568b4cad4bee3"
+git-tree-sha1 = "f76e41cf110de7176a657c72409e722cfc86fbb6"
 uuid = "34da2185-b29b-5c13-b0c7-acf172513d20"
-version = "3.19.0"
+version = "3.20.0"
 
 [[CompilerSupportLibraries_jll]]
 deps = ["Libdl", "Pkg"]
@@ -300,6 +300,11 @@ git-tree-sha1 = "eb0c34204c8410888844ada5359ac8b96292cfd1"
 uuid = "b552c78f-8df3-52c6-915a-8e097449b14b"
 version = "1.0.1"
 
+[[DisplayAs]]
+git-tree-sha1 = "44e8d47bc0b56ec09115056a692e5fa0976bfbff"
+uuid = "0b91fe84-8a4c-11e9-3e1d-67c38462b6d6"
+version = "0.1.2"
+
 [[Distances]]
 deps = ["LinearAlgebra", "Statistics"]
 git-tree-sha1 = "a5b88815e6984e9f3256b6ca0dc63109b16a506f"
@@ -347,9 +352,9 @@ version = "0.3.0"
 
 [[FFMPEG_jll]]
 deps = ["Artifacts", "Bzip2_jll", "FreeType2_jll", "FriBidi_jll", "JLLWrappers", "LAME_jll", "LibVPX_jll", "Libdl", "Ogg_jll", "OpenSSL_jll", "Opus_jll", "Pkg", "Zlib_jll", "libass_jll", "libfdk_aac_jll", "libvorbis_jll", "x264_jll", "x265_jll"]
-git-tree-sha1 = "ef1fb99ef8f4727dd9ea46fc4c10920a955a8162"
+git-tree-sha1 = "13a934b9e74a8722bf1786c989de346a9602e695"
 uuid = "b22a6f82-2f65-5046-a5b2-351ab43fb4e5"
-version = "4.3.1+3"
+version = "4.3.1+2"
 
 [[FFTW]]
 deps = ["AbstractFFTs", "FFTW_jll", "IntelOpenMP_jll", "Libdl", "LinearAlgebra", "MKL_jll", "Reexport"]
@@ -941,9 +946,9 @@ uuid = "510215fc-4207-5dde-b226-833fc4488ee2"
 version = "0.3.2"
 
 [[OffsetArrays]]
-git-tree-sha1 = "3fdfca8a532507d65f39ff0ad34fe81097a55337"
+git-tree-sha1 = "a416e2f267e2c8729f25bcaf1ce19d2893faf393"
 uuid = "6fe1bfb0-de20-5000-8ca7-80f57d26f881"
-version = "1.3.0"
+version = "1.3.1"
 
 [[Ogg_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
