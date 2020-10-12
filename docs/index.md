@@ -48,25 +48,21 @@ To view a PDB structure, use the `viewstruc` function with a PDB ID. The followi
 ```@example index
 sv = viewstruc("2VB1")
 ```
-
-```@example
-https://github.com/kool7d/BioMakie.jl/blob/master/assets/2vb1.png
-```
+![Image of struc](../assets/2vb1.png)
 
 You could also look at multiple structures at once.
 
 ```@example index
 svs = viewstrucs(["2vb1","1lw3"], colors = ["aqua","ele"])
-display(svs.scenes[1])
-display("https://github.com/kool7d/BioMakie.jl/blob/master/assets/pf00062.png")
-show("https://github.com/kool7d/BioMakie.jl/blob/master/assets/2strucs.png")
+```
 
 To view a multiple sequence alignment, use the `viewmsa` function with a Pfam ID (fasta coming soon)
+```@example
 mv = viewmsa("PF00062")
-Literate.markdown("src/index.jl")
 ```
+Literate.markdown("src/index.jl")
+
 
 ---
 
 *This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
-
