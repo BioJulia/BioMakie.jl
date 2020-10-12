@@ -263,7 +263,7 @@ end
 _stripallkeys(dicts::AbstractArray) =  _stripkeys.(dicts)
 _shuffledims!(arr::AbstractArray{T,1}) where {T} = arr
 _shuffledims!(arr::AbstractArray{T,2}) where {T} = @cast arr[j,i] := arr[i,j]
-_shuffledims!(arr::AbstractArray{T,3}, d::Int64 = 1) where {T}
+_shuffledims!(arr::AbstractArray{T,3}, d = 1) where {T}
 	if d == 1
 		@cast arr[i,k,j] := arr[i,j,k] # d==1 => index 1 is held
 	elseif d == 2
