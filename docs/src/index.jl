@@ -40,22 +40,14 @@ using BioMakie
 # To view a PDB structure, use the `viewstruc` function with a PDB ID. The following code plots the structure then returns a StructureView with the scene and layout.
 
 sv = viewstruc("2VB1")
+#md # ![Image of struc](https://github.com/kool7d/BioMakie.jl/blob/master/assets/2vb1.png)
 #md # ```@example
 #md # https://github.com/kool7d/BioMakie.jl/blob/master/assets/2vb1.png
 #md # ```
 
 # You could also look at multiple structures at once.
 svs = viewstrucs(["2vb1","1lw3"], colors = ["aqua","ele"])
-display(svs.scenes[1])
-display("https://github.com/kool7d/BioMakie.jl/blob/master/assets/pf00062.png")
-show("https://github.com/kool7d/BioMakie.jl/blob/master/assets/2strucs.png")
-AbstractPlotting
-using CairoMakie
-To view a multiple sequence alignment, use the `viewmsa` function with a Pfam ID (fasta coming soon)
-mv = viewmsa("PF00062")
+#md # ![Image of strucs](https://github.com/kool7d/BioMakie.jl/blob/master/assets/2strucs.png)
+
+# using Literate
 # Literate.markdown("src/index.jl","src")
-# [docs-img]: https://github.com/kool7d/BioMakie.jl/blob/master/assets/pf00062.png
-import DisplayAs
-img = plot(...)
-img = DisplayAs.PNG("https://github.com/kool7d/BioMakie.jl/blob/master/assets/2strucs.png")
-plot(img)

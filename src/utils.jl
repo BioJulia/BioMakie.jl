@@ -75,7 +75,7 @@ function kdict(str::String)
     elseif length(str) == 1
         kideradict["$str"]
     else
-        throw(ErrorException("can't do dict for $str"))
+        throw(ErrorException("can't get kdict for $str"))
     end
 end
 kdict(c::Char) = kdict(string(c))
@@ -94,10 +94,10 @@ function steprange(arr::AbstractArray{T,1}; step = 1) where {T<:Real}
     return StepRange(min_value,step,max_value)
 end
 function unitrange(arr::AbstractArray{T,1}) where {T<:Int}
-    min_value = arr[1]
-    max_value = arr[end]
-    max_value == min_value && error("the start and end points are the same value")
-	max_value < min_value && error("the last value is lower than the first")
+    start_value = arr[1]
+    end_value = arr[end]
+    end_value == start_value && error("the start and end points are the same value")
+	end_value < start_value && error("the last value is lower than the first")
     for i in 1:size(arr,1)
         if i == 1
             step = arr[i+1] - arr[i]
@@ -106,7 +106,7 @@ function unitrange(arr::AbstractArray{T,1}) where {T<:Int}
             error("inconsistent step for unit range")
         end
     end
-    return UnitRange(min_value,max_value)
+    return UnitRange(start_value,end_value)
 end
 splatrange(range) = [(range...)]
 function splatranges(ranges...)
@@ -261,9 +261,9 @@ function _stripkeys(dict::AbstractDict)
     return ks
 end
 _stripallkeys(dicts::AbstractArray) =  _stripkeys.(dicts)
-_shuffledims!(arr::AbstractArray{T,1}) where T = arr
-_shuffledims!(arr::AbstractArray{T,2}) where T = @cast arr[j,i] := arr[i,j]
-_shuffledims!(arr::AbstractArray{T,3}, d::Int64 = 1) where T =
+_shuffledims!(arr::AbstractArray{T,1}) where {T}; arr
+_shuffledims!(arr::AbstractArray{T,2}) where {T}; @cast arr[j,i] := arr[i,j]
+_shuffledims!(arr::AbstractArray{T,3}, d::Int64 = 1) where {T}
 	if d == 1
 		@cast arr[i,k,j] := arr[i,j,k] # d==1 => index 1 is held
 	elseif d == 2
