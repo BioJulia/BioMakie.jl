@@ -40,11 +40,11 @@ using BioMakie
 # To view a PDB structure, use the `viewstruc` function with a PDB ID. The following code plots the structure then returns a StructureView with the scene and layout.
 
 sv = viewstruc("2VB1")
-#md # ![Image of struc](https://github.com/kool7d/BioMakie.jl/blob/master/assets/2vb1.png)
+#md # ![Image of struc](assets/2vb1.png)
 
 # You could also look at multiple structures at once.
 svs = viewstrucs(["2vb1","1lw3"], colors = ["aqua","ele"])
-#md # ![Image of strucs](https://github.com/kool7d/BioMakie.jl/blob/master/assets/2strucs.png)
+#md # ![Image of strucs](assets/2strucs.png)
 
 using Literate #src
 Literate.markdown("src/index.jl","src") #src
