@@ -49,7 +49,7 @@ To view a PDB structure, use the `viewstruc` function with a PDB ID. The followi
 sv = viewstruc("2VB1")
 ```
 
-![Image of struc](assets/2vb1.png)
+![Image of struc](https://github.com/kool7d/BioMakie.jl/blob/master/assets/2vb1.png)
 
 You could also look at multiple structures at once.
 
@@ -57,7 +57,7 @@ You could also look at multiple structures at once.
 svs = viewstrucs(["2vb1","1lw3"], colors = ["aqua","ele"])
 ```
 
-![Image of strucs](assets/2strucs.png)
+![Image of strucs](https://github.com/kool7d/BioMakie.jl/blob/master/assets/2strucs.png)
 
 ---
 
