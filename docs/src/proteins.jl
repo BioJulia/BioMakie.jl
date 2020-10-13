@@ -13,7 +13,7 @@ svs = viewstrucs(["2vb1","1lw3"], colors = ["aqua","ele"])
 #md # [![Image of struc](https://github.com/kool7d/BioMakie.jl/blob/master/assets/2vb1.png)]
 #md # <a href = "https://www.github.com/JuliaPlots/Makie.jl"><img src="https://github.com/kool7d/BioMakie.jl/blob/master/assets/2vb1.png" alt="Makie.jl" height="30" align = "top"></a>
 #md # <a href = "https://www.github.com/JuliaPlots/Makie.jl"><img src="https://raw.githubusercontent.com/JuliaPlots/Makie.jl/master/assets/logo.png" alt="Makie.jl" height="30" align = "top"></a>
-
+svs.scene[1]
 # ## Multiple sequence alignments
 
 # You can similarly load a Multiple Sequence Alignment from the Pfam database using its
