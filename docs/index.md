@@ -1,5 +1,5 @@
 ```@meta
-EditURL = "<unknown>/src/index.jl"
+EditURL = "https://github.com/kool7d/BioMakie.jl/blob/master/docs/index.jl"
 ```
 
 ```@meta

@@ -21,10 +21,12 @@ You could also look at multiple structures at once.
 svs = viewstrucs(["2vb1","1lw3"], colors = ["aqua","ele"])
 ```
 
-![Image of struc](https://github.com/kool7d/BioMakie.jl/blob/master/assets/2vb1.png)
-[![Image of struc](https://github.com/kool7d/BioMakie.jl/blob/master/assets/2vb1.png)]
-<a href = "https://www.github.com/JuliaPlots/Makie.jl"><img src="https://github.com/kool7d/BioMakie.jl/blob/master/assets/2vb1.png" alt="Makie.jl" height="30" align = "top"></a>
-<a href = "https://www.github.com/JuliaPlots/Makie.jl"><img src="https://raw.githubusercontent.com/JuliaPlots/Makie.jl/master/assets/logo.png" alt="Makie.jl" height="30" align = "top"></a>
+![](https://github.com/kool7d/BioMakie.jl/blob/master/assets/2vb1.png)
+[![](https://github.com/kool7d/BioMakie.jl/blob/master/assets/2vb1.png)]
+
+```@example proteins
+svs.scene[1]
+```
 
 ## Multiple sequence alignments
 
@@ -33,9 +35,11 @@ ID like so:
 
 ```@example proteins
 msa1 = viewmsa("PF00062")  # opens a 'Scene' and returns an 'MSAView'
+save("msa1.svg",msa1.scenes[1])
 ```
 
-![Image of msa](assets/pf00062.png)
+![](msa1.svg)
+![Image of msa](pf00062.png)
 An `MSAView` contains the most relevant information about the protein sequences in the
 alignment along with the `Scene` and `Layout` which comprise the interface.
 
