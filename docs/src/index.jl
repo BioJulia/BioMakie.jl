@@ -25,10 +25,6 @@
 
 # ## Setup
 
-## in the REPL
-]add BioMakie
-
-## elsewhere
 using Pkg
 Pkg.add("BioMakie")
 
