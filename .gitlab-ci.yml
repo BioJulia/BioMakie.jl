@@ -1,38 +1,23 @@
-variables:
-    CI_IMAGE_TAG: "opengl"
-    MODERNGL_DEBUGGING: "true"
-    JULIA_DEPOT_PATH: "$CI_PROJECT_DIR/.julia/"
-    ABSTRACTPLOTTING_MINIMAL: "false"
+include: https://raw.githubusercontent.com/JuliaGPU/gitlab-ci/master/templates/v6.yml
 
-stages:
-  - documentation
-
-
-docs:
-  stage: documentation
+test:1.0:
+  extends:
+    - .julia:1.0
+    - .test
   tags:
-      - xorg
+      - nvidia
 
-  image: "juliagpu/julia:v1.3-${CI_IMAGE_TAG}"
+test:1.x:
+  extends:
+    - .julia:1
+    - .test
+  tags:
+      - nvidia
 
-  cache:
-    key: ${CI_JOB_NAME}
-    paths:
-      - .julia/
-
-  before_script:
-      - apt-get -qq update
-      # glfw
-      - apt-get install -y cmake xorg-dev mesa-utils p7zip-full ssh
-
-  script:
-    - mkdir -p $JULIA_DEPOT_PATH # Pkg.jl#325
-    - glxinfo | grep 'version'
-    - julia -e 'using InteractiveUtils; versioninfo()'
-    - julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
-    - julia --project=docs/ docs/make.jl
-
-  only:
-    - master # trigger docs on master branch changes
-    - tags
-    - external_pull_requests # trigger docs on PRs (only internal, not from forks)
+test:nightly:
+  extends:
+    - .julia:nightly
+    - .test
+  tags:
+      - nvidia
+  allow_failure: true

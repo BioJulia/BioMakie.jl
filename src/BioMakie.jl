@@ -25,10 +25,10 @@ using TensorCast
 using AbstractPlotting.MakieLayout
 Node = AbstractPlotting.Node
 
-include("../data/basicdata.jl")
-include("utils.jl")
-include("bonds.jl")
-include("structure.jl")
-include("msa.jl")
+include("./data/basicdata.jl")
+include("./src/utils.jl")
+include("./src/bonds.jl")
+include("./src/structure.jl")
+include("./src/msa.jl")
 
 end # BioMakie
