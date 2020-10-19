@@ -98,12 +98,6 @@ git-tree-sha1 = "5ab2b42c284246e895c92459a06b3549128f8fbc"
 uuid = "7de43156-b762-4475-b39f-ba1e1e59ee2f"
 version = "0.1.0"
 
-[[BioSequences]]
-deps = ["BioGenerics", "BioSymbols", "Combinatorics", "IndexableBitVectors", "Printf", "Random", "StableRNGs", "Twiddle"]
-git-tree-sha1 = "093ccb9211bdc71924abf8e74a0790af11da35a7"
-uuid = "7e6ae17a-c86d-528c-b3b9-7f778a29fe59"
-version = "2.0.5"
-
 [[BioStructures]]
 deps = ["BioAlignments", "BioCore", "BioGenerics", "BioSequences", "BioSymbols", "CodecZlib", "DataFrames", "Format", "LightGraphs", "LinearAlgebra", "MMTF", "MetaGraphs", "RecipesBase", "Statistics"]
 git-tree-sha1 = "b8ccba376e38a3760be57082e9a86a6e5fca8cd5"
