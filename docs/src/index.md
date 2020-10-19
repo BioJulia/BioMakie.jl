@@ -51,6 +51,7 @@ sv = viewstruc("2VB1")
 
 ![Image of struc](C:/Users/kool7/Google Drive/BioMakie.jl/docs/assets/msa1.svg)
 ![Image of struc2](../assets/msa1.svg)
+![Image of struc2](../../assets/msa1.svg)
 
 You could also look at multiple structures at once.
 
