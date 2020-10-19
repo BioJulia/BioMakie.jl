@@ -12,8 +12,7 @@ using Distances
 using Distributed
 using FileIO
 using GeometryBasics
-using GLFW, GLMakie
-GLFW.WindowHint(GLFW.FLOATING, 1)
+using Makie
 using JLD2
 using Lazy
 using MIToS
