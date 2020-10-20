@@ -20,7 +20,6 @@ You could also look at multiple structures at once.
 ```@example proteins
 svs = viewstrucs(["2vb1","1lw3"], colors = ["aqua","ele"])
 ```
-![Image of 2strucs](https://github.com/kool7d/BioMakie.jl/tree/master/docs/assets/2strucs.png)
 ![Image of 2strucs2](https://raw.githubusercontent.com/kool7d/BioMakie.jl/master/docs/assets/2vb1.png)
 
 
@@ -32,7 +31,7 @@ ID like so:
 ```@example proteins
 msa1 = viewmsa("PF00062")  # opens a 'Scene' and returns an 'MSAView'
 ```
-![Image of msa](BioMakie.jl/docs/assets/pf00062.png)
+![Image of msa](./pf00062.png)
 
 An `MSAView` contains the most relevant information about the protein sequences in the
 alignment along with the `Scene` and `Layout` which comprise the interface.
