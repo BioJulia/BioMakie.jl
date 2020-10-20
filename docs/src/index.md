@@ -49,7 +49,7 @@ To view a PDB structure, use the `viewstruc` function with a PDB ID. The followi
 sv = viewstruc("2VB1")
 ```
 ![Image of struc](../assets/2vb1.png)
-#
+
 ![Image of strucc](2vb1.png)
 
 ---

@@ -33,6 +33,8 @@ msa1 = viewmsa("PF00062")  # opens a 'Scene' and returns an 'MSAView'
 ```
 ![Image of msa](./pf00062.png)
 
+![Image of msa2](../assets/pf00062.png)
+
 An `MSAView` contains the most relevant information about the protein sequences in the
 alignment along with the `Scene` and `Layout` which comprise the interface.
 
