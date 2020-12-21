@@ -35,4 +35,4 @@ To view a multiple sequence alignment, use the `viewmsa` function with a Pfam ID
 ```julia
 julia> mv = viewmsa("PF00062")
 ```
-![Image of msa](https://github.com/kool7d/BioMakie.jl/blob/master/assets/docs/pf00062.png)
+![Image of msa](https://github.com/kool7d/BioMakie.jl/blob/master/docs/assets/pf00062.png)
