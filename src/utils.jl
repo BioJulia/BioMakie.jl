@@ -140,6 +140,24 @@ function internaldistances(vals::AbstractArray{Number})
     end
     return internaldists
 end
+function internaldistances(vals::AbstractArray)
+    internaldists = zeros(Float64, (size(vals,1),size(vals,1)))
+    for i in 1:size(vals,1)
+        for j in 1:size(vals,1)
+            internaldists[i,j] = Distances.euclidean(vals[i,:],vals[j,:])
+        end
+    end
+    return internaldists
+end
+function internaldistorders(internaldists::AbstractArray)
+    orders = zeros(Float64, (size(internaldists,1),size(internaldists,2)))
+
+    for i = 1:size(internaldists,1)
+        orders[i,:] = sortperm(sortperm(internaldists[i,:]))
+    end
+
+    return orders
+end
 function resmass(res::BioStructures.Residue)
     total = 0.0
     for atm in res
