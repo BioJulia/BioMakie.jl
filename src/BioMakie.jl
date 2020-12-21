@@ -11,7 +11,7 @@ using Distances
 using Distributed
 using FileIO
 using GeometryBasics
-# using Makie
+using Makie
 using JLD2
 using Lazy
 using MIToS
