@@ -32,7 +32,7 @@ TableTraitsUtils = "382cd787-c1b6-5bf2-a167-d5b971a19bda"
 TensorCast = "02d47bb6-7ce6-556a-be16-bb1710789e2b"
 
 [compat]
-AbstractPlotting = "0.12, 0.13, 0.14"
+AbstractPlotting = "0.12, 0.13, 0.14, 0.15"
 BioStructures = "0.11"
 ColorSchemes = "3.9.0"
 Colors = "0.12.3"
