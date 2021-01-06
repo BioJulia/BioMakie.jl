@@ -1,4 +1,5 @@
 abstract type AbstractTether end
+# known/obvious bonds for each residue
 heavyresbonds = Dict(
                 "ARG" => [["C","O"],["C","CA"],["CA","N"],["CA","CB"],["CB","CG"],
 						["CG","CD"],["CD","NE"],["NE","CZ"],["CZ","NH1"],["CZ","NH2"]],
@@ -89,16 +90,13 @@ mutable struct Bond <:AbstractTether
 	points
 	bondtype
 end
-mutable struct Residue{Symbol} <:AbstractResidue
-	parent
-	atoms
-	bonds::Vector{Bond}
-end
-Bond(x1::StructuralElement, x2::StructuralElement) = Bond([x1,x2],"1")
-
+Bond(x1::StructuralElement, x2::StructuralElement) = Bond([x1,x2],"single")
+Bond(x1::StructuralElement, x2::StructuralElement, bt::String) = Bond([x1,x2],bt)
 atoms(bond::AbstractTether) = bond.points
+bondtype(bond::AbstractTether) = bond.bondtype
 points(tether::AbstractTether) = tether.points
-function resbonds(res::AbstractResidue;
+
+function bonds(res::AbstractResidue;
 					hres = false)
 	bonds = []
 	missingbonds = []
@@ -192,10 +190,10 @@ function resbonds(res::AbstractResidue;
 		# 	end
 		# end
 	end
-	restype = res.name
-	restype2 = Symbol("$(restype)")
-	new_bonds = eval(Residue{restype2}(res,resatoms,bonds))
-	return new_bonds
+	# restype = res.name
+	# restype2 = Symbol("$(restype)")
+	# new_bonds = eval(Residue{restype2}(res,resatoms,bonds))
+	return bonds
 end
 # function backbonebonds(chn::BioStructures.Chain)
 # 	bbatoms = collectatoms(chn, fullbbselector)
@@ -213,6 +211,7 @@ end
 # 	end
 # 	return bonds
 # end
+
 # using GLMakie
 # prot1 = viewstruc("2vb1")
 # atms1 = collectatoms(chains(prot1)["A"], fullbbselector)
@@ -225,7 +224,6 @@ end
 # end
 # [([ch1...][1].atoms)...]
 
-
 function bondshape(twoatms::AbstractArray{T}) where {T<:AbstractAtom}
     pnt1 = GeometryBasics.Point3f0(coords(twoatms[1])[1], coords(twoatms[1])[2], coords(twoatms[1])[3])
     pnt2 = GeometryBasics.Point3f0(coords(twoatms[2])[1], coords(twoatms[2])[2], coords(twoatms[2])[3])
@@ -234,7 +232,7 @@ function bondshape(twoatms::AbstractArray{T}) where {T<:AbstractAtom}
 end
 bondshape(bond::Bond) = bondshape(atoms(bond))
 bondshape(bondlist::AbstractArray{Bond}) = bondshape.(bondlist)
-bondshape(resbonds::Residue{Symbol}) = bondshape.(resbonds.bonds)
+
 function collectbondshapes(arr)
 	shapes = []
 	for i = 1:size(arr,1)
