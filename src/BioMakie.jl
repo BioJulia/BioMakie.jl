@@ -11,7 +11,6 @@ using Distances
 using Distributed
 using FileIO
 using GeometryBasics
-using Makie
 using JLD2
 using Lazy
 using MIToS
@@ -19,8 +18,8 @@ using MIToS.MSA: AbstractMultipleSequenceAlignment, Stockholm
 using MacroTools
 using SplitApplyCombine
 using TensorCast
+using GLMakie
 # using WGLMakie
-using AbstractPlotting.MakieLayout
 Node = AbstractPlotting.Node
 
 include("../data/basicdata.jl")
