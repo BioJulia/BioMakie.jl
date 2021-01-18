@@ -11,7 +11,6 @@ using Lazy
 using MIToS
 using SplitApplyCombine
 using TensorCast
-using CairoMakie
 using GLMakie
 using WGLMakie
 
