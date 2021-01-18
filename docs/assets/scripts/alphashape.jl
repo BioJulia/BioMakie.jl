@@ -1,4 +1,4 @@
-using AbstractPlotting
+using AbstractPlotting, AbstractPlotting.MakieLayout
 using Pkg
 Pkg.add.(["PyCall", "Conda"])
 using PyCall, Conda
