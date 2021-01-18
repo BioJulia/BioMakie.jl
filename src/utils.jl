@@ -1,8 +1,8 @@
 import Base.convert
 indexshift(idxs,shift=1.0) = try
-	float.(idxs).+=shift .|> Int
-catch
-	float.(idxs).+=shift
+		float.(idxs).+=shift .|> Int
+	catch
+		float.(idxs).+=shift
 end
 function convert(::Type{T}, arr::Array{T,1}) where {T<:Number}
     if size(arr,1) > 1
@@ -22,17 +22,6 @@ end
 convert(::Type{String}, i::Int) = "$i"
 function convert(::Type{String}, f::T) where T<:Union{Float16,Float32,Float64}
 	"$f"
-end
-macro lock(l, expr)
-    quote
-        temp = $(esc(l))
-        lock(temp)
-        try
-            $(esc(expr))
-        finally
-            unlock(temp)
-        end
-    end
 end
 function varcall(name::String,body::Any)
     name=Symbol(name)
@@ -180,31 +169,6 @@ function makeclrgrad(vec::AbstractArray{T}, colrmap::AbstractArray) where T<:Rea
     return indexedcolors
 end
 ∑(x) = sum(x)
-(D::Dict)(i::Int) = Dict([keys(D)...][i] => [values(D)...][i])
-(D::OrderedDict)(i::Int) = OrderedDict([keys(D)...][i] => [values(D)...][i])
-(D::Dict)(is::AbstractVector{Int}) = Dict([([keys(D)...][i],[values(D)...][i]) for i in is])
-(D::OrderedDict)(is::AbstractVector{Int}) = OrderedDict([([keys(D)...][i],[values(D)...][i]) for i in is])
-(D::Dict)(is::Int...) = D([is...])
-(D::OrderedDict)(is::Int...) = D([is...])
-(D::Dict)(is::AbstractRange{Int}) = D([is...])
-(D::OrderedDict)(is::AbstractRange{Int}) = D([is...])
-(D::Dict)(is::AbstractRange{Int}...) = D([(is...)...])
-(D::OrderedDict)(is::AbstractRange{Int}...) = D([(is...)...])
-function (D::AbstractDict)(is...)
-    indices = []
-    for i in is
-        if typeof(i) <: Union{AbstractRange{Int},AbstractArray{Int}}
-            for j in i
-                push!(indices, j)
-            end
-        elseif typeof(i) <: Int
-            push!(indices, i)
-        else
-            error("could not index this, arguments must be Ints, ranges of Ints, arrays of Ints, or a combo of those")
-        end
-    end
-    return D(indices...)
-end
 function centerofpoints(points::AbstractArray{T}) where T <: Number
     xs = points[:,1]
     ys = points[:,2]
@@ -279,21 +243,22 @@ function _stripkeys(dict::AbstractDict)
     return ks
 end
 _stripallkeys(dicts::AbstractArray) =  _stripkeys.(dicts)
-# _shuffledims!(arr::AbstractArray{T,1}) where T = arr
-# _shuffledims!(arr::AbstractArray{T,2}) where T = @cast arr[j,i] := arr[i,j]
-# _shuffledims!(arr::AbstractArray{T,3}; d = 1) where {T}
-# 	if d == 1
-# 		@cast arr[i,k,j] := arr[i,j,k] # d==1 => index 1 is held
-# 	elseif d == 2
-# 		@cast arr[k,j,i] := arr[i,j,k] # d==2 => index 2 is held
-# 	elseif d == 3
-# 		@cast arr[j,i,k] := arr[i,j,k] # d==3 => index 3 is held
-# 	elseif d == 0
-# 		@cast arr[i,j,k] := arr[i,j,k] # d==0 => identity
-# 	elseif d == 4 || d == +1
-# 		@cast arr[k,i,j] := arr[i,j,k] # d==4 => move indices forward +1 ( index 3(+1) -> index 4 -> index 1 )
-# 	elseif d == 5 || d == -1
-# 		@cast arr[j,k,i] := arr[i,j,k] # d==5 => move indices backward -1 ( index 1(-1) -> index 0 -> index 3 )
-# 	else
-# 		@cast arr[i,j,k] := arr[i,j,k] # else => identity
-# end
+_shuffledims!(arr::AbstractArray{T,1}) where T = arr
+_shuffledims!(arr::AbstractArray{T,2}) where T = @cast arr[j,i] := arr[i,j]
+_shuffledims!(arr::AbstractArray{T,3}; d = 1) where {T}
+	if d == 1
+		@cast arr[i,k,j] := arr[i,j,k] # d==1 => index 1 is held
+	elseif d == 2
+		@cast arr[k,j,i] := arr[i,j,k] # d==2 => index 2 is held
+	elseif d == 3
+		@cast arr[j,i,k] := arr[i,j,k] # d==3 => index 3 is held
+	elseif d == 0
+		@cast arr[i,j,k] := arr[i,j,k] # d==0 => identity
+	elseif d == 4 || d == +1
+		@cast arr[k,i,j] := arr[i,j,k] # d==4 => move indices forward +1 ( index 3(+1) -> index 4 -> index 1 )
+	elseif d == 5 || d == -1
+		@cast arr[j,k,i] := arr[i,j,k] # d==5 => move indices backward -1 ( index 1(-1) -> index 0 -> index 3 )
+	else
+		@cast arr[i,j,k] := arr[i,j,k] # else => identity
+	end
+end
