@@ -1,16 +1,33 @@
-# Documentation: http://docs.travis-ci.com/user/languages/julia/
+Documentation: http://docs.travis-ci.com/user/languages/julia
 language: julia
-os:
-  - linux
-julia:
-  - 1.4
-  - nightly
-after_success:
-  - julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
-  - julia -e 'using Pkg; Pkg.add("Documenter"); using BioMakie; include(joinpath(dirname(pathof(BioMakie)), "..", "docs", "make.jl"))'
 notifications:
   email: false
-matrix:
+julia:
+  - 1.5
+os:
+  - linux
+arch:
+  - x64
+cache:
+  directories:
+    - ~/.julia/artifacts
+jobs:
   allow_failures:
-    - julia: nightly
-    - julia: 1.4
+    - julia: 1.5
+  include:
+  - stage: "Documentation"
+    julia: 1.5
+    os: linux
+    env:
+      ssh: ${{ secrets.DOCUMENTER_KEY }}
+    script:
+      - julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd()));
+                                             Pkg.instantiate()'
+      - julia --project=docs/ docs/make.jl
+  - name: Deploy 🚀
+    uses: JamesIves/github-pages-deploy-action@3.6.2
+    with:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      BRANCH: gh-pages # The branch the action should deploy to.
+      FOLDER: docs # The folder the action should deploy.
+      CLEAN: true # Automatically remove deleted files from the deploy branch
