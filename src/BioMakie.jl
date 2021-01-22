@@ -15,6 +15,7 @@ using MIToS
 using SplitApplyCombine
 using TensorCast
 using GLMakie
+using WGLMakie
 
 include("../data/basicdata.jl")
 include("../data/chemdata.jl")

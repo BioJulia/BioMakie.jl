@@ -9,6 +9,11 @@ end
 Bond(x1::StructuralElement, x2::StructuralElement) = Bond([x1,x2],"1")
 atoms(bond::AbstractTether) = bond.points
 points(tether::AbstractTether) = tether.points
+mutable struct Res{Symbol} <:AbstractResidue
+	parent
+	atoms
+	bonds::Vector{Bond}
+end
 function resbonds(res::AbstractResidue;
 					hres = false)
 	bonds = []
