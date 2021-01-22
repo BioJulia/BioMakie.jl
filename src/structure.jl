@@ -131,7 +131,7 @@ function viewstrucs(strs::AbstractArray{T};
 		svs = [structureview(string(str); dir = dir) for str in strs]
 	end
 
-    sc_scenes = [LScene(scene) for s in strs]
+
     # pdbtexts = [LText(scene, text = uppercase(str); textsize = 35-len) for str in strs]
 	typeof(colors)<:AbstractArray ? colors = Node(colors) : colors = Node([colors])
 

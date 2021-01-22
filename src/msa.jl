@@ -12,14 +12,14 @@ mutable struct MSAView
 	msa
 	annotations
 	matrix
-	scenes
-	layout
+	figure
 end
-MSAView(xs::AbstractArray{Node}) = MSAView(xs..., [], [])
+MSAView(xs::AbstractArray{Node}) = MSAView(xs..., [])
 
 for f in (	:msa,
 			:annotations,
 			:matrix,
+			:figure
 			)
   @eval $(f)(mv::MSAView) = mv.$(f)[]
 end
@@ -35,11 +35,12 @@ Return an MSAView object with Pfam ID `"str"`.
 
 """
 function msaview(   str::String;
-					filetype = Stockholm,
+					filetype = MIToS.Pfam.Stockholm,
 					aligntype = "full")
 
 	id = uppercase(str)
-	msa1 = read("http://pfam.xfam.org/family/$(id)/alignment/$(aligntype)", filetype)
+	pf1 = MIToS.Pfam.downloadpfam("$(id)")
+	msa1 = read("$(id).stockholm.gz", MIToS.Pfam.Stockholm)
 	annotations1 = msa1.annotations.file
 	matrix1 = Matrix(msa1)
 	return MSAView(  map( X->Node(X),
