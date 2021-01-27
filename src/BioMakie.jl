@@ -15,7 +15,7 @@ using MIToS
 using SplitApplyCombine
 using TensorCast
 using GLMakie
-using WGLMakie
+# using WGLMakie
 Node = AbstractPlotting.Node
 
 include("../data/basicdata.jl")

@@ -12,14 +12,13 @@ mutable struct MSAView
 	msa
 	annotations
 	matrix
-	figure
+	figures
 end
 MSAView(xs::AbstractArray{Node}) = MSAView(xs..., [])
-
 for f in (	:msa,
 			:annotations,
 			:matrix,
-			:figure
+			:figures
 			)
   @eval $(f)(mv::MSAView) = mv.$(f)[]
 end
@@ -72,7 +71,7 @@ function viewmsa(str::String;
 	ms = msaview(str)
 	height1 = height
 	width1 = width
-	scene, layout = layoutscene(resolution = resolution)
+	scene, layout = figures(resolution = resolution)
 	ax1 = layout[1:7,3:9] = LAxis(scene)
 	tightlimits!(ax1)
 	labels = ms.msa[].matrix.dicts[1] |> keys |> collect |> Node
