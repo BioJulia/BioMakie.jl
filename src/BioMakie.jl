@@ -16,7 +16,7 @@ using SplitApplyCombine
 using TensorCast
 using GLMakie
 # using WGLMakie
-Node = AbstractPlotting.Node
+Node = GLMakie.Node
 
 include("../data/basicdata.jl")
 include("../data/chemdata.jl")
