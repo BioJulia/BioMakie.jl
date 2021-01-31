@@ -23,6 +23,6 @@ include("../data/chemdata.jl")
 include("../src/utils.jl")
 include("../src/bonds.jl")
 include("../src/structure.jl")
-include("../src/msa.jl")
+# include("../src/msa.jl")
 
 end # BioMakie
