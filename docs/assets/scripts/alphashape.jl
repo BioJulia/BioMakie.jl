@@ -8,6 +8,7 @@ spatial = pyimport_conda("scipy","spatial")
 chull = pyimport_conda("scipy.spatial","ConvexHull")
 skl = pyimport_conda("sklearn", "sklearn")
 
+# the following python function was adapted from an implementation by Pranav Khade
 py"""
     from scipy.spatial import Delaunay
     import numpy as np
