@@ -9,6 +9,8 @@ mutable struct Bond <:AbstractTether
 end
 Bond(atom1::AbstractAtom, atom2::AbstractAtom) = Bond([atom1,atom2],"1")
 atoms(bond::AbstractTether) = bond.atoms
+bonds(residues) = resbonds.(residues; hres = true)
+bondshapes(bonds) = bondshape.(bonds)
 function resbonds(	res::AbstractResidue;
 					hres = false,
 					showmissing = false)
@@ -86,7 +88,7 @@ function resbonds(	res::AbstractResidue;
 			end
 		end
 	end
-	return bonds
+	return bonds |> Array{Bond}
 end
 function backbonebonds(chn::BioStructures.Chain)
 	bbatoms = collectatoms(chn, fullbbselector)

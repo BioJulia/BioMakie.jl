@@ -1,6 +1,7 @@
 *.jl.*.cov
 *.jl.cov
 *.jl.mem
+*.pdb
 .DS_Store
 /Manifest.toml
 /dev/
@@ -9,3 +10,5 @@
 page/__site
 docpage/__site
 _research/
+*.png
+*.gz
