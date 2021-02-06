@@ -150,10 +150,7 @@ function viewstrucs(strs::AbstractArray{T};
 	end
 	display(fig)
 
-    if len == 1
-        return svs[1]
-    end
-	return svs
+	return fig
 end
 """
     viewstruc(str::{String}; kwargs...)
