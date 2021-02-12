@@ -1,6 +1,6 @@
 module BioMakie
 
-export viewstruc, viewmsa, StructureView, MSAView
+export viewstruc
 
 using BioSequences
 using BioStructures
