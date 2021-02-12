@@ -4,21 +4,26 @@ export viewstruc, viewmsa, StructureView, MSAView
 
 using BioSequences
 using BioStructures
-using Colors, ColorSchemes
+using Colors
+using ColorSchemes
 using DataStructures
 using DelimitedFiles
 using Distances
 using Distributions
 using FileIO
+using FastaIO
 using GeometryBasics
-using MIToS
+using MIToS.MSA
+using MIToS.Information
+using MIToS.SIFTS
+using MIToS.PDB
+using MIToS.Pfam
 using SplitApplyCombine
 using TensorCast
 using GLMakie
-# using WGLMakie
+using WGLMakie
 Node = GLMakie.Node
 
-include("../data/basicdata.jl")
 include("../data/chemdata.jl")
 include("../src/utils.jl")
 include("../src/bonds.jl")

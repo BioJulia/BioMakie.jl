@@ -240,25 +240,6 @@ function _stripkeys(dict::AbstractDict)
     return ks
 end
 _stripallkeys(dicts::AbstractArray) =  _stripkeys.(dicts)
-_shuffledims!(arr::AbstractArray{T,1}) where T = arr
-_shuffledims!(arr::AbstractArray{T,2}) where T = @cast arr[j,i] := arr[i,j]
-_shuffledims!(arr::AbstractArray{T,3}; d = 1) where {T}
-	if d == 1
-		@cast arr[i,k,j] := arr[i,j,k] # d==1 => index 1 is held
-	elseif d == 2
-		@cast arr[k,j,i] := arr[i,j,k] # d==2 => index 2 is held
-	elseif d == 3
-		@cast arr[j,i,k] := arr[i,j,k] # d==3 => index 3 is held
-	elseif d == 0
-		@cast arr[i,j,k] := arr[i,j,k] # d==0 => identity
-	elseif d == 4 || d == +1
-		@cast arr[k,i,j] := arr[i,j,k] # d==4 => move indices forward +1 ( index 3(+1) -> index 4 -> index 1 )
-	elseif d == 5 || d == -1
-		@cast arr[j,k,i] := arr[i,j,k] # d==5 => move indices backward -1 ( index 1(-1) -> index 0 -> index 3 )
-	else
-		@cast arr[i,j,k] := arr[i,j,k] # else => identity
-	end
-end
 elecolors = Dict( "C" => :gray,
                   "N" => :blue,
                   "H" => :white,
