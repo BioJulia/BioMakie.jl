@@ -1,16 +1,3 @@
-"""
-	StructureView is an object/container to hold relevant data for convenience.
-
-	All fields except `scene` are `Observables/Nodes`, so they can be easily tracked
-	and used to trigger updates and events.
-
-	Fields:
-		id 				- PDB ID by default
-		chains			- Structure chains
-		residues		- Structure residues
-		atoms			- Structure atoms
-		scene			- The scene showing the structure
-"""
 mutable struct StructureView
 	id
 	chains
@@ -46,18 +33,6 @@ atomcolors(atoms; color = "element") =
 atomradii(atoms) = [vanderwaals[element(x)] for x in atoms]
 resids(residues) = resid.(residues)
 resatoms(residues) = BioStructures.atoms.(residues)
-
-"""
-    structureview(prot::ProteinStructure; kwargs...)
-
-Return a StructureView object for `prot`.
-
-### Optional Arguments:
-- dir (String)         				- Directory for PDB structure
-- select (BioStructures selector) 	- Selector to use, default = :standardselector
-- model	(Int)						- Structure model, default = 1
-
-"""
 function structureview( prot::ProteinStructure;
 						dir = "",
 						select = :standardselector,
@@ -75,18 +50,6 @@ function structureview( prot::ProteinStructure;
 							  	  atoms1
 								]))
 end
-
-"""
-    structureview(str::String; kwargs...)
-
-Return a StructureView object with PDB ID `"str"`.
-
-### Optional Arguments:
-- dir (String)         				- Directory for PDB structure
-- select (BioStructures selector) 	- Selector to use, default = :standardselector
-- model	(Int)						- Structure model, default = 1
-
-"""
 function structureview( str::String;
 						dir = "",
 						select = :standardselector,
@@ -100,19 +63,6 @@ function structureview( str::String;
 
 	return error("something wrong with the `structureview` input")
 end
-
-"""
-    viewstrucs(strs::AbstractArray{String}; kwargs...)
-
-Visualize all structures in the array `strs`.
-
-### Optional Arguments:
-- dir (String)         	- Directory of PDB structure, default `""`
-- show_bonds (Boolean) 	- To display bonds, default `true`
-- show_id (Boolean) 	- To display id, default `true`
-- color (String)       	- Color set for atoms, default `"element"`
-
-"""
 function viewstrucs(strs::AbstractArray{T};
 					dir = "",
 					show_bonds = true,
@@ -152,17 +102,6 @@ function viewstrucs(strs::AbstractArray{T};
 
 	return fig
 end
-"""
-    viewstruc(str::{String}; kwargs...)
-
-Visualize structure with PDB ID `"str"`.
-
-### Optional Arguments:
-- dir (String)         - Directory of PDB structure, default `"../data/PDB"`
-- showbonds (Boolean)  - To display bonds, default `true`
-- color (String)       - Color set for atoms, default `"element"`
-
-"""
 viewstruc(str::String; kwargs...) = viewstrucs([str]; kwargs...)
 viewstruc(stv::StructureView; kwargs...) = viewstrucs([stv]; kwargs...)
 viewstruc(stv::ProteinStructure; kwargs...) = viewstrucs([stv]; kwargs...)
