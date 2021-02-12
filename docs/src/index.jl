@@ -3,7 +3,7 @@
 #md # ```
 # # BioMakie
 
-# A user interface for bioinformatics.
+# User interface tools for bioinformatics.
 
 # ## Description
 
