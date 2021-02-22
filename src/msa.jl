@@ -1,13 +1,21 @@
 function viewmsa(   msa::AbstractMultipleSequenceAlignment;
-					sheetsize = [40,20]
+					sheetsize = [40,20],
+					resolution = (1500, 600)
 				)
 
 	width1 = sheetsize[1]
 	height1 = sheetsize[2]
 
-	fig = Figure()
+	if AbstractPlotting.current_backend[] == GLMakie.GLBackend()
+		Slider = GLMakie.Slider
+	elseif AbstractPlotting.current_backend[] == WGLMakie.WGLBackend()
+		Slider = JSServe.Slider
+	else
+		error("problem with AbstractPlotting backend")
+	end
 
 	# set the scene
+	fig = Figure(resolution = resolution)
 	ax1 = Axis(fig[1:7,3:9])
 	tightlimits!(ax1)
 	labels = msa.matrix.dicts[1] |> keys |> collect |> Node
@@ -18,29 +26,28 @@ function viewmsa(   msa::AbstractMultipleSequenceAlignment;
 	numsrange = @lift 1:1:$numssize
 
 	# sliders
-
-	sl1 = GLMakie.Slider(fig[end+1,3:9], range = numsrange, startvalue = 1)
+	sl1 = Slider(fig[end+1,3:9], range = numsrange, startvalue = 1)
 	sl1.value = 1
-	sl2 = GLMakie.Slider(fig[1:7,10], range = labelsrange, startvalue = 1, horizontal = false,
+	sl2 = Slider(fig[1:7,10], range = labelsrange, startvalue = 1, horizontal = false,
 		tellwidth = true, height = nothing)
 	sl2.value = labelssize[]
 
 	# menu 1
-	menutext1 = GLMakie.Label(fig[1,1:2], "colors:")
+	menutext1 = Label(fig[1,1:2], "colors:")
 	clrdict = Dict("viridis" => :viridis,
 				   "redblue" => :RdBu)
 	menu1 = Menu(fig[2,1:2], options = ["viridis", "redblue"], startvalue = "viridis")
 	menu1.selection = "viridis"
 
 	# menu 2
-	menutext2 =  GLMakie.Label(fig[3,1:2], "colorscheme:")
+	menutext2 = Label(fig[3,1:2], "colorscheme:")
 	clrscheme = Dict("size" => 2,
 					 "hydrophobicity" => 4)
 	menu2 = Menu(fig[4,1:2], options = ["size", "hydrophobicity"], startvalue = "size")
 	menu2.selection = "size"
 
 	# main title
-	title1 = GLMakie.Label(fig[0,2:3], "$(uppercase(str)): $(msa1.annotations.file["DE"])")
+	title1 = Label(fig[0,2:3], "$(uppercase(msa1.annotations.file["AC"])): $(msa1.annotations.file["DE"])")
 
 	# making data Nodes
 	strmsa = Matrix(msa) .|> string
