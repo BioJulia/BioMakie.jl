@@ -8,7 +8,7 @@ pstruc1 = viewstruc("2VB1")
 # ## Multiple sequence alignments
 
 # You can similarly load a Multiple Sequence Alignment from the Pfam database:
-msa1 = viewmsa("PF00062") 
+msa1 = viewmsa("PF00062")
 
 #md # ![](msa1.svg)
 #md # ![Image of msa](pf00062.png)

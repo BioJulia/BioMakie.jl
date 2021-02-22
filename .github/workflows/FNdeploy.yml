@@ -13,7 +13,7 @@ jobs:
           persist-credentials: false
       - name: Install SSH Client
         continue-on-error: true
-        uses: webfactory/ssh-agent@v0.4.1
+        uses: webfactory/ssh-agent@v0.5.0
         with:
           ssh-private-key: ${{ secrets.FRANKLIN_PRIV }}
       - name: Install dependencies
@@ -24,7 +24,7 @@ jobs:
         run: julia --project=docs/ docs/make.jl
 
       - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@3.7.1
+        uses: JamesIves/github-pages-deploy-action@4.0.0
         with:
           SSH: true
           BRANCH: gh-pages
