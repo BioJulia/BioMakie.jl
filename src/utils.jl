@@ -23,6 +23,12 @@ function varcall(name::String, body::Any)
     @eval (($name) = ($body))
 	return Symbol(name)
 end
+function collectkeys(args)
+    return keys(args) |> collect
+end
+function collectvals(args)
+    return values(args) |> collect
+end
 function reversekv(dict::AbstractDict{K,V}; print = false) where {K,V}
 	vkdict = [x[2].=>x[1] for x in dict]
 	if print == true
@@ -30,6 +36,17 @@ function reversekv(dict::AbstractDict{K,V}; print = false) where {K,V}
 	end
 	return OrderedDict{V,K}(vkdict)
 end
+pdbS(x; kwargs...) = try
+        retrievepdb(x; kwargs...)
+    catch
+        println("$(x) doesn't work, sorry")
+    end
+pdbM(x; model = "1", group = "ATOM", kwargs...) = try
+        read("$pdbdir\\$(x).pdb", MIToS.PDB.PDBFile, model = "1", group = "ATOM", kwargs...)
+    catch
+        pdbS(x; kwargs...)
+    end
+anynan(x) = any(isnan.(x))
 dfr(x) = DataFrame(x)
 dfr(xs...) = DataFrame(xs...)
 indexshift(idxs, shift=1.0) = try
