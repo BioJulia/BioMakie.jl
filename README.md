@@ -16,13 +16,13 @@ julia> using BioMakie
 
 ## Usage
 
-To view a PDB structure, use the `viewstruc` function with a PDB ID. The following code plots the structure then returns a StructureView with the scene and layout.
+To view a PDB structure, use the `viewstruc` function with a PDB ID. 
 ```julia
 julia> sv = viewstruc("2VB1")
 ```
 ![Image of struc](https://github.com/kool7d/BioMakie.jl/blob/master/docs/assets/2vb1.png)
 
-To view a multiple sequence alignment, use the `viewmsa` function with a Pfam ID (fasta coming soon).
+To view a multiple sequence alignment, use the `viewmsa` function with a Pfam ID.
 ```julia
 julia> mv = viewmsa("PF00062")
 ```
