@@ -1,6 +1,6 @@
 module BioMakie
 
-export viewstruc
+export viewstruc, viewmsa
 
 using BioSequences
 using BioStructures
@@ -14,7 +14,7 @@ using Distributions
 using FileIO
 using FastaIO
 using GeometryBasics
-using JSServe
+# using JSServe
 using MIToS
 using MIToS.MSA
 using MIToS.Information
@@ -25,13 +25,13 @@ using MIToS.Utils
 using OrderedCollections
 using SplitApplyCombine
 using TensorCast
-# using GLMakie
-using WGLMakie
+using GLMakie
+# using WGLMakie
 
 include("../data/chemdata.jl")
 include("../src/utils.jl")
 include("../src/bonds.jl")
 include("../src/structure.jl")
-# include("../src/msa.jl")
+include("../src/msa.jl")
 
 end # BioMakie
