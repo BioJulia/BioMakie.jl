@@ -12,12 +12,10 @@ User interface tools for bioinformatics.
 # Description
 
 BioMakie.jl is a package designed to facilitate visual investigation of biological
-data. It aims to provide extra tools to view and measure differences between data
-of such things as protein structures and sequences.
+data. It provides some extra tools to view data of structures and sequences.
 
 BioMakie utilizes other packages in the BioJulia ecosystem like BioStructures.jl,
-and outside packages like MIToS.jl to perform comparisons, load data, and to do
-most of the computation/numerical analysis. Makie `Node` objects can contain data
+and outside packages like MIToS.jl. Makie `Node` objects can contain data
 and be tracked. This is useful for interactivity and synchronization.
 
 For more examples of what Makie can do, visit the documentation at

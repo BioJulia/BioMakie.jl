@@ -44,11 +44,9 @@ width1 = 40
 height1 = 20
 resolution1 = (1500, 600)
 fig = Figure(resolution = resolution1)
-fig |> display
 
 # set the scene
-fig, scene, layout = figures(resolution = resolution)
-ax1 = layout[1:7,3:9] = LAxis(scene)
+ax1 = layout[1:7,3:9] = Axis(fig[1:7,3:9],resolution = resolution1)
 tightlimits!(ax1)
 labels = msa1.matrix.dicts[1] |> keys |> collect |> Node
 nums = msa1.matrix.dicts[2] |> keys |> collect |> Node
