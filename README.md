@@ -21,8 +21,6 @@ To view a PDB structure, use the `viewstruc` function with a PDB ID. The followi
 julia> sv = viewstruc("2VB1")
 ```
 ![Image of struc](https://github.com/kool7d/BioMakie.jl/blob/master/docs/assets/2vb1.png)
-```
-![Image of strucs](https://github.com/kool7d/BioMakie.jl/blob/master/docs/assets/2strucs.png)
 
 To view a multiple sequence alignment, use the `viewmsa` function with a Pfam ID (fasta coming soon).
 ```julia
