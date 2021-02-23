@@ -47,7 +47,7 @@ function viewmsa(   msa::AbstractMultipleSequenceAlignment;
 	menu2.selection = "size"
 
 	# main title
-	title1 = Label(fig[0,2:3], "$(uppercase(msa1.annotations.file["AC"])): $(msa.annotations.file["DE"])")
+	title1 = Label(fig[0,2:3], "$(uppercase(msa.annotations.file["AC"])): $(msa.annotations.file["DE"])")
 
 	# making data Nodes
 	strmsa = Matrix(msa) .|> string
