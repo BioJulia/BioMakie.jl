@@ -8,9 +8,9 @@
 
 This package is a set of interactive biological visualizations with Makie.
 This package is **in development** and will **break often**.
-
+If you want to test it out use `add BioMakie#master` instead of `add BioMakie` for the moment.
 ```julia
-julia> ] add BioMakie
+julia> ] add BioMakie#master
 julia> using BioMakie
 ```
 
