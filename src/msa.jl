@@ -47,7 +47,7 @@ function viewmsa(   msa::AbstractMultipleSequenceAlignment;
 	menu2.selection = "size"
 
 	# main title
-	title1 = Label(fig[0,2:3], "$(uppercase(msa1.annotations.file["AC"])): $(msa1.annotations.file["DE"])")
+	title1 = Label(fig[0,2:3], "$(uppercase(msa1.annotations.file["AC"])): $(msa.annotations.file["DE"])")
 
 	# making data Nodes
 	strmsa = Matrix(msa) .|> string
@@ -113,7 +113,7 @@ function viewmsa(   msa::AbstractMultipleSequenceAlignment;
 	return fig
 end
 function viewmsa(str::String; kwargs...)
-	pf1 = MIToS.Pfam.downloadpfam(str)
+	MIToS.Pfam.downloadpfam(str)
 	msa1 = read("$(str).stockholm.gz", Stockholm; generatemapping = true)
 	return viewmsa(msa1; kwargs...)
 end
