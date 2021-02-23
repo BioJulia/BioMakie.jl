@@ -6,8 +6,8 @@
 
 ## Installation and Setup
 
-This package is a set of interactive biological visualizations with Makie.
-This package is **in development** and will **break often**.
+This package contains interactive biological visualizations and using Makie.
+This package is **in development** and not yet "production ready".
 If you want to test it out use `add BioMakie#master` instead of `add BioMakie` for the moment.
 ```julia
 julia> ] add BioMakie#master
