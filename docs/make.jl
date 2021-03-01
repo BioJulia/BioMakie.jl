@@ -15,4 +15,5 @@ makedocs(
 deploydocs(
     repo = "github.com/kool7d/BioMakie",
     branch = "gh-pages",
-    target = "docs")
+    target = "build"
+    )

@@ -1,14 +1,19 @@
-# # Proteins
+# Proteins
 
-# ## Structures
+## Structures
 
-# You can load a Protein Structure from the PDB (Protein Data Bank):
+You can load a Protein Structure from the PDB (Protein Data Bank):
+
+```@example proteins
 pstruc1 = viewstruc("2VB1")
+```
 
-# ## Multiple sequence alignments
+## Multiple sequence alignments
 
-# You can similarly load a Multiple Sequence Alignment from the Pfam database:
+You can similarly load a Multiple Sequence Alignment from the Pfam database:
+```@example proteins
 msa1 = viewmsa("PF00062")
+```
 
 #md # ![](msa1.svg)
 #md # ![Image of msa](pf00062.png)
