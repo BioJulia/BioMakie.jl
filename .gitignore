@@ -5,9 +5,9 @@
 .DS_Store
 /Manifest.toml
 /dev/
-/docs/build/
 /docs/site/
 /docs/src/
+/docs/build/
 page/__site
 docpage/__site
 _research/
