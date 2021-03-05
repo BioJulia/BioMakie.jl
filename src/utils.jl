@@ -30,10 +30,6 @@ function collectvals(args)
     return values(args) |> collect
 end
 function reversekv(dict::AbstractDict{K,V}) where {K,V}
-    vkdict = [x[2].=>x[1] for x in dict]
-	return Dict{V,K}(vkdict)
-end
-function reversekv(dict::AbstractDict{K,V}) where {K,V}
 	vkdict = [x[2].=>x[1] for x in dict]
     if typeof(dict) <: OrderedDict
         return OrderedDict{V,K}(vkdict)
