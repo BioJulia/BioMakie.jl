@@ -1,5 +1,3 @@
-using Pkg
-Pkg.add("Documenter")
 using Documenter, BioMakie
 
 makedocs(
@@ -9,11 +7,9 @@ makedocs(
     clean   = true,
     format = Documenter.HTML(),
     pages = ["Home" => "index.md",
-            "Proteins" => "proteins.md",
-            "API" => "API.md"])
+            "Proteins" => "proteins.md"])
 
 deploydocs(
     repo = "github.com/kool7d/BioMakie",
     branch = "gh-pages",
-    target = "build"
-    )
+    target = "build")
