@@ -5,9 +5,7 @@ makedocs(
     modules = [BioMakie],
     build   = "build",
     clean   = true,
-    format = Documenter.HTML(),
-    pages = ["Home" => "index.md",
-            "Proteins" => "proteins.md"])
+    format = Documenter.HTML())
 
 deploydocs(
     repo = "github.com/kool7d/BioMakie",
