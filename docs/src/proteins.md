@@ -32,3 +32,8 @@ surface(
     colormap = :Spectral
 )
 ```
+
+```@example 1
+using BioMakie
+viewstruc("2vb1")
+```
