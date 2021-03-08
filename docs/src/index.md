@@ -4,10 +4,6 @@ CurrentModule = BioMakie
 
 # BioMakie
 
-## Biological data utilities for <a href = "https://www.github.com/JuliaPlots/Makie.jl"><img src="https://raw.githubusercontent.com/JuliaPlots/Makie.jl/master/assets/logo.png" alt="Makie.jl" height="30" align = "top"></a>
-
-[![Build Status](https://travis-ci.com/kool7d/BioMakie.jl.svg?branch=master)](https://travis-ci.com/kool7d/BioMakie.jl)
-
 ## Installation and Setup
 
 This package contains interactive biological visualizations and using Makie.
