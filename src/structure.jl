@@ -40,7 +40,7 @@ function viewstruc( struc::T;
 					show_bonds = true,
 					show_id = true,
 					id_size = 25,
-					selectors = :standardselector,
+					selectors = [standardselector,calphaselector],
 					atmcolors = "element"
 					) where {T}
     if !(T<:Node)
@@ -50,7 +50,7 @@ function viewstruc( struc::T;
             struc = Node(struc)
         end
     end
-    atms = @lift BioStructures.collectatoms($struc,standardselector)
+    atms = @lift BioStructures.collectatoms($struc,selectors...)
     atmcords = @lift atomcoords($atms)
     colr = lift(X->atomcolors(X; color = atmcolors),atms)
     marksize = lift(X->(1/3).*atomradii(X),atms)
@@ -58,7 +58,7 @@ function viewstruc( struc::T;
     ly = fig[2:10,1]
     plt = meshscatter(ly, atmcords; show_axis = false, color = colr, markersize = marksize)
     if show_bonds == true
-        shps = @lift bondshapes.(bonds(collectresidues($struc,standardselector))) |> collectbondshapes
+        shps = @lift bondshapes.(bonds(collectresidues($struc,selectors...))) |> collectbondshapes
         bnds = @lift normal_mesh.($shps)
         mesh!(ly, bnds, color = RGBAf0(0.5,0.5,0.5,0.8))
     end
@@ -78,3 +78,7 @@ function viewstruc( struc::T;
     end
     fig
 end
+
+# using GLMakie
+
+sv = viewstruc("2vb1")
