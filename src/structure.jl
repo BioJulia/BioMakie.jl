@@ -35,6 +35,15 @@ function resatoms(res; typ = :OrderedDict)
 	end
 	return res
 end
+"""
+    viewstruc(args)
+
+Create and return a Makie Figure for a PDB structure.
+# Examples
+```julia
+sv = viewstruc("2VB1")
+```
+"""
 function viewstruc( struc::T;
 					dir = "",
 					show_bonds = true,
