@@ -35,12 +35,21 @@ function resatoms(res; typ = :OrderedDict)
 	end
 	return res
 end
+"""
+    viewstruc(args)
+
+Create and return a Makie Figure for a PDB structure.
+# Examples
+```julia
+sv = viewstruc("2VB1")
+```
+"""
 function viewstruc( struc::T;
 					dir = "",
 					show_bonds = true,
 					show_id = true,
 					id_size = 25,
-					selectors = :standardselector,
+					selectors = [standardselector],
 					atmcolors = "element"
 					) where {T}
     if !(T<:Node)
@@ -50,7 +59,7 @@ function viewstruc( struc::T;
             struc = Node(struc)
         end
     end
-    atms = @lift BioStructures.collectatoms($struc,standardselector)
+    atms = @lift BioStructures.collectatoms($struc,selectors...)
     atmcords = @lift atomcoords($atms)
     colr = lift(X->atomcolors(X; color = atmcolors),atms)
     marksize = lift(X->(1/3).*atomradii(X),atms)

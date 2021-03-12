@@ -91,13 +91,13 @@ function resbonds(	res::AbstractResidue;
 	return bonds |> Array{Bond}
 end
 function backbonebonds(chn::BioStructures.Chain)
-	bbatoms = collectatoms(chn, fullbbselector)
+	bbatoms = collectatoms(chn, backboneselector)
 	bbkeys = collect(keys(bbatoms))
 	bonds = []
 	for i = 1:(size(bbkeys,1)-1)
 		firstatomname = bbkeys[i]
 		secondatomname = bbkeys[i+1]
-		println("$(bbkeys[i])")
+		# println("$(bbkeys[i])")
 		firstatomname == " N  " && secondatomname == " CA " && push!(bonds, Bond(bbatoms[i], bbatoms[i+1]))
 		firstatomname == " CA " && secondatomname == " C  " && push!(bonds, Bond(bbatoms[i], bbatoms[i+1]))
 		firstatomname == " C  " && secondatomname == " O  " && push!(bonds, Bond(bbatoms[i], bbatoms[i+1]),"1.5")

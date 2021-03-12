@@ -29,12 +29,12 @@ end
 function collectvals(args)
     return values(args) |> collect
 end
-function reversekv(dict::AbstractDict{K,V}; print = false) where {K,V}
+function reversekv(dict::AbstractDict{K,V}) where {K,V}
 	vkdict = [x[2].=>x[1] for x in dict]
-	if print == true
-		println.(vkdict)
-	end
-	return OrderedDict{V,K}(vkdict)
+    if typeof(dict) <: OrderedDict
+        return OrderedDict{V,K}(vkdict)
+    end
+	return Dict{V,K}(vkdict)
 end
 pdbS(x; kwargs...) = try
         retrievepdb(x; kwargs...)
@@ -85,34 +85,32 @@ function kdict(str::String)
     end
 end
 kdict(c::Char) = kdict(string(c))
-function steprange(arr::AbstractArray{T,1}; step = 1) where {T<:Real}
-    start_value = arr[1]
-    end_value = arr[end]
-	start_value == end_value && error("the start and end points are the same value")
-    for i in 1:size(arr,1)
-        if i == 1
-            step = arr[i+1] - arr[i]
-        end
-        if arr[i]-arr[i-1] != step
-            error("inconsistent step for step range")
-        end
-    end
-    return StepRange(min_value,step,max_value)
-end
-function unitrange(arr::AbstractArray{T,1}) where {T<:Int}
+function unitrange(arr::AbstractVector{T}) where {T<:Int}
     start_value = arr[1]
     end_value = arr[end]
     end_value == start_value && error("the start and end points are the same value")
 	end_value < start_value && error("the last value is lower than the first")
-    for i in 1:size(arr,1)
-        if i == 1
-            step = arr[i+1] - arr[i]
-        end
+    for i in 2:size(arr,1)
         if arr[i]-arr[i-1] != 1
             error("inconsistent step for unit range")
         end
     end
     return UnitRange(start_value,end_value)
+end
+function steprange(arr::AbstractVector{T}) where {T<:Real}
+    start_value = arr[1]
+    end_value = arr[end]
+	start_value == end_value && error("the start and end points are the same value")
+    step = 1
+    for i in 2:size(arr,1)
+        if i == 2
+            step = arr[i]-arr[i-1]
+        end
+        if arr[i]-arr[i-1] != step
+            error("inconsistent step for step range")
+        end
+    end
+    return StepRangeLen(start_value,step,length(arr))
 end
 splatrange(range) = [(range...)]
 function splatranges(ranges...)

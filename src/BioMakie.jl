@@ -2,7 +2,7 @@ module BioMakie
 
 export viewstruc, viewmsa
 
-using BioSequences
+# using BioSequences
 using BioStructures
 using Colors
 using ColorSchemes

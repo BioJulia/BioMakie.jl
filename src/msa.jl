@@ -1,3 +1,12 @@
+"""
+    viewmsa(args)
+
+Create and return a Makie Figure for a Pfam MSA
+# Examples
+```julia
+vm = viewmsa("PF00062")
+```
+"""
 function viewmsa(   msa::AbstractMultipleSequenceAlignment;
 					sheetsize = [40,20],
 					resolution = (1500, 600)
@@ -6,13 +15,13 @@ function viewmsa(   msa::AbstractMultipleSequenceAlignment;
 	width1 = sheetsize[1]
 	height1 = sheetsize[2]
 
-	if AbstractPlotting.current_backend[] == GLMakie.GLBackend()
-		Slider = GLMakie.Slider
-	elseif AbstractPlotting.current_backend[] == WGLMakie.WGLBackend()
-		Slider = JSServe.Slider
-	else
-		error("problem with AbstractPlotting backend")
-	end
+	# if AbstractPlotting.current_backend[] == GLMakie.GLBackend()
+	# 	Slider = GLMakie.Slider
+	# elseif AbstractPlotting.current_backend[] == WGLMakie.WGLBackend()
+	# 	Slider = JSServe.Slider
+	# else
+	# 	error("problem with AbstractPlotting backend")
+	# end
 
 	# set the scene
 	fig = Figure(resolution = resolution)
@@ -47,7 +56,7 @@ function viewmsa(   msa::AbstractMultipleSequenceAlignment;
 	menu2.selection = "size"
 
 	# main title
-	title1 = Label(fig[0,2:3], "$(uppercase(msa1.annotations.file["AC"])): $(msa1.annotations.file["DE"])")
+	title1 = Label(fig[0,2:3], "$(uppercase(msa.annotations.file["AC"])): $(msa.annotations.file["DE"])")
 
 	# making data Nodes
 	strmsa = Matrix(msa) .|> string
@@ -113,7 +122,7 @@ function viewmsa(   msa::AbstractMultipleSequenceAlignment;
 	return fig
 end
 function viewmsa(str::String; kwargs...)
-	pf1 = MIToS.Pfam.downloadpfam(str)
+	MIToS.Pfam.downloadpfam(str)
 	msa1 = read("$(str).stockholm.gz", Stockholm; generatemapping = true)
 	return viewmsa(msa1; kwargs...)
 end
