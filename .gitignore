@@ -6,11 +6,9 @@
 /Manifest.toml
 /dev/
 /docs/site/
-
 /docs/build/
 page/__site
 docpage/__site
 _research/
-*.png
 *.gz
 *.msa
