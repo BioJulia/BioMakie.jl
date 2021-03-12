@@ -1,57 +1,29 @@
 ```@meta
-EditURL = "https://github.com/kool7d/BioMakie.jl/blob/master/src/index.jl"
-```
-
-```@meta
 CurrentModule = BioMakie
 ```
+
 # BioMakie
 
-A user interface for bioinformatics.
+## Installation and Setup
 
-## Description
-
-BioMakie.jl is a package designed to facilitate visual investigation of biological
-data. It aims to provide extra tools to view and measure differences between data
-of such things as protein structures and sequences. If you have ever been staring
-at a command line or a REPL thinking about how much easier it would be if you had
-some graphical controls, then maybe BioMakie can be of some help!
-
-BioMakie utilizes other packages in the BioJulia ecosystem like BioStructures.jl,
-and outside packages like MIToS.jl to perform comparisons, load data, and to do
-most of the computation/numerical analysis. Makie `Node` objects can contain data
-and be tracked. Any changes or updates to the data inside these `Node`s will be
-heard by the `Node` and this can drive event chains that update many interdependent
-values and their graphical representations immediately.
-
-For more examples of what Makie can do, visit the documentation at
-https://makie.juliaplots.org/stable/
-
-## Setup
-
-```@example index
-# in the REPL
-]add BioMakie
-
-# elsewhere
-using Pkg
-Pkg.add("BioMakie")
-
-# import the package
-using BioMakie
+This package contains interactive biological visualizations and using Makie.
+This package is **in development** and not yet "production ready".
+If you want to test it out use `add BioMakie#master` instead of `add BioMakie` for the moment.
+```julia
+julia> ] add BioMakie#master
+julia> using BioMakie
 ```
 
-## Basic Usage
+## Usage
 
-To view a PDB structure, use the `viewstruc` function with a PDB ID. The following code plots the structure then returns a StructureView with the scene and layout.
-
-```@example index
-sv = viewstruc("2VB1")
+To view a PDB structure, use the `viewstruc` function with a PDB ID.
+```julia
+julia> sv = viewstruc("2VB1")
 ```
-![Image of struc](../assets/2vb1.png)
+![Image of struc](https://github.com/kool7d/BioMakie.jl/blob/master/docs/assets/2vb1.png)
 
-![Image of strucc](2vb1.png)
-
----
-
-*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
+To view a multiple sequence alignment, use the `viewmsa` function with a Pfam ID.
+```julia
+julia> mv = viewmsa("PF00062")
+```
+![Image of msa](https://github.com/kool7d/BioMakie.jl/blob/master/docs/assets/pf00062.png)

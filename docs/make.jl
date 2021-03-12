@@ -1,18 +1,12 @@
-using Pkg
-Pkg.add("Documenter")
 using Documenter, BioMakie
 
-makedocs(
+makedocs(repo = "github.com/kool7d/BioMakie",
     sitename = "BioMakie",
     modules = [BioMakie],
     build   = "build",
     clean   = true,
     format = Documenter.HTML(),
-    pages = ["Home" => "index.md",
-            "Proteins" => "proteins.md",
-            "API" => "API.md"])
+    pages = Any["Home" => "index.md",
+                "Proteins" => "proteins.md"])
 
-deploydocs(
-    repo = "github.com/kool7d/BioMakie",
-    branch = "gh-pages",
-    target = "docs")
+deploydocs(repo = "github.com/kool7d/BioMakie")
