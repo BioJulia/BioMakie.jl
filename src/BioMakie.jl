@@ -14,6 +14,7 @@ using Distributions
 using FileIO
 using FastaIO
 using GeometryBasics
+using GLMakie
 # using JSServe
 using MIToS
 using MIToS.MSA
@@ -25,7 +26,6 @@ using MIToS.Utils
 using OrderedCollections
 using SplitApplyCombine
 using TensorCast
-using GLMakie
 # using WGLMakie
 
 include("../data/chemdata.jl")

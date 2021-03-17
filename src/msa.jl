@@ -1,7 +1,7 @@
 """
     viewmsa(args)
 
-Create and return a Makie Figure for a Pfam MSA
+Create and return a Makie Figure for a Pfam MSA.
 # Examples
 ```julia
 vm = viewmsa("PF00062")
