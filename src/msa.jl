@@ -7,7 +7,7 @@ Create and return a Makie Figure for a Pfam MSA.
 vm = viewmsa("PF00062")
 ```
 """
-function viewmsa(   msa::AbstractMultipleSequenceAlignment;
+function viewmsa(   msa::MSA.AbstractMultipleSequenceAlignment;
 					sheetsize = [40,20],
 					resolution = (1500, 600)
 				)

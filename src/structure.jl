@@ -63,7 +63,7 @@ function viewstruc( struc::T;
     atmcords = @lift atomcoords($atms)
     colr = lift(X->atomcolors(X; color = atmcolors),atms)
     marksize = lift(X->(1/3).*atomradii(X),atms)
-    fig = Figure()
+    fig = Figure(resolution = (800,800))
     ly = fig[2:10,1]
     plt = meshscatter(ly, atmcords; show_axis = false, color = colr, markersize = marksize)
     if show_bonds == true

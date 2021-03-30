@@ -4,31 +4,16 @@ export viewstruc, viewmsa
 
 # using BioSequences
 using BioStructures
-using Colors
-using ColorSchemes
-using DataStructures
-using DataFrames
-using DelimitedFiles
-using Distances
-using Distributions
-using FileIO
-using FastaIO
-using GeometryBasics
-using GLMakie
-# using JSServe
+using Colors, ColorSchemes
+using DataStructures, DataFrames, DelimitedFiles
+using Distances, Distributions
+using FileIO, FastaIO, OrderedCollections, SplitApplyCombine, TensorCast
+using GeometryBasics, GLMakie
+# using JSServe, WGLMakie
 using MIToS
-using MIToS.MSA
-using MIToS.Information
-using MIToS.SIFTS
-using MIToS.PDB
-using MIToS.Pfam
-using MIToS.Utils
-using OrderedCollections
-using SplitApplyCombine
-using TensorCast
-# using WGLMakie
+using Phylo
 
-include("../data/chemdata.jl")
+include("../src/chemdata.jl")
 include("../src/utils.jl")
 include("../src/bonds.jl")
 include("../src/structure.jl")
