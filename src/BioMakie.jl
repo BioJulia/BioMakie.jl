@@ -12,6 +12,7 @@ using GeometryBasics, GLMakie
 # using JSServe, WGLMakie
 using MIToS
 using Phylo
+Node = GLMakie.Node
 
 include("../src/chemdata.jl")
 include("../src/utils.jl")
