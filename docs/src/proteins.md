@@ -1,6 +1,6 @@
-```@meta
+<!-- ```@meta
 EditURL = "https://github.com/kool7d/BioMakie.jl/blob/master/src/proteins.jl"
-```
+``` -->
 ```@example 1
 using BioMakie
 Page(exportable=true, offline=true)
