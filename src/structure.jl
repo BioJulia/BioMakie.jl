@@ -43,6 +43,14 @@ Create and return a Makie Figure for a PDB structure.
 ```julia
 sv = viewstruc("2VB1")
 ```
+```julia
+struc = retrievepdb("2vb1", dir = "data\\")
+sv = viewstruc(struc)
+```
+```julia
+struc = read("data\\2vb1_mutant1.pdb", BioStructures.PDB)
+sv = viewstruc(struc)
+```
 """
 function viewstruc( struc::T;
 					dir = "",
