@@ -15,6 +15,12 @@ struc = read("data\\2vb1_m1.pdb", BioStructures.PDB)
 sv = viewstruc(struc)
 ```
 ![Image of struc](docs/assets/2vb1.png)
+![Image of struc](../2vb1.png)
+![Image of struc](./2vb1.png)
+![Image of struc](../assets/2vb1.png)
+![Image of struc](./assets/2vb1.png)
+![Image of struc](../docs/assets/2vb1.png)
+![Image of struc](./docs/assets/2vb1.png)
 
 To view a multiple sequence alignment, use the `viewmsa` function with a Pfam ID or fasta file.
 ```julia
