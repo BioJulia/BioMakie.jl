@@ -73,7 +73,6 @@ Phylo = "0.4"
 SplitApplyCombine = "1.1"
 TableTraitsUtils = "1.0"
 TensorCast = "0.3, 0.4"
-WGLMakie = "0.3"
 julia = "1"
 
 [extras]
