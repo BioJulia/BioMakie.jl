@@ -75,7 +75,7 @@ Pluto = "0.12"
 PlutoUI = "0.7"
 SplitApplyCombine = "1.1"
 TableTraitsUtils = "1.0"
-TensorCast = "0.3"
+TensorCast = "0.3, 0.4"
 WGLMakie = "0.3"
 julia = "1"
 
