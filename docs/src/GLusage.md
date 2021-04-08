@@ -25,4 +25,4 @@ mv = viewmsa("PF00062")
 ```julia
 mv = viewmsa("data/fasta1.fas")
 ```
-![Image of msa](./assets/pf00062.png)
+![Image of msa](../assets/pf00062.png)
