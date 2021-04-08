@@ -120,12 +120,6 @@ function splatranges(ranges...)
     end
     return eval([Int64.(splattedrange)...])
 end
-carbonselector(at) = element(at) in ("C","CA","CB")
-nitroselector(at) = element(at) == "N"
-nothydrogenselector(at) = element(at) != "H"
-fullbbselector(at) = atomname(at) ∈ ("N","CA","C","O")
-sidechainselector(at) = !fullbbselector(at)
-resselector(at, res = "GLY") = resname(at) == "$res"
 function internaldistances(atms::AbstractVector{AbstractAtom})
     internaldists = zeros(Float64, (size(atms,1),size(atms,1)))
     for (i,x) in enumerate(atms)
@@ -325,3 +319,55 @@ kideradict = Dict(
     "GLX" => [-0.96,0.215,-0.77,1.135,-0.105,0.495,0.44,-0.165,-0.19,-1.225],
     "XAA" => [0,0,0,0,0,0,0,0,0,0],
     "XLE" => [-0.885,-0.08,0.775,-0.935,-0.545,-1.01,0.065,-0.125,0.555,-0.425] )
+kdict2 = Dict(
+    "A" => [-1.67],
+    "R" => [1.27],
+    "N" => [-0.07],
+    "D" => [-0.22],
+    "C" => [-0.89],
+    "Q" => [0.24],
+    "E" => [0.19],
+    "G" => [-1.96],
+    "H" => [0.52],
+    "I" => [-0.16],
+    "L" => [0],
+    "K" => [0.82],
+    "M" => [0.18],
+    "F" => [0.98],
+    "P" => [-0.33],
+    "S" => [-1.08],
+    "T" => [-0.7],
+    "W" => [2.1],
+    "Y" => [1.48],
+    "V" => [-0.71],
+    "B" => [-0.145],
+    "Z" => [0.215],
+    "X" => [0],
+    "J" => [-0.08],
+    "-" => [0],
+    "*" => [0],
+    "." => [0],
+	"ALA" => [-1.67],
+    "ARG" => [1.27],
+    "ASN" => [-0.07],
+    "ASP" => [-0.22],
+    "CYS" => [-0.89],
+    "GLN" => [0.24],
+    "GLU" => [0.19],
+    "GLY" => [-1.96],
+    "HIS" => [0.52],
+    "ILE" => [-0.16],
+    "LEU" => [0],
+    "LYS" => [0.82],
+    "MET" => [0.18],
+    "PHE" => [0.98],
+    "PRO" => [-0.33],
+    "SER" => [-1.08],
+    "THR" => [-0.7],
+    "TRP" => [2.1],
+    "TYR" => [1.48],
+    "VAL" => [-0.71],
+    "ASX" => [-0.145],
+    "GLX" => [0.215],
+    "XAA" => [0],
+    "XLE" => [-0.08] )
