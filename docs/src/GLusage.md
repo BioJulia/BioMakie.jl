@@ -1,5 +1,5 @@
 ```@meta
-EditURL = "https://github.com/kool7d/BioMakie.jl/blob/master/src/GLusage.jl"
+EditURL = "https://github.com/kool7d/BioMakie.jl/master/src/GLusage.jl"
 ```
 
 ## Usage
@@ -16,7 +16,7 @@ sv = viewstruc(struc)
 struc = read("data\\2vb1_m1.pdb", BioStructures.PDB)
 sv = viewstruc(struc)
 ```
-![Image of struc](https://github.com/kool7d/BioMakie.jl/docs/assets/2vb1.png)
+![Image of struc](../assets/2vb1.png)
 
 To view a multiple sequence alignment, use the `viewmsa` function with a Pfam ID or fasta file.
 ```julia
@@ -25,4 +25,4 @@ mv = viewmsa("PF00062")
 ```julia
 mv = viewmsa("data/fasta1.fas")
 ```
-![Image of msa](https://github.com/kool7d/BioMakie.jl/docs/assets/pf00062.png)
+![Image of msa](./assets/pf00062.png)

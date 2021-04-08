@@ -1,3 +1,6 @@
 ```@meta
-EditURL = "https://github.com/kool7d/BioMakie.jl/blob/master/src/proteins.jl"
+EditURL = "https://github.com/kool7d/BioMakie.jl/master/src/WGLusage.jl"
+```
+```@docs
+viewmsa(args)
 ```
