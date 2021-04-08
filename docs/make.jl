@@ -8,6 +8,6 @@ makedocs(repo = "github.com/kool7d/BioMakie",
     format = Documenter.HTML(),
     pages = Any["Home" => "index.md",
                 "GL Usage" => "GLusage.md",
-                "Proteins" => "proteins.md"])
+                "WebGL/JSServe Usage" => "WGLusage.md"])
 
 deploydocs(repo = "github.com/kool7d/BioMakie")
