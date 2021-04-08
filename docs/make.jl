@@ -10,8 +10,7 @@ makedocs(repo = "github.com/kool7d/BioMakie",
                 "GL Usage" => "GLusage.md",
                 "WebGL/JSServe Usage" => "WGLusage.md"])
 
-deploydocs(target = build,
-            repo = "github.com/kool7d/BioMakie",
+deploydocs(repo = "github.com/kool7d/BioMakie",
             branch = "gh-pages",
             versions = ["stable" => "v^", "v#.#"],
             push_preview = false)
