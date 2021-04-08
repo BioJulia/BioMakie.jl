@@ -13,5 +13,5 @@ makedocs(repo = "github.com/kool7d/BioMakie",
 deploydocs(target = build,
             repo = "github.com/kool7d/BioMakie",
             branch = "gh-pages",
-            versions = ["stable" => "v^", "v#.#", devurl => devurl],
+            versions = ["stable" => "v^", "v#.#"],
             push_preview = false)
