@@ -7,7 +7,7 @@
 /dev/
 /docs/site/
 /data/
-# /docs/build/
+/docs/build/
 page/__site
 docpage/__site
 _research/
