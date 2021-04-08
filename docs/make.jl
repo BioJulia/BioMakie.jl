@@ -7,7 +7,7 @@ makedocs(repo = "github.com/kool7d/BioMakie",
     clean   = true,
     format = Documenter.HTML(),
     pages = Any["Home" => "index.md",
-                "GL Usage" => "GLusage.md"
+                "GL Usage" => "GLusage.md",
                 "Proteins" => "proteins.md"])
 
 deploydocs(repo = "github.com/kool7d/BioMakie")
