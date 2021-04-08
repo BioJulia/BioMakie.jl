@@ -10,7 +10,7 @@ using Distances, Distributions
 using FileIO, FastaIO, OrderedCollections, SplitApplyCombine, TensorCast
 # using GeometryBasics, GLMakie
 # using JSServe, WGLMakie
-using MIToS
+# using MIToS
 using Phylo
 # Node = GLMakie.Node
 
