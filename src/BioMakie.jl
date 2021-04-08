@@ -8,11 +8,11 @@ using Colors, ColorSchemes
 using DataStructures, DataFrames, DelimitedFiles
 using Distances, Distributions
 using FileIO, FastaIO, OrderedCollections, SplitApplyCombine, TensorCast
-using GeometryBasics, GLMakie
+# using GeometryBasics, GLMakie
 # using JSServe, WGLMakie
 using MIToS
 using Phylo
-Node = GLMakie.Node
+# Node = GLMakie.Node
 
 include("../src/chemdata.jl")
 include("../src/utils.jl")
