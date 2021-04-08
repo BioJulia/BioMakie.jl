@@ -14,10 +14,10 @@ using FileIO, FastaIO, OrderedCollections, SplitApplyCombine, TensorCast
 using Phylo
 # Node = GLMakie.Node
 
-include("../src/chemdata.jl")
-include("../src/utils.jl")
-include("../src/bonds.jl")
-include("../src/structure.jl")
-include("../src/msa.jl")
+# include("../src/chemdata.jl")
+# include("../src/utils.jl")
+# include("../src/bonds.jl")
+# include("../src/structure.jl")
+# include("../src/msa.jl")
 
 end # BioMakie
