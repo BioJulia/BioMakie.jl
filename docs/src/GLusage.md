@@ -1,5 +1,5 @@
 ```@meta
-EditURL = "https://github.com/kool7d/BioMakie.jl/master/src/GLusage.jl"
+EditURL = "https://github.com/kool7d/BioMakie.jl/master/docs/src/GLusage.jl"
 ```
 
 ## Usage
@@ -16,7 +16,7 @@ sv = viewstruc(struc)
 ```
 ![Image of struc](docs/assets/2vb1.png)
 ![Image of struc](../../docs/assets/2vb1.png)
-![Image of struc](../../assets/2vb1.png)
+![Image of struc](../docs/assets/2vb1.png)
 ![Image of struc](BioMakie.jl/docs/assets/2vb1.png)
 ![Image of struc](2vb1.png)
 ![Image of struc](../../BioMakie.jl/docs/assets/2vb1.png)
