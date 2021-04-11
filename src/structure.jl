@@ -42,12 +42,10 @@ Create and return a Makie Figure for a PDB structure.
 # Examples
 ```julia
 sv = viewstruc("2VB1")
-```
-```julia
+
 struc = retrievepdb("2vb1", dir = "data\\")
 sv = viewstruc(struc)
-```
-```julia
+
 struc = read("data\\2vb1_mutant1.pdb", BioStructures.PDB)
 sv = viewstruc(struc)
 ```
@@ -55,7 +53,6 @@ sv = viewstruc(struc)
 function viewstruc( struc::T;
 					dir = "",
 					show_bonds = true,
-					show_id = true,
 					id_size = 25,
 					selectors = [standardselector],
 					atmcolors = "element"
@@ -72,26 +69,12 @@ function viewstruc( struc::T;
     colr = lift(X->atomcolors(X; color = atmcolors),atms)
     marksize = lift(X->(1/3).*atomradii(X),atms)
     fig = Figure(resolution = (800,800))
-    ly = fig[2:10,1]
+    ly = fig[1:10,1]
     plt = meshscatter(ly, atmcords; show_axis = false, color = colr, markersize = marksize)
     if show_bonds == true
         shps = @lift bondshapes.(bonds(collectresidues($struc,standardselector))) |> collectbondshapes
         bnds = @lift normal_mesh.($shps)
         mesh!(ly, bnds, color = RGBAf0(0.5,0.5,0.5,0.8))
-    end
-    if show_id == true
-    	try
-    		id = @lift $struc.name[1:end-4]
-    		Label(fig[1,1], id, tellwidth = false, tellheight = false, textsize = id_size)
-    	catch
-    		try
-    			id = @lift $struc.structure.name[1:end-4]
-    			Label(fig[1,1], id, tellwidth = false, tellheight = false, textsize = id_size)
-    		catch
-    			id = @lift $struc.model.structure.name[1:end-4]
-    			Label(fig[1,1], id, tellwidth = false, tellheight = false, textsize = id_size)
-    		end
-    	end
     end
     fig
 end
