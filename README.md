@@ -27,7 +27,7 @@ julia> struc = read("data\\2vb1_m1.pdb", BioStructures.PDB)
 julia> sv = viewstruc(struc)
 ```
 <p align="center">
-  <img width="400" height="500" src="docs/src/assets/2vb1.png">
+  <img width="450" height="500" src="docs/src/assets/2vb1.png">
 </p>
 
 To view a multiple sequence alignment, use the `viewmsa` function with a Pfam ID or fasta file.
@@ -37,5 +37,5 @@ julia> mv = viewmsa("PF00062")
 julia> mv = viewmsa("data/fasta1.fas")
 ```
 <p align="center">
-  <img width="850" height="300" src="docs/src/assets/pf00062.png">
+  <img width="850" height="350" src="docs/src/assets/pf00062.png">
 </p>
