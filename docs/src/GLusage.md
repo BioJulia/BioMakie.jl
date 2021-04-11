@@ -15,7 +15,7 @@ struc = read("data\\2vb1_m1.pdb", BioStructures.PDB)
 sv = viewstruc(struc)
 ```
 <p align="center">
-  <img width="450" height="500" src="docs/src/assets/2vb1.png">
+  <img width="450" height="500" src="assets/2vb1.png">
 </p>
 
 To view a multiple sequence alignment, use the `viewmsa` function with a Pfam ID or fasta file.
