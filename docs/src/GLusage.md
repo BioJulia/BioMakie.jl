@@ -17,7 +17,8 @@ sv = viewstruc(struc)
 <p align="center">
   <img width="450" height="500" src="assets/2vb1.png">
 </p>
-![Image of msa](assets/2vb1.png)
+
+![Image of struc](assets/2vb1.png)
 
 To view a multiple sequence alignment, use the `viewmsa` function with a Pfam ID or fasta file.
 ```julia
