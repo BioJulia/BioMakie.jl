@@ -118,9 +118,9 @@ version = "0.12.7"
 
 [[Compat]]
 deps = ["Base64", "Dates", "DelimitedFiles", "Distributed", "InteractiveUtils", "LibGit2", "Libdl", "LinearAlgebra", "Markdown", "Mmap", "Pkg", "Printf", "REPL", "Random", "SHA", "Serialization", "SharedArrays", "Sockets", "SparseArrays", "Statistics", "Test", "UUIDs", "Unicode"]
-git-tree-sha1 = "4fecfd5485d3c5de4003e19f00c6898cccd40667"
+git-tree-sha1 = "ac4132ad78082518ec2037ae5770b6e796f7f956"
 uuid = "34da2185-b29b-5c13-b0c7-acf172513d20"
-version = "3.26.0"
+version = "3.27.0"
 
 [[CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -567,6 +567,12 @@ version = "2.34.0+7"
 deps = ["Libdl"]
 uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 
+[[Literate]]
+deps = ["Base64", "JSON", "REPL"]
+git-tree-sha1 = "32b517d4d8219d3bbab199de3416ace45010bdb3"
+uuid = "98b081ad-f1c9-55d3-8b20-4c87d4299306"
+version = "2.8.0"
+
 [[Logging]]
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 
@@ -605,9 +611,9 @@ version = "2.16.8+1"
 
 [[MeshIO]]
 deps = ["ColorTypes", "FileIO", "GeometryBasics", "Printf"]
-git-tree-sha1 = "f969c87aa123e7718c95daa4eb0846a514006be1"
+git-tree-sha1 = "0b7334b0869d9bb9f255991032d1a36a01a60da7"
 uuid = "7269a6da-0436-5bbc-96c2-40638cbb6118"
-version = "0.4.5"
+version = "0.4.6"
 
 [[Missings]]
 deps = ["DataAPI"]
@@ -873,9 +879,9 @@ uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [[StatsBase]]
 deps = ["DataAPI", "DataStructures", "LinearAlgebra", "Missings", "Printf", "Random", "SortingAlgorithms", "SparseArrays", "Statistics"]
-git-tree-sha1 = "a83fa3021ac4c5a918582ec4721bc0cf70b495a9"
+git-tree-sha1 = "4bc58880426274277a066de306ef19ecc22a6863"
 uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
-version = "0.33.4"
+version = "0.33.5"
 
 [[StatsFuns]]
 deps = ["Rmath", "SpecialFunctions"]
@@ -885,9 +891,9 @@ version = "0.9.7"
 
 [[StructArrays]]
 deps = ["Adapt", "DataAPI", "Tables"]
-git-tree-sha1 = "26ea43b4be7e919a2390c3c0f824e7eb4fc19a0a"
+git-tree-sha1 = "44b3afd37b17422a62aea25f04c1f7e09ce6b07f"
 uuid = "09ab397b-f2b6-538f-b94a-2f83cf4a842a"
-version = "0.5.0"
+version = "0.5.1"
 
 [[StructTypes]]
 deps = ["Dates", "UUIDs"]

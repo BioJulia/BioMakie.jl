@@ -129,8 +129,8 @@ function viewmsa(   msa::Vector{Tuple{String,String}};
     fig = Figure(resolution = resolution)
     ax1 = Axis(fig[1:7,3:9])
     tightlimits!(ax1)
-    labels = GLMakie.Node([msa[i][1] for i in 1:size(msa,1)])
-    nums = GLMakie.Node(positions)
+    labels = Node([msa[i][1] for i in 1:size(msa,1)])
+    nums = Node(positions)
     labelssize = @lift size($labels,1) - (height1-1)
     labelsrange = @lift $labelssize:-1:1
     numssize = @lift size($nums,1) - (width1-1)
@@ -154,7 +154,7 @@ function viewmsa(   msa::Vector{Tuple{String,String}};
     # menu2.selection = "size"
     # title1 = Label(fig[0,2:3], "$(uppercase(msa.annotations.file["AC"])): $(msa.annotations.file["DE"])")
 
-    colorval = GLMakie.Node(colorval)
+    colorval = Node(colorval)
     strmsa = mat
     strmsavals = [ kdict(i) for i in strmsa ]
     strmsavals2 = strmsavals |> combinedims
