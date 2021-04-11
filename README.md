@@ -36,6 +36,4 @@ julia> mv = viewmsa("PF00062")
 
 julia> mv = viewmsa("data/fasta1.fas")
 ```
-<p align="center">
-  <img width="870" height="350" src="docs/src/assets/pf00062.png">
-</p>
+![Image of msa](assets/pf00062.png)
