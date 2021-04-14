@@ -12,6 +12,7 @@ This package contains interactive biological visualizations and using Makie.
 julia> ] add BioMakie
 julia> using BioMakie
 ```
+Basic GLMakie visualizations are implemented but WebGL is under construction.
 
 ## Usage
 
