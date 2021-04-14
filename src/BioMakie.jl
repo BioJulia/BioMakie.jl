@@ -9,8 +9,8 @@ using DataStructures, DataFrames, DelimitedFiles
 using Distances, Distributions
 using FileIO, FastaIO, OrderedCollections, SplitApplyCombine, TensorCast
 using GeometryBasics
-# using GLMakie
-using JSServe, WGLMakie
+using GLMakie
+# using JSServe, WGLMakie
 using MIToS
 using Observables
 # using Phylo
