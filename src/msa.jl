@@ -27,9 +27,9 @@ function viewmsa(   msa::MSA.AbstractMultipleSequenceAlignment;
 	numssize = @lift size($nums,1) - (width1-1)
 	numsrange = @lift 1:1:$numssize
 
-	sl1 = WGLMakie.labelslider!(fig[end+1,3:9],"",numsrange)
+    sl1 = Slider(fig[end+1,3:9], range = numsrange, startvalue = 1)
 	sl1.value = 1
-	sl2 = WGLMakie.labelslider!(fig[1:7,10],"",labelsrange, horizontal = false,
+	sl2 = Slider(fig[1:7,10], range = labelsrange, startvalue = 1, horizontal = false,
 		tellwidth = true, height = nothing)
 	sl2.value = labelssize[]
 
@@ -178,5 +178,4 @@ function viewmsa(str::String; kwargs...)
         msa1 = FastaIO.readfasta(str)
         return viewmsa(msa1; kwargs...)
     end
-    return error("couldn't use $(str) as a Pfam ID or fasta file")
 end

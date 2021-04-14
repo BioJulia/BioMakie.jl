@@ -15,7 +15,6 @@ using GLMakie
 using MIToS
 using Observables
 # using Phylo
-# Node = WGLMakie.Node
 
 include("../src/chemdata.jl")
 include("../src/utils.jl")
