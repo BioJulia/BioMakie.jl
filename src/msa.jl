@@ -169,13 +169,14 @@ function viewmsa(   msa::Vector{Tuple{String,String}};
     deregister_interaction!(fig.current_axis.x,:rectanglezoom)
     return fig
 end
+
 function viewmsa(str::String; kwargs...)
     try
-        MIToS.Pfam.downloadpfam(str)
+        downloadpfam(str)
         msa1 = read("$(str).stockholm.gz", MIToS.MSA.Stockholm; generatemapping = true)
         return viewmsa(msa1; kwargs...)
     catch
-        msa1 = FastaIO.readfasta(str)
-        return viewmsa(msa1; kwargs...)
+    msa1 = FastaIO.readfasta(str)
+    return viewmsa(msa1; kwargs...)
     end
 end
