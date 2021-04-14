@@ -12,7 +12,7 @@ using FileIO, FastaIO, OrderedCollections, SplitApplyCombine, TensorCast
 using GeometryBasics
 using GLMakie
 # using JSServe, WGLMakie
-using MIToS
+# using MIToS
 using Observables
 # using Phylo
 
