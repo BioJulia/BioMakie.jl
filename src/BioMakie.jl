@@ -3,6 +3,7 @@ module BioMakie
 export viewstruc, viewmsa
 
 # using BioSequences
+using AbstractPlotting
 using BioStructures
 using Colors, ColorSchemes
 using DataStructures, DataFrames, DelimitedFiles
