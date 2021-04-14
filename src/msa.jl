@@ -20,33 +20,20 @@ function viewmsa(   msa::MSA.AbstractMultipleSequenceAlignment;
 	fig = Figure(resolution = resolution)
 	ax1 = Axis(fig[1:7,3:9])
 	tightlimits!(ax1)
-	labels = msa.matrix.dicts[1] |> keys |> collect |> GLMakie.Node
-	nums = msa.matrix.dicts[2] |> keys |> collect |> GLMakie.Node
+	labels = msa.matrix.dicts[1] |> keys |> collect |> Node
+	nums = msa.matrix.dicts[2] |> keys |> collect |> Node
 	labelssize = @lift size($labels,1) - (height1-1)
 	labelsrange = @lift $labelssize:-1:1
 	numssize = @lift size($nums,1) - (width1-1)
 	numsrange = @lift 1:1:$numssize
 
-	sl1 = Slider(fig[end+1,3:9], range = numsrange, startvalue = 1)
+	sl1 = WGLMakie.labelslider!(fig[end+1,3:9],"",numsrange)
 	sl1.value = 1
-	sl2 = Slider(fig[1:7,10], range = labelsrange, startvalue = 1, horizontal = false,
+	sl2 = WGLMakie.labelslider!(fig[1:7,10],"",labelsrange, horizontal = false,
 		tellwidth = true, height = nothing)
 	sl2.value = labelssize[]
 
-	# menutext1 = Label(fig[1,1:2], "colors:")
-	# clrdict = Dict("viridis" => :viridis,
-	# 			   "redblue" => :RdBu)
-	# menu1 = Menu(fig[2,1:2], options = ["viridis", "redblue"], startvalue = "viridis")
-	# menu1.selection = "viridis"
-    #
-	# menutext2 = Label(fig[3,1:2], "colorscheme:")
-	# clrscheme = Dict("size" => 2,
-	# 				 "hydrophobicity" => 4)
-	# menu2 = Menu(fig[4,1:2], options = ["size", "hydrophobicity"], startvalue = "size")
-	# menu2.selection = "size"
-	# title1 = Label(fig[0,2:3], "$(uppercase(msa.annotations.file["AC"])): $(msa.annotations.file["DE"])")
-
-    colorval = GLMakie.Node(colorval)
+    colorval = Node(colorval)
 	strmsa = Matrix(msa) .|> string
 	strmsavals = [ kdict(i) for i in strmsa ]
 	strmsavals2 = strmsavals |> combinedims
@@ -80,13 +67,6 @@ function viewmsa(   msa::MSA.AbstractMultipleSequenceAlignment;
 
 	points1 = [Point2f0(x,y) for x in widthrange for y in heightrange] |> collect
 	charvec = @lift SplitApplyCombine.flatten($charshow)
-	# charcolors = lift(msashow) do mss
-	# 	arr = Symbol[]
-	# 	for X in mss
-	# 		X < 0.0 ? push!(arr,:white) : push!(arr,:black)
-	# 	end
-	# 	arr
-	# end
 	scatter!(ax1,
 	        points1,
 	        marker = charvec,
@@ -95,8 +75,7 @@ function viewmsa(   msa::MSA.AbstractMultipleSequenceAlignment;
 			strokecolor = :black
 	        )
 	heatmap!(ax1, msashow, show_grid = true, show_axis = true,
-	       colormap = colorscheme#,
-	       # ax1.aspect = AxisAspect(axisaspect)
+	       colormap = colorscheme
            )
     ax1.attributes.xaxisposition[] = :top
     deregister_interaction!(fig.current_axis.x,:rectanglezoom)
@@ -140,20 +119,7 @@ function viewmsa(   msa::Vector{Tuple{String,String}};
     sl1.value = 1
     sl2 = Slider(fig[1:7,10], range = labelsrange, startvalue = 1, horizontal = false,
     	tellwidth = true, height = nothing)
-    sl2.value = 1#labelssize[]
-    # menutext1 = Label(fig[1,1:2], "colors:")
-    # clrdict = Dict("viridis" => :viridis,
-    # 			   "redblue" => :RdBu)
-    # menu1 = Menu(fig[2,1:2], options = ["viridis", "redblue"], startvalue = "viridis")
-    # menu1.selection = "viridis"
-    #
-    # menutext2 = Label(fig[3,1:2], "colorscheme:")
-    # clrscheme = Dict("size" => 2,
-    # 				 "hydrophobicity" => 4)
-    # menu2 = Menu(fig[4,1:2], options = ["size", "hydrophobicity"], startvalue = "size")
-    # menu2.selection = "size"
-    # title1 = Label(fig[0,2:3], "$(uppercase(msa.annotations.file["AC"])): $(msa.annotations.file["DE"])")
-
+    sl2.value = 1
     colorval = Node(colorval)
     strmsa = mat
     strmsavals = [ kdict(i) for i in strmsa ]
@@ -188,13 +154,7 @@ function viewmsa(   msa::Vector{Tuple{String,String}};
 
     points1 = [Point2f0(x,y) for x in widthrange for y in heightrange] |> collect
     charvec = @lift SplitApplyCombine.flatten($charshow)
-    # charcolors = lift(msashow) do mss
-    # 	arr = Symbol[]
-    # 	for X in mss
-    # 		X < 0.0 ? push!(arr,:white) : push!(arr,:black)
-    # 	end
-    # 	arr
-    # end
+
     scatter!(ax1,
             points1,
             marker = charvec,
