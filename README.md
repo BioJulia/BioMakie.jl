@@ -3,7 +3,6 @@
 ## Biological data utilities for <a href = "https://www.github.com/JuliaPlots/Makie.jl"><img src="https://raw.githubusercontent.com/JuliaPlots/Makie.jl/master/assets/logo.png" alt="Makie.jl" height="30" align = "top"></a>
 
 [![Build Status](https://travis-ci.com/kool7d/BioMakie.jl.svg?branch=master)](https://travis-ci.com/kool7d/BioMakie.jl)
-[![Docs Latest](https://img.shields.io/badge/docs-dev-blue.svg)](https://kool7d.github.io/BioMakie.jl/)
 
 ## Installation and Setup
 
@@ -13,6 +12,7 @@ This package contains interactive biological visualizations and using Makie.
 julia> ] add BioMakie
 julia> using BioMakie
 ```
+Basic GLMakie visualizations are implemented but WebGL is under construction.
 
 ## Usage
 
@@ -20,9 +20,11 @@ To view a PDB structure, use the `viewstruc` function with a PDB ID or BioStruct
 ```julia
 julia> sv = viewstruc("2VB1")
 
+julia> using BioStructures
 julia> struc = retrievepdb("2vb1", dir = "data\\")
 julia> sv = viewstruc(struc)
 
+julia> using BioStructures
 julia> struc = read("data\\2vb1_m1.pdb", BioStructures.PDB)
 julia> sv = viewstruc(struc)
 ```
@@ -30,10 +32,9 @@ julia> sv = viewstruc(struc)
   <img width="550" height="620" src="docs/src/assets/2vb1.png">
 </p>
 
-To view a multiple sequence alignment, use the `viewmsa` function with a Pfam ID or fasta file.
+To view a multiple sequence alignment, use the `viewmsa` function with a loaded fasta file.
 ```julia
-julia> mv = viewmsa("PF00062")
-
+julia> using FastaIO
 julia> mv = viewmsa("data/fasta1.fas")
 ```
 ![Image of msa](docs/src/assets/pf00062.png)
