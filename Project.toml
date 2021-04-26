@@ -41,7 +41,7 @@ TableTraitsUtils = "382cd787-c1b6-5bf2-a167-d5b971a19bda"
 TensorCast = "02d47bb6-7ce6-556a-be16-bb1710789e2b"
 
 [compat]
-AbstractPlotting = "0.16, 0.17"
+AbstractPlotting = "0.16, 0.17, 0.18"
 BioSequences = "2.0"
 BioStructures = "0.11"
 CUDA = "2.4, 3.0"
