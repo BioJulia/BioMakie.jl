@@ -11,10 +11,7 @@ using Distances, Distributions
 using FileIO, FastaIO, OrderedCollections, SplitApplyCombine, TensorCast
 using GeometryBasics
 using GLMakie
-# using JSServe, WGLMakie
-# using MIToS
 using Observables
-# using Phylo
 
 include("../src/chemdata.jl")
 include("../src/utils.jl")
