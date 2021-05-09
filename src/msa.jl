@@ -82,13 +82,18 @@
 # 	return fig
 # end
 """
-    viewmsa(args)
+    viewmsa(msa)
 
 Create and return a Makie Figure for a fasta file.
 # Examples
 ```julia
 vm = viewmsa("data/fasta1.fas")
 ```
+Parameters:
+sheetsize ----- Dimensions of the msa shown, Default - [18,18]
+resolution ---- Default - (1500, 600)
+colorscheme --- Default - :viridis
+positions ----- Residue positions, Default - length of msa
 """
 function viewmsa(   msa::Vector{Tuple{String,String}};
 					sheetsize = [18,18],

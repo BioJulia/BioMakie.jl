@@ -8,6 +8,7 @@
 /docs/site/
 /data/
 /docs/build/
+/docs/Manifest.toml
 page/__site
 docpage/__site
 _research/

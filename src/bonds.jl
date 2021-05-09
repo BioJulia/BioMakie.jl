@@ -1,25 +1,20 @@
 abstract type AbstractTether end
-mutable struct Tether{T} <:AbstractTether where {T}
-	points::T
-end
-points(tether::AbstractTether) = tether.points
-mutable struct Bond <:AbstractTether
-	atoms::Vector{BioStructures.Atom}
+abstract type AbstractBond <: AbstractTether end
+mutable struct Bond <:AbstractBond
+	atoms::Vector{AbstractAtom}
 end
 import BioStructures.defaultatom, BioStructures.defaultresidue
 defaultatom(at::BioStructures.Atom) = at
 defaultresidue(res::BioStructures.Residue) = res
+convert(::BioStructures.Atom,disat::DisorderedAtom) = defaultatom(disat)
 Bond(atom1::AbstractAtom, atom2::AbstractAtom) = Bond([atom1,atom2])
-atoms(bond::Bond) = bond.atoms
-bonds(residues) = resbonds.(residues; hres = true)
-bondshapes(bonds) = bondshape.(bonds)
-function resbonds(	res::AbstractResidue;
-					hres = true,
-					showmissing = false)
-	bonds = Vector{Bond}()
-	missingbonds = []
+atoms(bond::AbstractBond) = bond.atoms
+function resbonds(res::AbstractResidue,
+	selectors::Function...;
+	hres = true)
+	bonds = Vector{AbstractBond}()
 	resatoms = res.atoms
-	resatoms2 = collectatoms(res) .|> defaultatom
+	resatoms2 = collectatoms(res,selectors...) .|> defaultatom
 	atmkeys = keys(resatoms) |> collect
 	resatomkeys = _stripkeys(resatoms)
 	for heavybond in heavyresbonds[res.name]
@@ -49,10 +44,6 @@ function resbonds(	res::AbstractResidue;
 				println("unusual atom $(heavybond[2])")
 			end
 			push!(bonds, Bond(resatoms[firstatomname], resatoms[secondatomname]))
-		else
-			if showmissing == true
-				print("| $(firstatomname) $(secondatomname) bond missing |")
-			end
 		end
 	end
 	if hres == true
@@ -83,10 +74,6 @@ function resbonds(	res::AbstractResidue;
 					println("unusual atom $(hresbond[2])")
 				end
 				push!(bonds, Bond(resatoms[firstatomname], resatoms[secondatomname]))
-			else
-				if showmissing == true
-					print("| $(firstatomname) $(secondatomname) bond missing |")
-				end
 			end
 		end
 	end
@@ -112,20 +99,18 @@ function backbonebonds(chn::BioStructures.Chain)
 
 	return bonds
 end
-function bondshape(twoatms::AbstractArray{T}) where {T<:AbstractAtom}
+bonds(residues::AbstractArray{AbstractResidue}, selectors::Function...; hres = true) = resbonds.(residues; hres = hres)
+function bonds(chain::BioStructures.Chain, selectors::Function...; hres = true)
+	rbonds = bonds(collectresidues(chain, selectors...); hres = hres) |> SplitApplyCombine.flatten
+	bbonds = backbonebonds(chain)
+	chbonds = vcat(rbonds,bbonds)
+	return chbonds
+end
+function bondshape(bond::AbstractBond)
+	twoatms = atoms(bond)
     pnt1 = GeometryBasics.Point3f0(coords(twoatms[1])[1], coords(twoatms[1])[2], coords(twoatms[1])[3])
     pnt2 = GeometryBasics.Point3f0(coords(twoatms[2])[1], coords(twoatms[2])[2], coords(twoatms[2])[3])
     cyl = GeometryBasics.Cylinder(pnt1,pnt2,Float32(0.15))
     return cyl
 end
-bondshape(bond::Bond) = bondshape(atoms(bond))
-bondshape(resbonds::AbstractArray{Bond}) = bondshape.(resbonds)
-function collectbondshapes(arr)
-	shapes = []
-	for i = 1:size(arr,1)
-		for j = 1:size(arr[i],1)
-			push!(shapes,arr[i][j])
-		end
-	end
-	return shapes |> Vector{GeometryBasics.Cylinder{3,Float32}}
-end
+bondshape(bonds::Vector{AbstractBond}) = bondshape.(bonds)

@@ -49,12 +49,20 @@ sv = viewstruc(struc)
 struc = read("data\\2vb1_mutant1.pdb", BioStructures.PDB)
 sv = viewstruc(struc)
 ```
+Keyword arguments:
+dir ----------- Directory of structure
+resolution ---- Default - (800,800)
+show_bonds ---- Default - true
+atmcolors ----- Default - "element", define your own dict for atoms like "N" => :blue
+atmscale ------ Size adjustment of atom radii, Default - 1/3
 """
-function viewstruc( struc::T;
+function viewstruc( struc::T,
+					selectors::Function...;
 					dir = "",
+					resolution = (800,800),
 					show_bonds = true,
-					selectors = [standardselector],
-					atmcolors = "element"
+					atmcolors = "element",
+					atmscale = 1/3
 					) where {T}
     if !(T<:Node)
         if T<:String
@@ -66,13 +74,13 @@ function viewstruc( struc::T;
     atms = @lift BioStructures.collectatoms($struc,selectors...)
     atmcords = @lift atomcoords($atms)
     colr = lift(X->atomcolors(X; color = atmcolors),atms)
-    marksize = lift(X->(1/3).*atomradii(X),atms)
-    fig = Figure(resolution = (800,800))
+    marksize = lift(X->(atmscale).*atomradii(X),atms)
+    fig = Figure(resolution = resolution)
     ly = fig[1:10,1]
     plt = meshscatter(ly, atmcords; show_axis = false, color = colr, markersize = marksize)
     if show_bonds == true
-        resshps = @lift bondshapes.(bonds(collectresidues($struc,selectors...))) |> collectbondshapes
-		bbshps = @lift bondshapes(backbonebonds.(collectchains($struc))) |> collectbondshapes
+        resshps = @lift bondshape(SplitApplyCombine.flatten(bonds(collectresidues($struc,selectors...))))
+		bbshps = @lift bondshape(SplitApplyCombine.flatten(backbonebonds.(collectchains($struc))))
         resbnds = @lift normal_mesh.($resshps)
 		bckbnds = @lift normal_mesh.($bbshps)
         mesh!(ly, resbnds, color = RGBAf0(0.5,0.5,0.5,0.8))
