@@ -5,20 +5,24 @@ end
 points(tether::AbstractTether) = tether.points
 mutable struct Bond <:AbstractTether
 	atoms
-	bondtype
+	bondorder
 end
+import BioStructures.defaultatom, BioStructures.defaultresidue
+defaultatom(at::BioStructures.Atom) = at
+defaultresidue(res::BioStructures.Residue) = res
 Bond(atom1::AbstractAtom, atom2::AbstractAtom) = Bond([atom1,atom2],"1")
+Bond(atom1::AbstractAtom, atom2::AbstractAtom,bondorder::String) = Bond([atom1,atom2],bondorder)
 atoms(bond::AbstractTether) = bond.atoms
 bonds(residues) = resbonds.(residues; hres = true)
 bondshapes(bonds) = bondshape.(bonds)
 function resbonds(	res::AbstractResidue;
-					hres = false,
+					hres = true,
 					showmissing = false)
 	bonds = []
 	missingbonds = []
 	resatoms = res.atoms
-	resatoms2 = collectatoms(res)
-	atmkeys = keys(resatoms2) |> collect
+	resatoms2 = collectatoms(res) .|> defaultatom
+	atmkeys = keys(resatoms) |> collect
 	resatomkeys = _stripkeys(resatoms)
 	for heavybond in heavyresbonds[res.name]
 		firstatomname = "$(heavybond[1])"
@@ -91,19 +95,23 @@ function resbonds(	res::AbstractResidue;
 	return bonds |> Array{Bond}
 end
 function backbonebonds(chn::BioStructures.Chain)
-	bbatoms = collectatoms(chn, backboneselector)
+	bbatoms = collectatoms(chn, backboneselector) .|> defaultatom
+	allatms = collectatoms(chn, standardselector) .|> defaultatom
 	bbkeys = collect(keys(bbatoms))
-	bonds = []
-	for i = 1:(size(bbkeys,1)-1)
-		firstatomname = bbkeys[i]
-		secondatomname = bbkeys[i+1]
-		# println("$(bbkeys[i])")
-		firstatomname == " N  " && secondatomname == " CA " && push!(bonds, Bond(bbatoms[i], bbatoms[i+1]))
-		firstatomname == " CA " && secondatomname == " C  " && push!(bonds, Bond(bbatoms[i], bbatoms[i+1]))
-		firstatomname == " C  " && secondatomname == " O  " && push!(bonds, Bond(bbatoms[i], bbatoms[i+1]),"1.5")
-		secondatomname == " N  " && firstatomname == " C  " && push!(bonds, Bond(bbatoms[i], bbatoms[i+1]),"1.5")
-		secondatomname == " N  " && "$(bbkeys[i-2])" ==  " C  " && push!(bonds, Bond(bbatoms[i+1], bbatoms[i-2]),"1.5")
+	bonds = Vector{Bond}()
+	for i = 1:(size(bbatoms,1)-1)
+		firstatomname = bbatoms[i].name
+		secondatomname = bbatoms[i+1].name
+		firstatomname == " N  " && secondatomname == " CA " && distance(bbatoms[i], bbatoms[i+1]) < 1.8 && push!(bonds, Bond(bbatoms[i], bbatoms[i+1]))
+		firstatomname == " CA " && secondatomname == " C  " && distance(bbatoms[i], bbatoms[i+1]) < 1.8 && push!(bonds, Bond(bbatoms[i], bbatoms[i+1]))
+		firstatomname == " C  " && secondatomname == " O  " && distance(bbatoms[i], bbatoms[i+1]) < 1.8 && push!(bonds, Bond(bbatoms[i], bbatoms[i+1]))
+		try
+			firstatomname == " N  " && bbatoms[i-2].name ==  " C  " && distance(bbatoms[i], bbatoms[i-2]) < 1.8 && push!(bonds, Bond(bbatoms[i], bbatoms[i-2]))
+		catch
+
+		end
 	end
+
 	return bonds
 end
 function bondshape(twoatms::AbstractArray{T}) where {T<:AbstractAtom}
@@ -113,7 +121,7 @@ function bondshape(twoatms::AbstractArray{T}) where {T<:AbstractAtom}
     return cyl
 end
 bondshape(bond::Bond) = bondshape(atoms(bond))
-bondshape(resbonds::AbstractArray{Bond}) = bondshape.(bondlist)
+bondshape(resbonds::AbstractArray{Bond}) = bondshape.(resbonds)
 function collectbondshapes(arr)
 	shapes = []
 	for i = 1:size(arr,1)

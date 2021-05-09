@@ -53,7 +53,6 @@ sv = viewstruc(struc)
 function viewstruc( struc::T;
 					dir = "",
 					show_bonds = true,
-					id_size = 25,
 					selectors = [standardselector],
 					atmcolors = "element"
 					) where {T}
@@ -72,9 +71,12 @@ function viewstruc( struc::T;
     ly = fig[1:10,1]
     plt = meshscatter(ly, atmcords; show_axis = false, color = colr, markersize = marksize)
     if show_bonds == true
-        shps = @lift bondshapes.(bonds(collectresidues($struc,standardselector))) |> collectbondshapes
-        bnds = @lift normal_mesh.($shps)
-        mesh!(ly, bnds, color = RGBAf0(0.5,0.5,0.5,0.8))
+        resshps = @lift bondshapes.(bonds(collectresidues($struc,selectors...))) |> collectbondshapes
+		bbshps = @lift bondshapes(backbonebonds.(collectchains($struc))) |> collectbondshapes
+        resbnds = @lift normal_mesh.($resshps)
+		bckbnds = @lift normal_mesh.($bbshps)
+        mesh!(ly, resbnds, color = RGBAf0(0.5,0.5,0.5,0.8))
+		mesh!(ly, bckbnds, color = RGBAf0(0.5,0.5,0.5,0.8))
     end
     fig
 end
