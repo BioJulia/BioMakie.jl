@@ -4,21 +4,19 @@ mutable struct Tether{T} <:AbstractTether where {T}
 end
 points(tether::AbstractTether) = tether.points
 mutable struct Bond <:AbstractTether
-	atoms
-	bondorder
+	atoms::Vector{BioStructures.Atom}
 end
 import BioStructures.defaultatom, BioStructures.defaultresidue
 defaultatom(at::BioStructures.Atom) = at
 defaultresidue(res::BioStructures.Residue) = res
-Bond(atom1::AbstractAtom, atom2::AbstractAtom) = Bond([atom1,atom2],"1")
-Bond(atom1::AbstractAtom, atom2::AbstractAtom,bondorder::String) = Bond([atom1,atom2],bondorder)
-atoms(bond::AbstractTether) = bond.atoms
+Bond(atom1::AbstractAtom, atom2::AbstractAtom) = Bond([atom1,atom2])
+atoms(bond::Bond) = bond.atoms
 bonds(residues) = resbonds.(residues; hres = true)
 bondshapes(bonds) = bondshape.(bonds)
 function resbonds(	res::AbstractResidue;
 					hres = true,
 					showmissing = false)
-	bonds = []
+	bonds = Vector{Bond}()
 	missingbonds = []
 	resatoms = res.atoms
 	resatoms2 = collectatoms(res) .|> defaultatom
@@ -92,7 +90,7 @@ function resbonds(	res::AbstractResidue;
 			end
 		end
 	end
-	return bonds |> Array{Bond}
+	return bonds
 end
 function backbonebonds(chn::BioStructures.Chain)
 	bbatoms = collectatoms(chn, backboneselector) .|> defaultatom
