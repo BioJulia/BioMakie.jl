@@ -113,4 +113,6 @@ function bondshape(bond::AbstractBond)
     cyl = GeometryBasics.Cylinder(pnt1,pnt2,Float32(0.15))
     return cyl
 end
-bondshape(bonds::Vector{AbstractBond}) = bondshape.(bonds)
+function bondshape(bonds::AbstractArray{T}) where {T<:AbstractBond}
+	return bondshape.(bonds)
+end

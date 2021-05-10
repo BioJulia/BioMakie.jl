@@ -57,7 +57,7 @@ atmcolors ----- Default - "element", define your own dict for atoms like "N" => 
 atmscale ------ Size adjustment of atom radii, Default - 1/3
 """
 function viewstruc( struc::T,
-					selectors::Function...;
+					selectors = [standardselector];
 					dir = "",
 					resolution = (800,800),
 					show_bonds = true,
