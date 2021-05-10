@@ -1,8 +1,12 @@
-name: Documenter
+name: CI
 on:
+  pull_request:
+    branches:
+      - master
   push:
-    branches: [master]
-    tags: [v*]
+    branches:
+      - master
+    tags: '*'
 jobs:
   test:
     name: Julia ${{ matrix.version }} - ${{ matrix.os }} - ${{ matrix.arch }} - ${{ github.event_name }}
@@ -40,13 +44,3 @@ jobs:
       - uses: codecov/codecov-action@v1
         with:
           file: lcov.info
-  Documenter:
-    name: Documentation
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: julia-actions/julia-buildpkg@latest
-      - uses: julia-actions/julia-docdeploy@latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
