@@ -23,6 +23,33 @@ function varcall(name::String, body::Any)
     @eval (($name) = ($body))
 	return Symbol(name)
 end
+function collectall(args...; maxdepth = 5, currentdepth = 1)
+	ff = []
+	f1 = collect([args...])
+	f2 = collect([Base.Iterators.flatten(f1)...])
+
+    for x in f2
+		if typeof(x) <: Union{AbstractArray,AbstractRange} && currentdepth < maxdepth
+			xx = try
+                collect([Base.Iterators.flatten(x)...])
+            catch
+                collect(x)
+            end
+			push!(ff,collectall(xx; maxdepth, currentdepth = currentdepth+1)...)
+		else
+			push!(ff,x)
+		end
+	end
+
+	typ = typeof(ff[1])
+    try
+        ff = Vector{typ}(ff)
+    catch
+
+    end
+
+	return ff
+end
 function collectkeys(args)
     return keys(args) |> collect
 end
@@ -46,6 +73,32 @@ pdbM(x; model = "1", group = "ATOM", kwargs...) = try
     catch
         pdbS(x; kwargs...)
     end
+#
+function download_file(url::AbstractString, filename::AbstractString;
+                       headers::Dict{String,String}=Dict{String,String}(),
+                       kargs...)
+    HTTP.open("GET", url, headers; kargs...) do stream
+        open(filename, "w") do fh
+           write(fh, stream)
+        end
+    end
+    filename
+end
+function download_file(url::AbstractString;
+                       headers::Dict{String,String}=Dict{String,String}(),
+                       kargs...)
+    download_file(url, tempname(); headers=headers, kargs...)
+end
+function downloadpfam(pfamcode::String; filename::String="$pfamcode.stockholm.gz", kargs...)
+    @assert endswith(filename,".gz") "filename must end with the .gz extension"
+    if occursin(r"^PF\d{5}$"i, pfamcode)
+        number = pfamcode[3:end]
+        download_file("http://pfam.xfam.org/family/PF$(number)/alignment/full/gzipped",
+                      filename; kargs...)
+    else
+        throw(ErrorException("$pfamcode is not a correct Pfam code"))
+    end
+end
 anynan(x) = any(isnan.(x))
 dfr(x) = DataFrame(x)
 dfr(xs...) = DataFrame(xs...)
@@ -258,14 +311,14 @@ elecolors = Dict( "C" => :gray,
 				  "ZN" => :gray,
 				  "CL" => :gray
 )
-aquacolors = Dict("C" => RGB{Float32}(0.5,0.5,0.5),
-                  "N" => RGB{Float32}(0.472,0.211,0.499),
-                  "H" => RGB{Float32}(0.65,0.96,0.70),
-                  "O" => RGB{Float32}(0.111,0.37,0.999),
-                  "S" => RGB{Float32}(0.992,0.753,0.525),
-				  "X" => RGB{Float32}(0.5,0.5,0.5),
-				  "ZN" => RGB{Float32}(0.5,0.5,0.5),
-				  "CL" => RGB{Float32}(0.5,0.5,0.5)
+aquacolors = Dict("C" => RGBf0(0.5,0.5,0.5),
+                  "N" => RGBf0(0.472,0.211,0.499),
+                  "H" => RGBf0(0.65,0.96,0.70),
+                  "O" => RGBf0(0.111,0.37,0.999),
+                  "S" => RGBf0(0.992,0.753,0.525),
+				  "X" => RGBf0(0.5,0.5,0.5),
+				  "ZN" => RGBf0(0.5,0.5,0.5),
+				  "CL" => RGBf0(0.5,0.5,0.5)
 )
 kideradict = Dict(
     "A" => [-1.56,-1.67,-0.97,-0.27,-0.93,-0.78,-0.2,-0.08,0.21,-0.48],

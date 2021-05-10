@@ -42,23 +42,27 @@ Create and return a Makie Figure for a PDB structure.
 # Examples
 ```julia
 sv = viewstruc("2VB1")
-```
-```julia
+
 struc = retrievepdb("2vb1", dir = "data\\")
 sv = viewstruc(struc)
-```
-```julia
+
 struc = read("data\\2vb1_mutant1.pdb", BioStructures.PDB)
 sv = viewstruc(struc)
 ```
+Keyword arguments:
+dir ----------- Directory of structure
+resolution ---- Default - (800,800)
+show_bonds ---- Default - true
+atmcolors ----- Default - "element", define your own dict for atoms like "N" => :blue
+atmscale ------ Size adjustment of atom radii, Default - 1/3
 """
-function viewstruc( struc::T;
+function viewstruc( struc::T,
+					selectors = [standardselector];
 					dir = "",
+					resolution = (800,800),
 					show_bonds = true,
-					show_id = true,
-					id_size = 25,
-					selectors = [standardselector],
-					atmcolors = "element"
+					atmcolors = "element",
+					atmscale = 1/3
 					) where {T}
     if !(T<:Node)
         if T<:String
@@ -70,28 +74,17 @@ function viewstruc( struc::T;
     atms = @lift BioStructures.collectatoms($struc,selectors...)
     atmcords = @lift atomcoords($atms)
     colr = lift(X->atomcolors(X; color = atmcolors),atms)
-    marksize = lift(X->(1/3).*atomradii(X),atms)
-    fig = Figure(resolution = (800,800))
-    ly = fig[2:10,1]
+    marksize = lift(X->(atmscale).*atomradii(X),atms)
+    fig = Figure(resolution = resolution)
+    ly = fig[1:10,1]
     plt = meshscatter(ly, atmcords; show_axis = false, color = colr, markersize = marksize)
     if show_bonds == true
-        shps = @lift bondshapes.(bonds(collectresidues($struc,standardselector))) |> collectbondshapes
-        bnds = @lift normal_mesh.($shps)
-        mesh!(ly, bnds, color = RGBAf0(0.5,0.5,0.5,0.8))
-    end
-    if show_id == true
-    	try
-    		id = @lift $struc.name[1:end-4]
-    		Label(fig[1,1], id, tellwidth = false, tellheight = false, textsize = id_size)
-    	catch
-    		try
-    			id = @lift $struc.structure.name[1:end-4]
-    			Label(fig[1,1], id, tellwidth = false, tellheight = false, textsize = id_size)
-    		catch
-    			id = @lift $struc.model.structure.name[1:end-4]
-    			Label(fig[1,1], id, tellwidth = false, tellheight = false, textsize = id_size)
-    		end
-    	end
+        resshps = @lift bondshape(SplitApplyCombine.flatten(bonds(collectresidues($struc,selectors...))))
+		bbshps = @lift bondshape(SplitApplyCombine.flatten(backbonebonds.(collectchains($struc))))
+        resbnds = @lift normal_mesh.($resshps)
+		bckbnds = @lift normal_mesh.($bbshps)
+        mesh!(ly, resbnds, color = RGBAf0(0.5,0.5,0.5,0.8))
+		mesh!(ly, bckbnds, color = RGBAf0(0.5,0.5,0.5,0.8))
     end
     fig
 end
