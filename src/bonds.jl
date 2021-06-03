@@ -9,9 +9,9 @@ defaultresidue(res::BioStructures.Residue) = res
 convert(::BioStructures.Atom,disat::DisorderedAtom) = defaultatom(disat)
 Bond(atom1::AbstractAtom, atom2::AbstractAtom) = Bond([atom1,atom2])
 atoms(bond::AbstractBond) = bond.atoms
-function resbonds(res::AbstractResidue,
-	selectors::Function...;
-	hres = true)
+function resbonds(	res::AbstractResidue,
+					selectors::Function...;
+					hres = true)
 	bonds = Vector{AbstractBond}()
 	resatoms = res.atoms
 	resatoms2 = collectatoms(res,selectors...) .|> defaultatom
