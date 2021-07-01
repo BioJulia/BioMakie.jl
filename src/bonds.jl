@@ -14,8 +14,8 @@ function resbonds(	res::AbstractResidue,
 					hres = true)
 	bonds = Vector{AbstractBond}()
 	resatoms = res.atoms
-	resatoms2 = collectatoms(res,selectors...) .|> defaultatom
-	atmkeys = keys(resatoms) |> collect
+	# resatoms2 = collectatoms(res,selectors...) .|> defaultatom
+	# atmkeys = keys(resatoms) |> collect
 	resatomkeys = _stripkeys(resatoms)
 	for heavybond in heavyresbonds[res.name]
 		firstatomname = "$(heavybond[1])"
@@ -81,8 +81,6 @@ function resbonds(	res::AbstractResidue,
 end
 function backbonebonds(chn::BioStructures.Chain)
 	bbatoms = collectatoms(chn, backboneselector) .|> defaultatom
-	allatms = collectatoms(chn, standardselector) .|> defaultatom
-	bbkeys = collect(keys(bbatoms))
 	bonds = Vector{Bond}()
 	for i = 1:(size(bbatoms,1)-1)
 		firstatomname = bbatoms[i].name

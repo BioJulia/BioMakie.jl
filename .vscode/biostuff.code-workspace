@@ -7,5 +7,7 @@
 			"path": "..\\..\\Prots"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"julia.environmentPath": "c:\\Users\\kool7\\Google Drive\\BioMakie.jl"
+	}
 }

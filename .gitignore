@@ -13,3 +13,6 @@ docpage/__site
 _research/
 *.gz
 *.msa
+vscode/
+.vscode/*
+.vscode/biostuff.code-workspace
