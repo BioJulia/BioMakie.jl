@@ -8,6 +8,8 @@
 		}
 	],
 	"settings": {
-		"julia.environmentPath": "c:\\Users\\kool7\\Google Drive\\BioMakie.jl"
+		"julia.environmentPath": "c:\\Users\\kool7\\Google Drive\\Prots",
+		"jupyter.jupyterServerType": "local",
+		"python.pythonPath": "C:\\Users\\kool7\\anaconda3\\python.exe"
 	}
 }

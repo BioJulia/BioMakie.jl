@@ -1,12 +1,10 @@
 # BioMakie
 
-## Biological data utilities for <a href = "https://www.github.com/JuliaPlots/Makie.jl"><img src="https://raw.githubusercontent.com/JuliaPlots/Makie.jl/master/assets/logo.png" alt="Makie.jl" height="30" align = "top"></a>
-
 [![Build Status](https://travis-ci.com/kool7d/BioMakie.jl.svg?branch=master)](https://travis-ci.com/kool7d/BioMakie.jl)
 
 ## Installation and Setup
 
-This package contains interactive biological visualizations and using Makie.
+This package contains visual utilities for biodata, mostly proteins. 
 
 ```julia
 julia> ] add BioMakie
@@ -16,9 +14,6 @@ julia> using BioMakie
 ## Usage
 
 To view a PDB structure, use the `viewstruc` function with a PDB ID or BioStructures protein structure.
-```julia
-julia> sv = viewstruc("2VB1")
-```
 ```julia
 julia> struc = retrievepdb("2vb1", dir = "data\\")
 julia> sv = viewstruc(struc)

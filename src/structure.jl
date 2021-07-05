@@ -49,9 +49,7 @@ struc = read("data\\2vb1_mutant1.pdb", BioStructures.PDB) |> Node
 sv = viewstruc(struc)
 ```
 Keyword arguments:
-dir ----------- Directory of structure
 resolution ---- Default - (800,800)
-show_bonds ---- Default - true
 atmcolors ----- Default - "element", define your own dict for atoms like "N" => :blue
 atmscale ------ Size adjustment of atom radii, Default - 1/3
 """
@@ -78,3 +76,26 @@ function viewstruc( struc::T,
     fig
 end
 viewstruc(struc::String; kwargs...) = error("input must be a node! wrap the structure like Node(struc)")
+function _viewstruc( struc::T,
+					selectors = [standardselector];
+					resolution = (800,800),
+					atmcolors = "element",
+					atmscale = 1/3
+					) where {T<:Node}
+
+	atms = @lift BioStructures.collectatoms($struc,selectors...)
+	atmcords = @lift atomcoords($atms)
+	colr = lift(X->atomcolors(X; color = atmcolors),atms)
+	marksize = lift(X->(atmscale).*atomradii(X),atms)
+	fig = Figure(resolution = resolution)
+	ly = fig[1:13,1:10]
+	plt = meshscatter(ly, atmcords; show_axis = false, color = colr, markersize = marksize)
+	resshps = @lift bondshape(SplitApplyCombine.flatten(bonds(collectresidues($struc,selectors...))))
+	bbshps = @lift bondshape(SplitApplyCombine.flatten(backbonebonds.(collectchains($struc))))
+	resbnds = @lift normal_mesh.($resshps)
+	bckbnds = @lift normal_mesh.($bbshps)
+	mesh!(ly, resbnds, color = RGBAf0(0.5,0.5,0.5,0.8))
+	mesh!(ly, bckbnds, color = RGBAf0(0.5,0.5,0.5,0.8))
+	display(fig)
+	return [resshps[],bbshps[],resbnds[],bckbnds[]]
+end
