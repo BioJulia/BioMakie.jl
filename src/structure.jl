@@ -41,7 +41,6 @@ end
 Create and return a Makie Figure for a PDB structure.
 # Examples
 ```julia
-
 struc = retrievepdb("2vb1", dir = "data\\") |> Node
 sv = viewstruc(struc)
 
@@ -59,7 +58,6 @@ function viewstruc( struc::T,
 					atmcolors = "element",
 					atmscale = 1/3
 					) where {T<:Node}
-	
     atms = @lift BioStructures.collectatoms($struc,selectors...)
     atmcords = @lift atomcoords($atms)
     colr = lift(X->atomcolors(X; color = atmcolors),atms)

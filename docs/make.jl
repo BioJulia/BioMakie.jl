@@ -1,13 +1,17 @@
 using Documenter, BioMakie
 
-makedocs(repo = "github.com/kool7d/BioMakie",
-    sitename = "BioMakie",
+makedocs(sitename = "BioMakie",
     modules = [BioMakie],
     build   = "build",
     clean   = true,
     format = Documenter.HTML(),
-    pages = Any["Home" => "index.md",
-                "GL Usage" => "GLusage.md",
-                "Proteins" => "proteins.md"])
+    pages = ["Home" => "index.md",
+            "GL Usage" => "GLusage.md",
+            "WebGL/JSServe Usage" => "WGLusage.md",
+            "API" => "api.md"]
+        )
 
-deploydocs(repo = "github.com/kool7d/BioMakie")
+deploydocs(repo = "github.com/kool7d/BioMakie.jl.git",
+            branch = "gh-pages",
+            versions = ["stable" => "v^", "v#.#"],
+            push_preview = true)

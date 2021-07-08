@@ -8,12 +8,14 @@
 /docs/site/
 /data/
 /docs/build/
+/docs/Manifest.toml
 page/__site
 docpage/__site
 _research/
 *.gz
 *.msa
-vscode/
+.vscode/
 .vscode/*
 .vscode/biostuff.code-workspace
 .vscode/biostuff.code-workspace
+
