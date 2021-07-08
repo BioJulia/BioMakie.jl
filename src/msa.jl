@@ -119,7 +119,7 @@ function viewmsa(   msa::Vector{Tuple{String,String}};
         width1 = sheetsize[2]
     end
 
-    fig = Figure(resolution = resolution)
+    fig = GLMakie.Figure(resolution = resolution)
     ax1 = Axis(fig[1:7,3:9])
     tightlimits!(ax1)
     labels = Node([msa[i][1] for i in 1:size(msa,1)])
@@ -183,7 +183,7 @@ function viewmsa(   msa::Vector{Tuple{String,String}};
     deregister_interaction!(fig.current_axis.x,:rectanglezoom)
     return fig
 end
-function viewmsa!(  fig::Figure,
+function viewmsa!(  fig::GLMakie.Figure,
                     msa::Vector{Tuple{String,String}};
 					sheetsize = [20,40],
 					resolution = (1000, 400),

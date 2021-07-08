@@ -76,6 +76,7 @@ function viewstruc( struc::T,
     fig
 end
 viewstruc(struc::String; kwargs...) = error("input must be a node! wrap the structure like Node(struc)")
+GLMakie.activate!()
 function _viewstruc( struc::T,
 					selectors = [standardselector];
 					resolution = (800,800),
@@ -87,15 +88,16 @@ function _viewstruc( struc::T,
 	atmcords = @lift atomcoords($atms)
 	colr = lift(X->atomcolors(X; color = atmcolors),atms)
 	marksize = lift(X->(atmscale).*atomradii(X),atms)
-	fig = Figure(resolution = resolution)
+	fig = GLMakie.Figure(resolution = resolution)
 	ly = fig[1:13,1:10]
-	plt = meshscatter(ly, atmcords; show_axis = false, color = colr, markersize = marksize)
+	plt = GLMakie.meshscatter(ly, atmcords; show_axis = false, color = colr, markersize = marksize)
 	resshps = @lift bondshape(SplitApplyCombine.flatten(bonds(collectresidues($struc,selectors...))))
 	bbshps = @lift bondshape(SplitApplyCombine.flatten(backbonebonds.(collectchains($struc))))
 	resbnds = @lift normal_mesh.($resshps)
 	bckbnds = @lift normal_mesh.($bbshps)
-	mesh!(ly, resbnds, color = RGBAf0(0.5,0.5,0.5,0.8))
-	mesh!(ly, bckbnds, color = RGBAf0(0.5,0.5,0.5,0.8))
+	GLMakie.mesh!(ly, resbnds, color = RGBAf0(0.5,0.5,0.5,0.8))
+	GLMakie.mesh!(ly, bckbnds, color = RGBAf0(0.5,0.5,0.5,0.8))
 	display(fig)
-	return [resshps[],bbshps[],resbnds[],bckbnds[]]
+	meshes = [plt,resshps,bbshps,resbnds,bckbnds]
+	return atmcords, meshes, fig
 end

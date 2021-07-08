@@ -7,13 +7,14 @@ using Colors, ColorSchemes, Lazy
 using DataStructures, DataFrames, DelimitedFiles, JLD2
 using Distances, Distributions, GeometryBasics
 using FileIO, FastaIO, OrderedCollections, SplitApplyCombine, TensorCast
-using CairoMakie, GLMakie, WGLMakie, GraphMakie, JSServe
+using GLMakie, JSServe#, CairoMakie, WGLMakie, GraphMakie
 using Observables, Meshes, MeshViz
+using GLMakie: @lift, lift
 GLMakie.activate!()
 
 include("../src/chemdata.jl")
 include("../src/utils.jl")
-include("../src/bonds.jl") 
+include("../src/bonds.jl")
 include("../src/structure.jl")
 include("../src/msa.jl")
 
