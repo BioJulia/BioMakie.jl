@@ -14,3 +14,4 @@ docpage/__site
 _research/
 *.gz
 *.msa
+.vscode/
