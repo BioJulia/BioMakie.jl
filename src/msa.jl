@@ -133,6 +133,7 @@ labelsrange = @lift $labelssize:-1:1
 numssize = @lift size($nums,1) - (width1-1)
 numsrange = @lift 1:1:$numssize
 
+<<<<<<< Updated upstream
 sl1 = Slider(fig[end+1,3:9], range = numsrange, startvalue = 1)
 sl1.value = 1
 sl2 = Slider(fig[1:7,10], range = labelsrange, startvalue = 1, horizontal = false,
@@ -152,6 +153,17 @@ charmsa = [x[1] for x in strmsa]
 charshow = @lift charmsa[$labelshow2,$numsshow2]
 widthrange = indexshift([1:width1...],-0.5)
 heightrange = indexshift([1:height1...],-0.5)
+=======
+    fig = GLMakie.Figure(resolution = resolution)
+    ax1 = Axis(fig[1:7,3:9])
+    tightlimits!(ax1)
+    labels = Node([msa[i][1] for i in 1:size(msa,1)])
+    nums = Node(positions)
+    labelssize = @lift size($labels,1) - (height1-1)
+    labelsrange = @lift $labelssize:-1:1
+    numssize = @lift size($nums,1) - (width1-1)
+    numsrange = @lift 1:1:$numssize
+>>>>>>> Stashed changes
 
 ax1.yticks = (heightrange, labelshow[])
 on(labelshow) do ls
@@ -190,6 +202,7 @@ fig
 #     return fig
 # end
 
+<<<<<<< Updated upstream
 # function viewmsa(str::String; kwargs...)
 #     try
 #         downloadpfam(str)
@@ -205,6 +218,26 @@ fig
 function viewmsa(   msa::Vector{Tuple{String,String}};
 					sheetsize = [15,15],
 					resolution = (1500, 600),
+=======
+    scatter!(ax1,
+            points1,
+            marker = charvec,
+            markersize = (7.0,8.0),
+    		color = :black,
+    		strokecolor = :black
+            )
+    heatmap!(ax1, msashow, show_grid = true, show_axis = true,
+           colormap = colorscheme
+           )
+    ax1.attributes.xaxisposition[] = :top
+    deregister_interaction!(fig.current_axis.x,:rectanglezoom)
+    return fig
+end
+function viewmsa!(  fig::GLMakie.Figure,
+                    msa::Vector{Tuple{String,String}};
+					sheetsize = [20,40],
+					resolution = (1000, 400),
+>>>>>>> Stashed changes
                     colorscheme = :viridis,
                     colorval = 2,
                     positions = 0

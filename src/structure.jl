@@ -88,3 +88,29 @@ function viewstruc( struc::T,
     end
     fig
 end
+viewstruc(struc::String; kwargs...) = error("input must be a node! wrap the structure like Node(struc)")
+GLMakie.activate!()
+function _viewstruc( struc::T,
+					selectors = [standardselector];
+					resolution = (800,800),
+					atmcolors = "element",
+					atmscale = 1/3
+					) where {T<:Node}
+
+	atms = @lift BioStructures.collectatoms($struc,selectors...)
+	atmcords = @lift atomcoords($atms)
+	colr = lift(X->atomcolors(X; color = atmcolors),atms)
+	marksize = lift(X->(atmscale).*atomradii(X),atms)
+	fig = GLMakie.Figure(resolution = resolution)
+	ly = fig[1:13,1:10]
+	plt = GLMakie.meshscatter(ly, atmcords; show_axis = false, color = colr, markersize = marksize)
+	resshps = @lift bondshape(SplitApplyCombine.flatten(bonds(collectresidues($struc,selectors...))))
+	bbshps = @lift bondshape(SplitApplyCombine.flatten(backbonebonds.(collectchains($struc))))
+	resbnds = @lift normal_mesh.($resshps)
+	bckbnds = @lift normal_mesh.($bbshps)
+	GLMakie.mesh!(ly, resbnds, color = RGBAf0(0.5,0.5,0.5,0.8))
+	GLMakie.mesh!(ly, bckbnds, color = RGBAf0(0.5,0.5,0.5,0.8))
+	display(fig)
+	meshes = [plt,resshps,bbshps,resbnds,bckbnds]
+	return atmcords, meshes, fig
+end

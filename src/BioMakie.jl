@@ -9,9 +9,10 @@ using BioStructures
 using DataStructures, DataFrames, DelimitedFiles
 using Distances, Distributions
 using FileIO, FastaIO, OrderedCollections, SplitApplyCombine, TensorCast
-using GeometryBasics
-using GLMakie
-using Observables
+using GLMakie, JSServe#, CairoMakie, WGLMakie, GraphMakie
+using Observables, Meshes, MeshViz
+using GLMakie: @lift, lift
+GLMakie.activate!()
 
 include("../src/chemdata.jl")
 include("../src/utils.jl")
