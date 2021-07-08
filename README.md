@@ -16,10 +16,10 @@ Basic GLMakie visualizations are implemented but WebGL is under construction.
 
 To view a PDB structure, use the `viewstruc` function with a PDB ID or BioStructures protein structure.
 ```julia
-julia> struc = retrievepdb("2vb1", dir = "data\\")
+julia> struc = retrievepdb("2vb1", dir = "data\\") |> Node
 julia> sv = viewstruc(struc)
 
-julia> struc = read("data\\2vb1_m1.pdb", BioStructures.PDB)
+julia> struc = read("data\\2vb1_m1.pdb", BioStructures.PDB) |> Node
 julia> sv = viewstruc(struc)
 ```
 <p align="center">
