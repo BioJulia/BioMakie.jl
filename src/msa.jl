@@ -101,10 +101,8 @@ function viewmsa(   msa::MSA.AbstractMultipleSequenceAlignment;
                     colorscheme = :viridis,
                     colorval = 2
 				)
-
 	width1 = sheetsize[1]
 	height1 = sheetsize[2]
-
 	fig = Figure(resolution = resolution)
 	ax1 = Axis(fig[1:7,3:9])
 	tightlimits!(ax1)
