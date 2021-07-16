@@ -3,7 +3,7 @@ module BioMakie
 export viewstruc, viewmsa
 
 using BioStructures, MolecularGraph, MIToS
-using Colors, ColorSchemes, Lazy
+using Colors, Lazy
 using DataStructures, DataFrames, DelimitedFiles, JLD2
 using Distances, Distributions, GeometryBasics
 using FileIO, FastaIO, OrderedCollections, SplitApplyCombine, TensorCast

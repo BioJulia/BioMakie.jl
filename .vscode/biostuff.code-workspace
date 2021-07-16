@@ -8,11 +8,14 @@
 		},
 		{
 			"path": "..\\..\\Prots2"
+		},
+		{
+			"path": "..\\..\\model-zoo"
 		}
 	],
 	"settings": {
 		"jupyter.jupyterServerType": "local",
 		"python.pythonPath": "C:\\Users\\kool7\\anaconda3\\python.exe",
-		"julia.environmentPath": "c:\\Users\\kool7\\Google Drive\\Prots2"
+		"julia.environmentPath": "c:\\Users\\kool7\\Google Drive\\BioMakie.jl"
 	}
 }
