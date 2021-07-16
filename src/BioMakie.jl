@@ -2,12 +2,10 @@ module BioMakie
 
 export viewstruc, viewmsa
 
-# using BioSequences
-# using AbstractPlotting
-using BioStructures
-# using Colors, ColorSchemes
-using DataStructures, DataFrames, DelimitedFiles
-using Distances, Distributions
+using BioStructures, MolecularGraph, MIToS
+using Colors, Lazy
+using DataStructures, DataFrames, DelimitedFiles, JLD2
+using Distances, Distributions, GeometryBasics
 using FileIO, FastaIO, OrderedCollections, SplitApplyCombine, TensorCast
 using GLMakie, JSServe#, CairoMakie, WGLMakie, GraphMakie
 using Observables, Meshes, MeshViz
