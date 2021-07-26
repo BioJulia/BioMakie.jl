@@ -1,373 +1,113 @@
-# """
-#     viewmsa(args)
-#
-# Create and return a Makie Figure for a Pfam MSA.
-# # Examples
-# ```julia
-# vm = viewmsa("PF00062")
-# ```
-# """
-# function viewmsa(   msa::MSA.AbstractMultipleSequenceAlignment;
-# 					sheetsize = [40,20],
-# 					resolution = (1500, 600),
-#                     colorscheme = :viridis,
-#                     colorval = 2
-# 				)
-#
-# 	width1 = sheetsize[1]
-# 	height1 = sheetsize[2]
-#
-# 	fig = Figure(resolution = resolution)
-# 	ax1 = Axis(fig[1:7,3:9])
-# 	tightlimits!(ax1)
-# 	labels = msa.matrix.dicts[1] |> keys |> collect |> Node
-# 	nums = msa.matrix.dicts[2] |> keys |> collect |> Node
-# 	labelssize = @lift size($labels,1) - (height1-1)
-# 	labelsrange = @lift $labelssize:-1:1
-# 	numssize = @lift size($nums,1) - (width1-1)
-# 	numsrange = @lift 1:1:$numssize
-#
-#     sl1 = Slider(fig[end+1,3:9], range = numsrange, startvalue = 1)
-# 	sl1.value = 1
-# 	sl2 = Slider(fig[1:7,10], range = labelsrange, startvalue = 1, horizontal = false,
-# 		tellwidth = true, height = nothing)
-# 	sl2.value = labelssize[]
-#
-#     colorval = Node(colorval)
-# 	strmsa = Matrix(msa) .|> string
-# 	strmsavals = [ kdict(i) for i in strmsa ]
-# 	strmsavals2 = strmsavals |> combinedims
-# 	labelshow = lift(X->labels[][(X+(height1-1):-1:X)],sl2.value)
-# 	numsshow = lift(X->nums[][(X:1:X+(width1-1))],sl1.value)
-# 	labelshow2 = lift(X->(X+(height1-1):-1:X),sl2.value)
-# 	numsshow2 = lift(X->(X:1:X+(width1-1)),sl1.value)
-# 	fixtmsa = lift(X->replace(strmsavals2[X,:,:], nothing => 0.0),colorval)
-# 	msashow = @lift $fixtmsa[$labelshow2,$numsshow2] |> _t
-# 	charmsa = [x[1] for x in strmsa]
-# 	charshow = @lift charmsa[$labelshow2,$numsshow2]
-# 	widthrange = indexshift([1:width1...],-0.5)
-# 	heightrange = indexshift([1:height1...],-0.5)
-# 	ax1.yticks = (heightrange, labelshow[])
-# 	on(labelshow) do ls
-# 		ax1.yticks = (heightrange, ls)
-# 	end
-# 	ax1.xticks = (widthrange, numsshow[])
-# 	on(numsshow) do ns
-# 		ax1.xticks = (widthrange, ns)
-# 	end
-# 	ax1.xticklabelsize = 9
-# 	ax1.yticklabelsize = 13
-# 	ax1.xzoomlock[] = true
-# 	ax1.yzoomlock[] = true
-# 	axisaspect = 2.3
-# 	ax1.yticklabelspace[] = 10
-#
-# 	poly!(ax1, [FRect2D(x, y, 1, 1) for x in 0:(width1-1) for y in 0:(height1-1)],
-# 		 	color = :transparent, strokecolor = :black, strokewidth = 1)
-#
-# 	points1 = [Point2f0(x,y) for x in widthrange for y in heightrange] |> collect
-# 	charvec = @lift SplitApplyCombine.flatten($charshow)
-# 	scatter!(ax1,
-# 	        points1,
-# 	        marker = charvec,
-# 	        markersize = (10.0,11.0),
-# 			color = :black,
-# 			strokecolor = :black
-# 	        )
-# 	heatmap!(ax1, msashow, show_grid = true, show_axis = true,
-# 	       colormap = colorscheme
-#            )
-#     ax1.attributes.xaxisposition[] = :top
-#     deregister_interaction!(fig.current_axis.x,:rectanglezoom)
-# 	return fig
-# end
 """
     viewmsa(msa)
 
-Create and return a Makie Figure for a fasta file.
+Create and return a Makie Figure for a AbstractMultipleSequenceAlignment.
 # Examples
 ```julia
-vm = viewmsa("data/fasta1.fas")
+using MIToS.MSA
+downloadpfam("pf00062")
+vm = MIToS.MSA.read("pf00062.stockholm.gz",Stockholm) |> Node
+fig1 = viewmsa(vm)
+
+using FastaIO
+vm = FastaIO.readfasta("data/fasta1.fas") |> Node
+fig1 = viewmsa(vm)
 ```
 Parameters:
-sheetsize ----- Dimensions of the msa shown, Default - [18,18]
+sheetsize ----- Dimensions of the msa shown, Default - [40,20]
 resolution ---- Default - (1500, 600)
 colorscheme --- Default - :viridis
-positions ----- Residue positions, Default - length of msa
+positions ----- Residue positions, Default - 1:(length of msa)
 """
-function viewmsa(   msa::MSA.AbstractMultipleSequenceAlignment;
+function viewmsa(   msa::T;
 					sheetsize = [40,20],
 					resolution = (1500, 600),
                     colorscheme = :viridis,
-                    colorval = 2
-				)
+                    colorval = 2,
+                    positions = 0
+				) where {T<:Node}
 	width1 = sheetsize[1]
 	height1 = sheetsize[2]
 	fig = Figure(resolution = resolution)
-	ax1 = Axis(fig[1:7,3:9])
-	tightlimits!(ax1)
-	labels = msa.matrix.dicts[1] |> keys |> collect |> Node
-	nums = msa.matrix.dicts[2] |> keys |> collect |> Node
+	ax = Axis(fig[1:7,3:9])
+    labels = nothing
+    nums = nothing
+    strmsa = nothing
+	tightlimits!(ax)
+    # f2 = [msa[i][2] for i in 1:size(msa,1)]
+    # mat = [[f2[i]...] for i in 1:size(f2,1)] |> combinedims .|> string |> _t
+    # if size(mat,1) < sheetsize[1]
+    #     height1 = size(mat,1) - 1
+    # else
+    #     height1 = sheetsize[1]
+    # end
+    # if size(mat,2) < sheetsize[2]
+    #     width1 = size(mat,2) - 1
+    # else
+    #     width1 = sheetsize[2]
+    # end
+    if typeof(msa[])<:MSA.AbstractMultipleSequenceAlignment
+        labels = @lift $(msa).matrix.dicts[1] |> keys |> collect
+	    nums = @lift $(msa).matrix.dicts[2] |> keys |> collect
+        strmsa = @lift Matrix($msa) .|> string
+    elseif typeof(msa[])<:Vector{Tuple{String,String}}
+        if positions == 0
+            positions = @lift [1:length($msa[1][2])...]
+        end
+        labels = @lift [$msa[i][1] for i in 1:size($msa,1)]
+	    nums = typeof(positions)<:Node ? (@lift collect($positions)) : Node(positions)
+        strmsa = @lift [[$fas1[i][2]...] for i in 1:size($fas1,1)] |> combinedims .|> string
+    else
+        error("sorry methods for that input don't exist")
+    end
 	labelssize = @lift size($labels,1) - (height1-1)
 	labelsrange = @lift $labelssize:-1:1
 	numssize = @lift size($nums,1) - (width1-1)
 	numsrange = @lift 1:1:$numssize
-
     sl1 = GLMakie.Slider(fig[end+1,3:9], range = numsrange, startvalue = 1)
 	sl1.value = 1
 	sl2 = GLMakie.Slider(fig[1:7,10], range = labelsrange, startvalue = 1, horizontal = false,
 		tellwidth = true, height = nothing)
 	sl2.value = labelssize[]
-
-    colorval = Node(colorval)
-	strmsa = Matrix(msa) .|> string
-	strmsavals = [ kdict(i) for i in strmsa ]
-	strmsavals2 = strmsavals |> combinedims
+    colorval = typeof(colorval)<:Node ? colorval : Node(colorval)
+	strmsavals = @lift [ _kdict(i) for i in $strmsa ]
+	strmsavals2 = @lift $strmsavals |> combinedims
 	labelshow = lift(X->labels[][(X+(height1-1):-1:X)],sl2.value)
 	numsshow = lift(X->nums[][(X:1:X+(width1-1))],sl1.value)
 	labelshow2 = lift(X->(X+(height1-1):-1:X),sl2.value)
 	numsshow2 = lift(X->(X:1:X+(width1-1)),sl1.value)
-	fixtmsa = lift(X->replace(strmsavals2[X,:,:], nothing => 0.0),colorval)
+	fixtmsa = @lift replace($strmsavals2[$colorval,:,:], nothing => 0.0)
 	msashow = @lift $fixtmsa[$labelshow2,$numsshow2] |> _t
-	charmsa = [x[1] for x in strmsa]
-	charshow = @lift charmsa[$labelshow2,$numsshow2]
-	widthrange = indexshift([1:width1...],-0.5)
-	heightrange = indexshift([1:height1...],-0.5)
-	ax1.yticks = (heightrange, labelshow[])
+	charmsa = @lift [x[1] for x in $strmsa]
+	charshow = @lift $charmsa[$labelshow2,$numsshow2]
+	widthrange = [1:width1...]
+	heightrange = [1:height1...]
+	ax.yticks = (heightrange, labelshow[])
 	on(labelshow) do ls
-		ax1.yticks = (heightrange, ls)
+		ax.yticks = (heightrange, ls)
 	end
-	ax1.xticks = (widthrange, numsshow[])
+	ax.xticks = (widthrange, numsshow[])
 	on(numsshow) do ns
-		ax1.xticks = (widthrange, ns)
+		ax.xticks = (widthrange, ns)
 	end
-	ax1.xticklabelsize = 9
-	ax1.yticklabelsize = 13
-	ax1.xzoomlock[] = true
-	ax1.yzoomlock[] = true
-	axisaspect = 2.3
-	ax1.yticklabelspace[] = 10
-
-scatter!(ax1,
-        points1,
-        marker = charvec,
-        markersize = (10.0,11.0),
-		color = :black,
-		strokecolor = :black
-        )
-heatmap!(ax1, msashow, show_grid = true, show_axis = true,
-       colormap = colorscheme
-       )
-ax1.attributes.xaxisposition[] = :top
-deregister_interaction!(fig.current_axis.x,:rectanglezoom)
-fig
-#     return fig
-# end
-
+	ax.xticklabelsize = 9
+	ax.yticklabelsize = 13
+	ax.xzoomlock[] = true
+	ax.yzoomlock[] = true
+	ax.yticklabelspace[] = 10
 	points1 = [Point2f0(x,y) for x in widthrange for y in heightrange] |> collect
 	charvec = @lift SplitApplyCombine.flatten($charshow)
-	scatter!(ax1,
+	scatter!(ax,
 	        points1,
 	        marker = charvec,
 	        markersize = (10.0,11.0),
 			color = :black,
 			strokecolor = :black
 	        )
-	heatmap!(ax1, msashow, show_grid = true, show_axis = true,
+	heatmap!(ax, msashow, show_grid = true, show_axis = true,
 	       colormap = colorscheme
            )
-    ax1.attributes.xaxisposition[] = :top
+    ax.attributes.xaxisposition[] = :top
     deregister_interaction!(fig.current_axis.x,:rectanglezoom)
 	return fig
-end
-"""
-    viewmsa(msa)
-
-Create and return a Makie Figure for a fasta file.
-# Examples
-```julia
-vm = viewmsa("data/fasta1.fas")
-```
-Parameters:
-sheetsize ----- Dimensions of the msa shown, Default - [18,18]
-resolution ---- Default - (1500, 600)
-colorscheme --- Default - :viridis
-positions ----- Residue positions, Default - length of msa
-"""
-function viewmsa(   msa::Vector{Tuple{String,String}};
-                    sheetsize = [18,18],
-					          resolution = (1000, 400),
-                    colorscheme = :viridis,
-                    colorval = 2,
-                    positions = 0
-				)
-    #
-    if positions == 0
-        positions = [1:length(msa[1][2])...]
-    end
-    f2 = [msa[i][2] for i in 1:size(msa,1)]
-    mat = [[f2[i]...] for i in 1:size(f2,1)] |> combinedims .|> string |> _t
-    if size(mat,1) < sheetsize[1]
-        height1 = size(mat,1) - 1
-    else
-        height1 = sheetsize[1]
-    end
-    if size(mat,2) < sheetsize[2]
-        width1 = size(mat,2) - 1
-    else
-        width1 = sheetsize[2]
-    end
-
-    fig = GLMakie.Figure(resolution = resolution)
-    ax1 = Axis(fig[1:7,3:9])
-    tightlimits!(ax1)
-    labels = Node([msa[i][1] for i in 1:size(msa,1)])
-    nums = Node(positions)
-    labelssize = @lift size($labels,1) - (height1-1)
-    labelsrange = @lift $labelssize:-1:1
-    numssize = @lift size($nums,1) - (width1-1)
-    numsrange = @lift 1:1:$numssize
-
-    sl1 = GLMakie.Slider(fig[end+1,3:9], range = numsrange, startvalue = 1)
-    sl1.value = 1
-    sl2 = GLMakie.Slider(fig[1:7,10], range = labelsrange, startvalue = 1, horizontal = false,
-    	tellwidth = true, height = nothing)
-    sl2.value = 1
-    colorval = Node(colorval)
-    strmsa = mat
-    strmsavals = [ kdict(i) for i in strmsa ]
-    strmsavals2 = strmsavals |> combinedims
-    labelshow = lift(X->labels[][(X+(height1-1):-1:X)],sl2.value)
-    numsshow = lift(X->nums[][(X:1:X+(width1-1))],sl1.value)
-    labelshow2 = lift(X->(X+(height1-1):-1:X),sl2.value)
-    numsshow2 = lift(X->(X:1:X+(width1-1)),sl1.value)
-    fixtmsa = lift(X->replace(strmsavals2[X,:,:], nothing => 0.0),colorval)
-    msashow = @lift $fixtmsa[$labelshow2,$numsshow2] |> _t
-    charmsa = [x[1] for x in strmsa]
-    charshow = @lift charmsa[$labelshow2,$numsshow2]
-    widthrange = indexshift([1:width1...],-0.5)
-    heightrange = indexshift([1:height1...],-0.5)
-    ax1.yticks = (heightrange, labelshow[])
-    on(labelshow) do ls
-    	ax1.yticks = (heightrange, ls)
-    end
-    ax1.xticks = (widthrange, numsshow[])
-    on(numsshow) do ns
-    	ax1.xticks = (widthrange, ns)
-    end
-    ax1.xticklabelsize = 7.5
-    ax1.yticklabelsize = 10
-    ax1.xzoomlock[] = true
-    ax1.yzoomlock[] = true
-    axisaspect = 2.0
-    ax1.yticklabelspace[] = 6
-
-    poly!(ax1, [FRect2D(x, y, 1, 1) for x in 0:(width1-1) for y in 0:(height1-1)],
-    	 	color = :transparent, strokecolor = :black, strokewidth = 1)
-
-    points1 = [Point2f0(x,y) for x in widthrange for y in heightrange] |> collect
-    charvec = @lift SplitApplyCombine.flatten($charshow)
-
-    scatter!(ax1,
-            points1,
-            marker = charvec,
-            markersize = (7.0,8.0),
-    		color = :black,
-    		strokecolor = :black
-            )
-    heatmap!(ax1, msashow, show_grid = true, show_axis = true,
-           colormap = colorscheme
-           )
-    ax1.attributes.xaxisposition[] = :top
-    deregister_interaction!(fig.current_axis.x,:rectanglezoom)
-    return fig
-end
-function viewmsa!(  fig::GLMakie.Figure,
-                    msa::Vector{Tuple{String,String}};
-					sheetsize = [20,40],
-					resolution = (1000, 400),
-                    colorscheme = :viridis,
-                    colorval = 2,
-                    positions = 0
-				)
-    #
-    if positions == 0
-        positions = [1:length(msa[1][2])...]
-    end
-    f2 = [msa[i][2] for i in 1:size(msa,1)]
-    mat = [[f2[i]...] for i in 1:size(f2,1)] |> combinedims .|> string |> _t
-    if size(mat,1) < sheetsize[1]
-        height1 = size(mat,1) - 1
-    else
-        height1 = sheetsize[1]
-    end
-    if size(mat,2) < sheetsize[2]
-        width1 = size(mat,2) - 1
-    else
-        width1 = sheetsize[2]
-    end
-
-    # fig = Figure(resolution = resolution)
-    ax1 = Axis(fig[(end+1):(end+7),3:9])
-    tightlimits!(ax1)
-    labels = Node([msa[i][1] for i in 1:size(msa,1)])
-    nums = Node(positions)
-    labelssize = @lift size($labels,1) - (height1-1)
-    labelsrange = @lift $labelssize:-1:1
-    numssize = @lift size($nums,1) - (width1-1)
-    numsrange = @lift 1:1:$numssize
-
-    sl1 = Slider(fig[end+1,3:9], range = numsrange, startvalue = 1)
-    sl1.value = 1
-    sl2 = Slider(fig[(end-7):end,10], range = labelsrange, startvalue = 1, horizontal = false,
-    	tellwidth = true, height = nothing)
-    sl2.value = 1
-    colorval = Node(colorval)
-    strmsa = mat
-    strmsavals = [ kdict(i) for i in strmsa ]
-    strmsavals2 = strmsavals |> combinedims
-    labelshow = lift(X->labels[][(X+(height1-1):-1:X)],sl2.value)
-    numsshow = lift(X->nums[][(X:1:X+(width1-1))],sl1.value)
-    labelshow2 = lift(X->(X+(height1-1):-1:X),sl2.value)
-    numsshow2 = lift(X->(X:1:X+(width1-1)),sl1.value)
-    fixtmsa = lift(X->replace(strmsavals2[X,:,:], nothing => 0.0),colorval)
-    msashow = @lift $fixtmsa[$labelshow2,$numsshow2] |> _t
-    charmsa = [x[1] for x in strmsa]
-    charshow = @lift charmsa[$labelshow2,$numsshow2]
-    widthrange = indexshift([1:width1...],-0.5)
-    heightrange = indexshift([1:height1...],-0.5)
-    ax1.yticks = (heightrange, labelshow[])
-    on(labelshow) do ls
-    	ax1.yticks = (heightrange, ls)
-    end
-    ax1.xticks = (widthrange, numsshow[])
-    on(numsshow) do ns
-    	ax1.xticks = (widthrange, ns)
-    end
-    ax1.xticklabelsize = 7.5
-    ax1.yticklabelsize = 10
-    ax1.xzoomlock[] = true
-    ax1.yzoomlock[] = true
-    axisaspect = 2.0
-    ax1.yticklabelspace[] = 6
-
-    poly!(ax1, [FRect2D(x, y, 1, 1) for x in 0:(width1-1) for y in 0:(height1-1)],
-    	 	color = :transparent, strokecolor = :black, strokewidth = 1)
-
-    points1 = [Point2f0(x,y) for x in widthrange for y in heightrange] |> collect
-    charvec = @lift SplitApplyCombine.flatten($charshow)
-
-    scatter!(ax1,
-            points1,
-            marker = charvec,
-            markersize = (7.0,8.0),
-    		color = :black,
-    		strokecolor = :black
-            )
-    heatmap!(ax1, msashow, show_grid = true, show_axis = true,
-           colormap = colorscheme
-           )
-    ax1.attributes.xaxisposition[] = :top
-    deregister_interaction!(fig.current_axis.x,:rectanglezoom)
-    return fig
 end

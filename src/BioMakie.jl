@@ -4,12 +4,12 @@ export viewstruc, viewmsa
 
 using BioStructures, MolecularGraph, MIToS
 using Colors, Lazy
-using DataStructures, DataFrames, DelimitedFiles, JLD2
+using DataStructures, DelimitedFiles, JLD2, HTTP
 using Distances, Distributions, GeometryBasics
 using FileIO, FastaIO, OrderedCollections, SplitApplyCombine, TensorCast
-using GLMakie, JSServe#, CairoMakie, WGLMakie, GraphMakie
+using Makie, JSServe, GraphMakie
 using Observables, Meshes, MeshViz
-using GLMakie: @lift, lift
+using GLMakie
 GLMakie.activate!()
 
 include("../src/chemdata.jl")

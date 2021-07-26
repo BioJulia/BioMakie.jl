@@ -11,6 +11,9 @@
 		},
 		{
 			"path": "..\\..\\model-zoo"
+		},
+		{
+			"path": "..\\..\\Flux3D.jl"
 		}
 	],
 	"settings": {

@@ -14,8 +14,6 @@ docpage/__site
 _research/
 *.gz
 *.msa
-.vscode/
-.vscode/*
+.vscode
+*.vscode/*
 .vscode/biostuff.code-workspace
-.vscode/biostuff.code-workspace
-
