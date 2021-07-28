@@ -1,3 +1,30 @@
+using MolecularGraph: ATOMTABLE, ATOMSYMBOLMAP, ATOM_COVALENT_RADII, ATOM_VANDERWAALS_RADII
+
+ATOMSYMBOLKEYS = ATOMSYMBOLMAP |> collectkeys
+ATOMSYMBOLVALS = ATOMSYMBOLMAP |> collectvals
+sp = sortperm(ATOMSYMBOLMAP |> collectvals)
+atomicmasses = OrderedDict(ATOMSYMBOLKEYS[sp].=>[ATOMTABLE[ATOMSYMBOLMAP[x]]["Weight"] for x in ATOMSYMBOLKEYS[sp]])
+
+_covrad = []
+for x in ATOMSYMBOLKEYS[sp]
+	try
+		push!(_covrad,OrderedDict(x=>ATOM_COVALENT_RADII[ATOMTABLE[ATOMSYMBOLMAP[x]]["Number"]]))
+	catch
+			
+	end
+end
+covrad = merge(_covrad...)
+
+_vdwrad = []
+for x in ATOMSYMBOLKEYS[sp]
+	try
+		push!(_vdwrad,OrderedDict(x=>ATOM_VANDERWAALS_RADII[ATOMTABLE[ATOMSYMBOLMAP[x]]["Number"]]))
+	catch
+			
+	end
+end
+vdwrad = merge(_vdwrad...)
+
 res3letters = ["ARG", "MET", "ASN", "GLU", "PHE",
 	"ILE", "ASP", "LEU", "ALA", "GLN",
 	"GLY", "CYS", "TRP", "TYR", "LYS",
@@ -60,22 +87,6 @@ resletterdict = OrderedDict(
 	"V" => "VAL",
 	"X" => "XAA",
 	"J" => "XLE"
-)
-atomicmasses = Dict("C" => 12.0107,
-                    "N" => 14.0067,
-                    "H" => 1.0079,
-                    "O" => 15.9994,
-                    "S" => 32.065,
-					"X" => 1.0079
-)
-vanderwaals = Dict( "C" => 1.70,
-            		"N" => 1.55,
-            		"H" => 1.20,
-            		"O" => 1.52,
-            		"S" => 1.85,
-					"X" => 1.20,
-					"ZN" => 1.20,
-  				  	"CL" => 1.85
 )
 heavyresbonds = Dict(
                 "ARG" => [["C","O"],["C","CA"],["CA","N"],["CA","CB"],["CB","CG"],

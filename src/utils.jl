@@ -181,7 +181,7 @@ end
 function resvdw(res::BioStructures.Residue)
     total = 0.0
     for atm in res
-        total+=vdw["$(element(atm, strip=true))"]
+        total+=vdwrad["$(element(atm, strip=true))"]
     end
     return total
 end
@@ -199,7 +199,7 @@ function centerofpoints(points::AbstractArray{T}) where T <: Number
     zs = points[:,3]
     return centerofpoints = [ ∑(xs)/size(xs,1), ∑(ys)/size(ys,1), ∑(zs)/size(zs,1) ] |> _g
 end
-function centerofmass(atms::AbstractArray{AbstractAtom})
+function centerofmass(atms::AbstractArray{T}) where {T<:AbstractAtom}
     masses = []
     positions = coordarray(atms)
     xs = positions[1,:]
@@ -237,7 +237,7 @@ function surfacearea(coordinates, connectivity)
     end
     return totalarea
 end
-function linesegs(arr::AbstractArray{AbstractFloat,3})
+function linesegs(arr::AbstractArray{T,3}) where {T<:AbstractFloat}
     new_arr::AbstractArray{Point3f0} = []
     for i in 1:size(arr,1)
         push!(new_arr, Makie.Point3f0(arr[i,1,:]))

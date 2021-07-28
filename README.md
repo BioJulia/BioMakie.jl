@@ -3,7 +3,7 @@
 ## Installation and Setup
 
 This package contains visual utilities for biodata, mostly proteins. 
-At the moment it might be best to use the master branch like so:
+At the moment it might be best to add the package like so:
 ```julia
 julia> ] add 'https://github.com/kool7d/BioMakie.jl'
 julia> using BioMakie

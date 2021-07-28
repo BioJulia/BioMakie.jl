@@ -50,21 +50,23 @@ sv = viewstruc(struc)
 ```
 Keyword arguments:
 resolution ---- Default - (800,800)
-atmcolors ----- Default - "element", define your own dict for atoms like "N" => :blue
-atmscale ------ Size adjustment of atom radii, Default - 1/3
+atmcolors ----- Default - "element", define your own dict for atoms like: "N" => :blue
+atmscale ------ Default - 1/3, size adjustment of atom radii
+figdims ------- Default - [13,10], GridLayout dimensions for structure view: 'fig = Figure(); fig[ 1:(figdims[1]), 1:(figdims[2]) ]'
 """
 function viewstruc( struc::T,
 					selectors = [standardselector];
 					resolution = (800,800),
 					atmcolors = "element",
-					atmscale = 1/3
+					atmscale = 1/3,
+					figdims = [13,10]
 					) where {T<:Node}
     atms = @lift BioStructures.collectatoms($struc,selectors...)
     atmcords = @lift atomcoords($atms)
-    colr = lift(X->atomcolors(X; color = atmcolors),atms)
-    marksize = lift(X->(atmscale).*atomradii(X),atms)
+    colr = @lift atomcolors($atms; color = atmcolors)
+    marksize = @lift (atmscale).*atomradii($atms)
     fig = Figure(resolution = resolution)
-    ly = fig[1:13,1:10]
+    ly = fig[ 1:(figdims[1]), 1:(figdims[2]) ]
     plt = meshscatter(ly, atmcords; show_axis = false, color = colr, markersize = marksize)
 	resshps = @lift bondshape(SplitApplyCombine.flatten(bonds(collectresidues($struc,selectors...))))
 	bbshps = @lift bondshape(SplitApplyCombine.flatten(backbonebonds.(collectchains($struc))))
