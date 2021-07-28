@@ -10,7 +10,7 @@ julia> using BioMakie
 ```
 ## Usage
 
-To view a PDB structure, use the `viewstruc` function with a PDB ID or BioStructures protein structure.
+To view a PDB structure, use the `viewstruc` function.
 ```julia
 using BioStructures
 struc = retrievepdb("2vb1", dir = "data\\") |> Node
@@ -23,7 +23,7 @@ sv = viewstruc(struc)
   <img width="550" height="620" src="docs/src/assets/2vb1.png">
 </p>
 
-To view a multiple sequence alignment, use the `viewmsa` function with a Pfam ID or fasta file.
+To view a multiple sequence alignment, use the `viewmsa` function with a Pfam MSA or fasta file.
 ```julia
 using MIToS.MSA
 downloadpfam("pf00062")
@@ -35,3 +35,4 @@ vm = FastaIO.readfasta("data/fasta1.fas") |> Node
 fig1 = viewmsa(vm)
 ```
 ![Image of msa](docs/src/assets/pf00062.png)
+
