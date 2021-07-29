@@ -16,7 +16,7 @@ atomcolors(atoms; color = "element") =
 							end
 						end
 					end
-atomradii(atoms) = [vanderwaals[BioStructures.element(x)] for x in atoms]
+atomradii(atoms) = [vdwrad[BioStructures.element(x)] for x in atoms]
 resids(residues) = resid.(residues)
 function resatoms(res; typ = :OrderedDict)
 	resvec1 = [k for k in res]

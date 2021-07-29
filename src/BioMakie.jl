@@ -8,7 +8,7 @@ using Reexport
 
 using BioStructures, MolecularGraph, MIToS
 using Colors, Lazy
-using DataStructures, DelimitedFiles, JLD2, HTTP
+using DataStructures, DelimitedFiles, JLD2, JSON, HTTP
 using Distances, Distributions, GeometryBasics
 using FileIO, FastaIO, OrderedCollections, SplitApplyCombine, TensorCast
 using Makie, GraphMakie, JSServe#, WGLMakie
@@ -21,5 +21,6 @@ include("../src/chemdata.jl")
 include("../src/bonds.jl")
 include("../src/structure.jl")
 include("../src/msa.jl")
+include("../src/downloaders.jl")
 
 end # BioMakie
