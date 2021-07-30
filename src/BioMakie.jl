@@ -10,7 +10,7 @@ using DataStructures, DelimitedFiles, JLD2, JSON3, HTTP
 using Distances, Distributions, GeometryBasics
 using FileIO, FastaIO, OrderedCollections, SplitApplyCombine, TensorCast
 using Makie, GraphMakie, JSServe#, WGLMakie
-using Observables, Meshes, MeshViz
+using Observables, Meshes
 using GLMakie
 GLMakie.activate!()
 
