@@ -23,6 +23,7 @@ sv = viewstruc(struc)
   <img width="550" height="620" src="docs/src/assets/2vb1.png">
 </p>
 
+
 To view a multiple sequence alignment, use the `viewmsa` function with a Pfam MSA or fasta file.
 ```julia
 using MIToS.MSA
@@ -36,3 +37,14 @@ fig1 = viewmsa(vm)
 ```
 ![Image of msa](docs/src/assets/pf00062.png)
 
+
+Here is a downloader for data from PDBe. Call it with `PDBe_downloader(pdbid)`.
+```julia
+fig = PDBe_downloader("2vb1")
+
+pdbid = "2vb1" |> Node
+fig = PDBe_downloader(pdbid)
+```
+<p align="center">
+  <img width="450" height="620" src="docs/src/assets/Screenshot (10)2.png">
+</p>
