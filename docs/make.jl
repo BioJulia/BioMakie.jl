@@ -1,17 +1,15 @@
-using Documenter, BioMakie
+using BioMakie, Documenter, Literate
 
-makedocs(sitename = "BioMakie",
-    modules = [BioMakie],
-    build   = "build",
-    clean   = true,
-    format = Documenter.HTML(),
+makedocs(; modules=[BioMakie], authors="Dan Kool",
+    repo="https://github.com/kool7d/BioMakie.jl/blob/{commit}{path}#{line}",
+    sitename="BioMakie.jl",
+    format=Documenter.HTML(; prettyurls=get(ENV, "CI", "false") == "true",
+                       canonical="https://JuliaPlots.github.io/BioMakie.jl", assets=String[]),
+
     pages = ["Home" => "index.md",
-            "GL Usage" => "GLusage.md",
-            "WebGL/JSServe Usage" => "WGLusage.md",
+            "Usage" => "usage.md",
             "API" => "api.md"]
         )
 
-deploydocs(repo = "github.com/kool7d/BioMakie.jl.git",
-            branch = "gh-pages",
-            versions = ["stable" => "v^", "v#.#"],
-            push_preview = true)
+deploydocs(;repo="github.com/kool7d/BioMakie.jl",
+            push_preview=true)

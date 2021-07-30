@@ -1,3 +1,10 @@
+export  atomcoords, 
+		atomcolors, 
+		atomradii,
+		resids,
+		resatoms,
+		viewstruc
+
 atomcoords(atoms) = coordarray(atoms) |> transpose |> collect
 atomcolors(atoms; color = "element") =
 					if color == "ele" || color == "element" || color == :ele || color == :element

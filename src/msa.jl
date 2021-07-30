@@ -1,3 +1,5 @@
+export viewmsa
+
 """
     viewmsa(msa)
 
