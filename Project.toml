@@ -49,6 +49,7 @@ Underscores = "d9a01c3f-67ce-4d8c-9b55-35f6e4050bb1"
 WGLMakie = "276b4fcb-3e11-5398-bf8b-a0c2d153d008"
 
 [compat]
+Parameters = "0.12"
 julia = "1"
 
 [extras]
