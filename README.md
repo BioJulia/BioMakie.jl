@@ -48,18 +48,3 @@ fig = PDBe_downloader(pdbid)
 <p align="center">
   <img width="450" height="620" src="docs/src/assets/Screenshot (10)2.png">
 </p>
-
-You can also get molecular graph representations from protein sequences.
-```julia
-using MolecularGraph
-prot = protsmiles("LAAVSTPK")
-protmol = smilestomol(prot)
-canvas = SvgCanvas()
-draw2d!(canvas, protmol)
-drawatomindex!(canvas, protmol)
-molsvg = tosvg(canvas, 800, 350)
-display("image/svg+xml", molsvg)
-```
-<p align="center">
-  <img width="550" height="450" src="docs/src/assets/Screenshot (177).png">
-</p>
