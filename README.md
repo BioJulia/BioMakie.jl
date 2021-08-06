@@ -1,5 +1,20 @@
 # BioMakie
 
+BioMakie is still in what what I would consider its early stages, and there is still a lot of work to do. 
+If you have any ideas or code, I'd love to collaborate! 
+
+Open an issue or a pull request on github, 
+
+or join the chat on Slack:    
+https://join.slack.com/t/julialang/shared_invite/zt-nmal0i0x-LcYEtdnTameGsXmBzMzgog - "invite link"   
+https://julialang.slack.com - regular link
+
+or Zulip:   
+https://julialang.zulipchat.com 
+
+or Julialang Discourse (specifically the *Visualization* and *Biology, Health and Medicine* domains):   
+https://discourse.julialang.org/
+
 ## Installation and Setup
 
 This package contains visual utilities for biodata, mostly proteins. 
@@ -47,19 +62,4 @@ fig = PDBe_downloader(pdbid)
 ```
 <p align="center">
   <img width="450" height="620" src="docs/src/assets/Screenshot (10)2.png">
-</p>
-
-You can also get molecular graph representations from protein sequences.
-```julia
-using MolecularGraph
-prot = protsmiles("LAAVSTPK")
-protmol = smilestomol(prot)
-canvas = SvgCanvas()
-draw2d!(canvas, protmol)
-drawatomindex!(canvas, protmol)
-molsvg = tosvg(canvas, 800, 350)
-display("image/svg+xml", molsvg)
-```
-<p align="center">
-  <img width="550" height="450" src="docs/src/assets/Screenshot (177).png">
 </p>
