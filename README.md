@@ -1,5 +1,15 @@
 # BioMakie
 
+BioMakie is still in what what I would consider its early stages, and there is still a lot of work to do. If you have any ideas or code, I'd love to collaborate! 
+Open an issue or a pull request on github, 
+or join the chat on Slack:
+https://join.slack.com/t/julialang/shared_invite/zt-nmal0i0x-LcYEtdnTameGsXmBzMzgog - "invite link"
+https://julialang.slack.com - regular link
+or Zulip:
+https://julialang.zulipchat.com 
+or Julialang Discourse (specifically the *Visualization* and *Biology, Health and Medicine* domains):
+https://discourse.julialang.org/
+
 ## Installation and Setup
 
 This package contains visual utilities for biodata, mostly proteins. 
