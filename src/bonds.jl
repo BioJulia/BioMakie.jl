@@ -6,8 +6,8 @@ export  AtomBond,
 
 abstract type AbstractTether end
 abstract type AbstractBond <: AbstractTether end
-mutable struct AtomBond <:AbstractBond
-	atoms::Vector{AbstractAtom}
+mutable struct AtomBond{T} <:Bond where {T}
+	atoms::Vector{T}
 end
 import BioStructures.defaultatom, BioStructures.defaultresidue
 defaultatom(at::BioStructures.Atom) = at
@@ -91,11 +91,11 @@ function backbonebonds(chn::BioStructures.Chain)
 	for i = 1:(size(bbatoms,1)-1)
 		firstatomname = bbatoms[i].name
 		secondatomname = bbatoms[i+1].name
-		firstatomname == " N  " && secondatomname == " CA " && distance(bbatoms[i], bbatoms[i+1]) < 1.8 && push!(bonds, AtomBond(bbatoms[i], bbatoms[i+1]))
-		firstatomname == " CA " && secondatomname == " C  " && distance(bbatoms[i], bbatoms[i+1]) < 1.8 && push!(bonds, AtomBond(bbatoms[i], bbatoms[i+1]))
-		firstatomname == " C  " && secondatomname == " O  " && distance(bbatoms[i], bbatoms[i+1]) < 1.8 && push!(bonds, AtomBond(bbatoms[i], bbatoms[i+1]))
+		firstatomname == " N  " && secondatomname == " CA " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i+1])) < 1.8 && push!(bonds, AtomBond(bbatoms[i], bbatoms[i+1]))
+		firstatomname == " CA " && secondatomname == " C  " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i+1])) < 1.8 && push!(bonds, AtomBond(bbatoms[i], bbatoms[i+1]))
+		firstatomname == " C  " && secondatomname == " O  " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i+1])) < 1.8 && push!(bonds, AtomBond(bbatoms[i], bbatoms[i+1]))
 		try
-			firstatomname == " N  " && bbatoms[i-2].name ==  " C  " && distance(bbatoms[i], bbatoms[i-2]) < 1.8 && push!(bonds, AtomBond(bbatoms[i], bbatoms[i-2]))
+			firstatomname == " N  " && bbatoms[i-2].name ==  " C  " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i-2])) < 1.8 && push!(bonds, AtomBond(bbatoms[i], bbatoms[i-2]))
 		catch
 
 		end
