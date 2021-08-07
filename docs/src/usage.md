@@ -45,14 +45,12 @@ using JSServe
 Page(exportable=true, offline=true)
 ```
 ```@example 1
-using WGLMakie
+using WGLMakie, BioStructures
 WGLMakie.activate!()
 fig = Figure()
 lscene = LScene(fig[1, 1], scenekw = (camera = cam3d!, raw = false))
 struc = retrievepdb("2vb1")
 cords = coordarray(collectatoms(struc,standardselector))
 meshscatter!(lscene,cords;show_axis=false)
-
-# now you can plot into lscene like you're used to
 
 ```

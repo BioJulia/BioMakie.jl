@@ -1,17 +1,14 @@
 module BioMakie
 
-using Makie: push!
-using Reexport
-@reexport using Makie
-
 using BioStructures, MolecularGraph, MIToS
-using Colors, Lazy
+using Lazy, SplitApplyCombine, TensorCast
 using DataStructures, DelimitedFiles, JLD2, JSON3, HTTP
-using Distances, Distributions, GeometryBasics
-using FileIO, FastaIO, OrderedCollections, SplitApplyCombine, TensorCast
-using Makie, GraphMakie, JSServe#, WGLMakie
-using Observables, Meshes
-using GLMakie
+using Distances, Distributions, GeometryBasics, Colors
+using FileIO, FastaIO, OrderedCollections
+using GraphMakie, JSServe, WGLMakie
+using Observables, Meshes, GLMakie
+using WGLMakie.Makie
+using Makie: push!
 GLMakie.activate!()
 
 include("../src/utils.jl")
