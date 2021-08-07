@@ -4,43 +4,56 @@ EditURL = "https://github.com/kool7d/BioMakie.jl/master/docs/src/GLusage.jl"
 
 ## Usage
 
-To view a PDB structure, use the `viewstruc` function with a PDB ID or BioStructures protein structure.
+To view a PDB structure, use the `viewstruc` function.
 ```julia
-sv = viewstruc("2VB1")
-
-struc = retrievepdb("2vb1", dir = "data\\")
+using BioStructures
+struc = retrievepdb("2vb1", dir = "data\\") |> Node
 sv = viewstruc(struc)
 
-struc = read("data\\2vb1_m1.pdb", BioStructures.PDB)
+struc = read("data\\2vb1_mutant1.pdb", BioStructures.PDB) |> Node
 sv = viewstruc(struc)
 ```
-<p align="center">
-  <img width="650" height="720" src="./assets/2vb1.png">
-</p>
+![Image of struc](./assets/2vb1.png)
 
-To view a multiple sequence alignment, use the `viewmsa` function with a Pfam ID or fasta file.
+
+To view a multiple sequence alignment, use the `viewmsa` function with a Pfam MSA or fasta file.
 ```julia
-mv = viewmsa("PF00062")
-```
-```julia
-mv = viewmsa("data/fasta1.fas")
+using MIToS.MSA
+downloadpfam("pf00062")
+vm = MIToS.MSA.read("pf00062.stockholm.gz",Stockholm) |> Node
+fig1 = viewmsa(vm)
+
+using FastaIO
+vm = FastaIO.readfasta("data/fasta1.fas") |> Node
+fig1 = viewmsa(vm)
 ```
 ![Image of msa](./assets/pf00062.png)
+
+
+Here is a downloader for data from PDBe. Call it with `PDBe_downloader(pdbid)`.
+```julia
+fig = PDBe_downloader("2vb1")
+
+pdbid = "2vb1" |> Node
+fig = PDBe_downloader(pdbid)
+```
+![Image of downloader](./assets/dler.png)
+
 
 ```@example 1
 using JSServe
 Page(exportable=true, offline=true)
 ```
-
 ```@example 1
 using WGLMakie
 WGLMakie.activate!()
-
 fig = Figure()
-
 lscene = LScene(fig[1, 1], scenekw = (camera = cam3d!, raw = false))
 
+using BioStructures
+struc = retrievepdb("2vb1") |> Node
+sv = viewstruc(struc)
+
 # now you can plot into lscene like you're used to
-meshscatter!(lscene, randn(100, 3))
-fig
+
 ```
