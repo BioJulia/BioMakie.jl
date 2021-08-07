@@ -49,10 +49,9 @@ using WGLMakie
 WGLMakie.activate!()
 fig = Figure()
 lscene = LScene(fig[1, 1], scenekw = (camera = cam3d!, raw = false))
-
-using BioStructures
-struc = retrievepdb("2vb1") |> Node
-sv = viewstruc(struc)
+struc = retrievepdb("2vb1")
+cords = coordarray(collectatoms(struc,standardselector))
+meshscatter!(lscene,cords;show_axis=false)
 
 # now you can plot into lscene like you're used to
 
