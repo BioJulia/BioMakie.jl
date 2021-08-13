@@ -61,5 +61,5 @@ pdbid = "2vb1" |> Node
 fig = PDBe_downloader(pdbid)
 ```
 <p align="center">
-  <img width="450" height="620" src="docs/src/assets/Screenshot (10)2.png">
+  <img width="450" height="620" src="docs/src/assets/dler.png">
 </p>
