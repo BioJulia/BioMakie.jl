@@ -35,7 +35,7 @@ struc = read("data\\2vb1_mutant1.pdb", BioStructures.PDB) |> Node
 sv = viewstruc(struc)
 ```
 <p align="center">
-  <img width="550" height="620" src="docs/src/assets/2vb1.png">
+  <img width="550" height="620" src="docs/assets/2vb1.png">
 </p>
 
 
@@ -50,7 +50,7 @@ using FastaIO
 vm = FastaIO.readfasta("data/fasta1.fas") |> Node
 fig1 = viewmsa(vm)
 ```
-![Image of msa](docs/src/assets/pf00062.png)
+![Image of msa](docs/assets/pf00062.png)
 
 
 Here is a downloader for data from PDBe. Call it with `PDBe_downloader(pdbid)`.
@@ -61,5 +61,5 @@ pdbid = "2vb1" |> Node
 fig = PDBe_downloader(pdbid)
 ```
 <p align="center">
-  <img width="450" height="620" src="docs/src/assets/dler.png">
+  <img width="450" height="620" src="docs/assets/dler.png">
 </p>
