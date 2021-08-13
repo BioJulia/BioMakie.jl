@@ -1,5 +1,3 @@
-export SMILESaa, protsmiles
-
 using MolecularGraph: UndirectedGraph
 import Base.convert
 

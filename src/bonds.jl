@@ -1,9 +1,3 @@
-export  AtomBond,
-		resbonds,
-		backbonebonds,
-		bonds,
-		bondshape
-
 abstract type AbstractTether end
 abstract type AbstractBond <: AbstractTether end
 mutable struct AtomBond{T} <:Bond where {T}
