@@ -1,22 +1,11 @@
 module BioMakie
 
-export  AtomBond,
-		resbonds,
-		backbonebonds,
-		bonds,
-		bondshape,
+export  bondshape,
         resletterdict,
         PDBe_downloader,
         viewmsa,
-        atomcoords, 
 		atomcolors, 
-		atomradii,
-		resids,
-		resatoms,
-		viewstruc,
-        SMILESaa, 
-        protsmiles
-#
+		viewstruc
 
 using BioStructures, MolecularGraph, MIToS
 using Lazy, SplitApplyCombine, TensorCast
