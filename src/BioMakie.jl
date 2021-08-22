@@ -13,8 +13,7 @@ using DataStructures, DelimitedFiles, JLD2, JSON3, HTTP
 using Distances, Distributions, GeometryBasics, Colors
 using FileIO, FastaIO, OrderedCollections
 using GraphMakie, JSServe, WGLMakie
-using Observables, Meshes, GLMakie
-using WGLMakie.Makie
+using Meshes, GLMakie
 using Makie: push!
 GLMakie.activate!()
 

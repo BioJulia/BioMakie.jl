@@ -9,7 +9,7 @@ atomcolors(atoms; color = "element") =
 							[color[BioStructures.element(x)] for x in atoms]
 						catch
 							try
-								d = @eval $(color)*"colors"
+								d = @eval $(color)
 								[d[BioStructures.element(x)] for x in atoms]
 							catch
 								println("color dict not found")

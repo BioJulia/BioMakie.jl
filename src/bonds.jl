@@ -1,14 +1,55 @@
-abstract type AbstractTether end
-abstract type AbstractBond <: AbstractTether end
-mutable struct AtomBond{T} <:Bond where {T}
-	atoms::Vector{T}
+import Base.setindex!, Base.delete!, Base.convert
+using ComponentArrays, OrderedCollections
+mutable struct AtomData{T}
+    d::T
 end
+Base.setindex!(atd:<:AtomData, val, name::String) = Base.setindex!(atd.d, val, name)
+Base.getindex(atd<:AtomData, name::String) = atd.d[name]
+take!(atd::AtomData, str::String) = pop!(atd.d,str)
+delete!(atd::AtomData, str::String) = delete!(atd.d,str)
+function convert(typ,atd::AtomData)
+	newd = Base.convert(typ,atd.d)
+	return AtomData(newd)
+end
+function AtomData{T}(atd::AtomData) where {T}
+	ratd = convert(T,atd::AtomData)
+	return ratd
+end
+AtomData() = AtomData(OrderedDict())
+
+a1 = AtomData()
+push!(a1.d,"tst1" => 1)
+a1.d
+AtomData{OrderedDict{String,Int64}}(a1)
+
+Base.setindex!(atd:<:AtomData, val, name::String) = Base.setindex!(atd.d, val, name)
+Base.getindex(atd<:AtomData, name::String) = atd.d[name]
+take!(atd::AtomData, str::String) = pop!(atd.d,str)
+delete!(atd::AtomData, str::String) = delete!(atd.d,str)
+
+d1 = AtomData()
+d1["id"] = 123
+d1["charge"] = 1.0
+d1["charge2"] = 0.5
+d1["id"] # 123
+
+take!(d1,"charge2") # 0.5
+delete!(d1,"charge")
+mutable struct Bond{T} <:AbstractBond where {T}
+	d::T
+end
+DataFrame(:atoms => [], :bond => [])
+
 import BioStructures.defaultatom, BioStructures.defaultresidue
 defaultatom(at::BioStructures.Atom) = at
 defaultresidue(res::BioStructures.Residue) = res
 convert(::BioStructures.Atom,disat::DisorderedAtom) = defaultatom(disat)
-AtomBond(atom1::AbstractAtom, atom2::AbstractAtom) = AtomBond([atom1,atom2])
-atoms(bond::AtomBond) = bond.atoms
+
+Bond(atom1::AbstractAtom, atom2::AbstractAtom) = Bond{DataFrame}(DataFrame(:atoms => [coords(atom1),coords(atom2)], :bond => [1]))
+Bond{ComponentArray}(atom1::AbstractAtom, atom2::AbstractAtom) = Bond{ComponentArray}(ComponentArray(:atoms => [coords(atom1),coords(atom2)], :bond => [1]))
+Bond{ComponentArray}(atom1::AbstractAtom, atom2::AbstractAtom, bondtype::Number) = Bond{ComponentArray}(ComponentArray(:atoms => [coords(atom1),coords(atom2)], :bond => [bondtype]))
+Bond{DataFrame}(bond::Bond{ComponentArray}) = Bond{}(DataFrame(:atoms => [coords(atom1),coords(atom2)], :bond => [bondtype]))
+atoms(bond::Bond) = bond.d[:atoms]
 function resbonds(	res::AbstractResidue,
 					selectors::Function...;
 					hres = true)
@@ -85,11 +126,11 @@ function backbonebonds(chn::BioStructures.Chain)
 	for i = 1:(size(bbatoms,1)-1)
 		firstatomname = bbatoms[i].name
 		secondatomname = bbatoms[i+1].name
-		firstatomname == " N  " && secondatomname == " CA " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i+1])) < 1.8 && push!(bonds, AtomBond(bbatoms[i], bbatoms[i+1]))
-		firstatomname == " CA " && secondatomname == " C  " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i+1])) < 1.8 && push!(bonds, AtomBond(bbatoms[i], bbatoms[i+1]))
-		firstatomname == " C  " && secondatomname == " O  " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i+1])) < 1.8 && push!(bonds, AtomBond(bbatoms[i], bbatoms[i+1]))
+		firstatomname == " N  " && secondatomname == " CA " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i+1])) < 1.8 && push!(bonds, Bond(bbatoms[i], bbatoms[i+1]))
+		firstatomname == " CA " && secondatomname == " C  " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i+1])) < 1.8 && push!(bonds, Bond(bbatoms[i], bbatoms[i+1]))
+		firstatomname == " C  " && secondatomname == " O  " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i+1])) < 1.8 && push!(bonds, Bond(bbatoms[i], bbatoms[i+1]))
 		try
-			firstatomname == " N  " && bbatoms[i-2].name ==  " C  " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i-2])) < 1.8 && push!(bonds, AtomBond(bbatoms[i], bbatoms[i-2]))
+			firstatomname == " N  " && bbatoms[i-2].name ==  " C  " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i-2])) < 1.8 && push!(bonds, Bond(bbatoms[i], bbatoms[i-2]))
 		catch
 
 		end
