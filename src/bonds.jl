@@ -1,18 +1,16 @@
-abstract type AbstractTether end
-abstract type AbstractBond <: AbstractTether end
-mutable struct AtomBond{T} <:Bond where {T}
-	atoms::Vector{T}
+mutable struct BondAtoms{T}
+	atoms::AbstractArray{T}
 end
 import BioStructures.defaultatom, BioStructures.defaultresidue
 defaultatom(at::BioStructures.Atom) = at
 defaultresidue(res::BioStructures.Residue) = res
 convert(::BioStructures.Atom,disat::DisorderedAtom) = defaultatom(disat)
-AtomBond(atom1::AbstractAtom, atom2::AbstractAtom) = AtomBond([atom1,atom2])
-atoms(bond::AtomBond) = bond.atoms
+BondAtoms(atom1::AbstractAtom, atom2::AbstractAtom) = BondAtoms([atom1,atom2])
+atoms(bond::BondAtoms) = bond.atoms
 function resbonds(	res::AbstractResidue,
 					selectors::Function...;
 					hres = true)
-	bonds = Vector{AtomBond}()
+	bonds = Vector{BondAtoms}()
 	resatoms = res.atoms
 	# resatoms2 = collectatoms(res,selectors...) .|> defaultatom
 	# atmkeys = keys(resatoms) |> collect
@@ -43,7 +41,7 @@ function resbonds(	res::AbstractResidue,
 			else
 				println("unusual atom $(heavybond[2])")
 			end
-			push!(bonds, AtomBond(resatoms[firstatomname], resatoms[secondatomname]))
+			push!(bonds, BondAtoms(resatoms[firstatomname], resatoms[secondatomname]))
 		end
 	end
 	if hres == true
@@ -73,7 +71,7 @@ function resbonds(	res::AbstractResidue,
 				else
 					println("unusual atom $(hresbond[2])")
 				end
-				push!(bonds, AtomBond(resatoms[firstatomname], resatoms[secondatomname]))
+				push!(bonds, BondAtoms(resatoms[firstatomname], resatoms[secondatomname]))
 			end
 		end
 	end
@@ -81,15 +79,15 @@ function resbonds(	res::AbstractResidue,
 end
 function backbonebonds(chn::BioStructures.Chain)
 	bbatoms = collectatoms(chn, backboneselector) .|> defaultatom
-	bonds = Vector{AtomBond}()
+	bonds = Vector{BondAtoms}()
 	for i = 1:(size(bbatoms,1)-1)
 		firstatomname = bbatoms[i].name
 		secondatomname = bbatoms[i+1].name
-		firstatomname == " N  " && secondatomname == " CA " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i+1])) < 1.8 && push!(bonds, AtomBond(bbatoms[i], bbatoms[i+1]))
-		firstatomname == " CA " && secondatomname == " C  " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i+1])) < 1.8 && push!(bonds, AtomBond(bbatoms[i], bbatoms[i+1]))
-		firstatomname == " C  " && secondatomname == " O  " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i+1])) < 1.8 && push!(bonds, AtomBond(bbatoms[i], bbatoms[i+1]))
+		firstatomname == " N  " && secondatomname == " CA " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i+1])) < 1.8 && push!(bonds, BondAtoms(bbatoms[i], bbatoms[i+1]))
+		firstatomname == " CA " && secondatomname == " C  " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i+1])) < 1.8 && push!(bonds, BondAtoms(bbatoms[i], bbatoms[i+1]))
+		firstatomname == " C  " && secondatomname == " O  " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i+1])) < 1.8 && push!(bonds, BondAtoms(bbatoms[i], bbatoms[i+1]))
 		try
-			firstatomname == " N  " && bbatoms[i-2].name ==  " C  " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i-2])) < 1.8 && push!(bonds, AtomBond(bbatoms[i], bbatoms[i-2]))
+			firstatomname == " N  " && bbatoms[i-2].name ==  " C  " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i-2])) < 1.8 && push!(bonds, BondAtoms(bbatoms[i], bbatoms[i-2]))
 		catch
 
 		end
@@ -104,13 +102,13 @@ function bonds(chain::BioStructures.Chain, selectors::Function...; hres = true)
 	chbonds = vcat(rbonds,bbonds)
 	return chbonds
 end
-function bondshape(bond::AtomBond)
+function bondshape(bond::BondAtoms, bondwidth = 0.15)
 	twoatms = atoms(bond)
     pnt1 = GeometryBasics.Point3f0(coords(twoatms[1])[1], coords(twoatms[1])[2], coords(twoatms[1])[3])
     pnt2 = GeometryBasics.Point3f0(coords(twoatms[2])[1], coords(twoatms[2])[2], coords(twoatms[2])[3])
-    cyl = GeometryBasics.Cylinder(pnt1,pnt2,Float32(0.15))
+    cyl = GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth))
     return cyl
 end
-function bondshape(bonds::AbstractArray{T}) where {T<:AtomBond}
+function bondshape(bonds::AbstractArray{T}) where {T<:BondAtoms}
 	return bondshape.(bonds)
 end

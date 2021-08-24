@@ -1,21 +1,5 @@
 atomcoords(atoms) = coordarray(atoms) |> transpose |> collect
-atomcolors(atoms; color = "element") =
-					if color == "ele" || color == "element" || color == :ele || color == :element
-						[elecolors[BioStructures.element(x)] for x in atoms]
-					elseif color == "aqua" || color == :aqua
-						[aquacolors[BioStructures.element(x)] for x in atoms]
-					else
-						try
-							[color[BioStructures.element(x)] for x in atoms]
-						catch
-							try
-								d = @eval $(color)*"colors"
-								[d[BioStructures.element(x)] for x in atoms]
-							catch
-								println("color dict not found")
-							end
-						end
-					end
+atomcolors(atoms, color = elecolors) = [color[BioStructures.element(x)] for x in atoms]
 atomradii(atoms) = [vdwrad[BioStructures.element(x)] for x in atoms]
 resids(residues) = resid.(residues)
 function resatoms(res; typ = :OrderedDict)
