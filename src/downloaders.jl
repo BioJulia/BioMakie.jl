@@ -1,4 +1,3 @@
-using Base: download_url
 using Downloads: download
 
 """
