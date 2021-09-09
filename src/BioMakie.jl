@@ -1,32 +1,19 @@
 module BioMakie
 
-export  AtomBond,
-		resbonds,
-		backbonebonds,
-		bonds,
-		bondshape,
+export  bondshape,
         resletterdict,
         PDBe_downloader,
         viewmsa,
-        atomcoords, 
 		atomcolors, 
-		atomradii,
-		resids,
-		resatoms,
-		viewstruc,
-        SMILESaa, 
-        protsmiles
-#
+		viewstruc
 
 using BioStructures, MolecularGraph, MIToS
 using Lazy, SplitApplyCombine, TensorCast
 using DataStructures, DelimitedFiles, JLD2, JSON3, HTTP
 using Distances, Distributions, GeometryBasics, Colors
 using FileIO, FastaIO, OrderedCollections
-using GraphMakie, JSServe, WGLMakie
-using Observables, Meshes, GLMakie
-using WGLMakie.Makie
-using Makie: push!
+using GraphMakie, JSServe, Meshes, Meshing
+using Makie, GLMakie, WGLMakie
 GLMakie.activate!()
 
 include("../src/utils.jl")

@@ -178,12 +178,12 @@ function resmass(res::BioStructures.Residue)
     end
     return total
 end
-function resvdw(res::BioStructures.Residue)
+function resvdw(res::BioStructures.Residue; scale = 1.0)
     total = 0.0
     for atm in res
         total+=vdwrad["$(element(atm, strip=true))"]
     end
-    return total
+    return total*scale
 end
 function makeclrgrad(vec::AbstractArray{T}, colrmap::AbstractArray) where T<:Real
     softmaxvec = Flux.softmax(vec)
