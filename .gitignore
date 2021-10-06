@@ -18,3 +18,5 @@ _research/
 *.vscode/*
 .vscode/biostuff.code-workspace
 istio-1.11.1
+research/
+*/BioMakie/

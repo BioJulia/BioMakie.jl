@@ -56,6 +56,3 @@ set_close_to!(radius.slider, 1.0)
 on(radius.slider.value) do s
    atmrad[] = s 
 end
-
-# ProtoSyn
-

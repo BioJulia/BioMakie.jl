@@ -1,5 +1,6 @@
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+Franklin = "713c75ef-9fc9-4b05-94a9-213340da978e"
 JSServe = "824d6782-a2ef-11e9-3a09-e5662e0c26f9"
 Literate = "98b081ad-f1c9-55d3-8b20-4c87d4299306"
 WGLMakie = "276b4fcb-3e11-5398-bf8b-a0c2d153d008"
