@@ -18,10 +18,7 @@ sv = viewstruc(struc)
 struc = read("data\\2vb1_mutant1.pdb", BioStructures.PDB) |> Node
 sv = viewstruc(struc)
 ```
-<p align="center">
-  <img width="550" height="620" src="docs/assets/2vb1.png">
-</p>
-
+![Image of struc](docs/assets/2vb1.png)
 
 To view a multiple sequence alignment, use the `viewmsa` function with a Pfam MSA or fasta file.
 ```julia
