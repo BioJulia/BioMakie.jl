@@ -1,5 +1,5 @@
 using Documenter
-using BioMakie
+using BioMakie, Documenter
 
 DocMeta.setdocmeta!(BioMakie, :DocTestSetup, :(using BioMakie); recursive=true)
 
