@@ -18,7 +18,9 @@ sv = viewstruc(struc)
 struc = read("data\\2vb1_mutant1.pdb", BioStructures.PDB) |> Node
 sv = viewstruc(struc)
 ```
-![Image of struc](docs/assets/2vb1.png)
+<p align="center">
+  <img width="530" height="600" src="docs/assets/struc.png">
+</p>
 
 To view a multiple sequence alignment, use the `viewmsa` function with a Pfam MSA or fasta file.
 ```julia
@@ -31,7 +33,7 @@ using FastaIO
 vm = FastaIO.readfasta("data/fasta1.fas") |> Node
 fig1 = viewmsa(vm)
 ```
-![Image of msa](docs/assets/pf00062.png)
+![pf00062x](https://user-images.githubusercontent.com/26263436/141277817-16a4958d-6637-43b0-9946-1916c2947c3a.png)
 
 Open an issue or a pull request on github, 
 
