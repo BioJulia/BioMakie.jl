@@ -21,8 +21,9 @@ using DataStructures, DelimitedFiles, JLD2, JSON3, HTTP
 using Distances, Distributions, GeometryBasics, Colors
 using FileIO, FastaIO, OrderedCollections
 using GraphMakie, JSServe, Meshes
-using Makie, GLMakie, WGLMakie
+using GLMakie, WGLMakie
 GLMakie.activate!()
+using GLMakie: @lift
 
 include("../src/utils.jl")
 include("../src/chemdata.jl")

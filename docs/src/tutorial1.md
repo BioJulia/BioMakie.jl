@@ -1,10 +1,12 @@
-# # Tutorial 1
+# Tutorial
 
-# Structures
+## Structures
 
 Let's start by loading a protein structure from the Protein Data Bank (PDB) with BioStructures.
 
 ````@example usage
+using Pkg # hide
+Pkg.add("BioStructures") # hide
 using BioStructures
 struc = retrievepdb("2vb1")
 ````
@@ -74,4 +76,3 @@ end
 ---
 
 *This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
-
