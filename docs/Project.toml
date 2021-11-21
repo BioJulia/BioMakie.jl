@@ -1,4 +1,7 @@
 [deps]
 BioMakie = "7de43156-b762-4475-b39f-ba1e1e59ee2f"
+BioStructures = "de9282ab-8554-53be-b2d6-f6c222edabfc"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+JSServe = "824d6782-a2ef-11e9-3a09-e5662e0c26f9"
 NodeJS = "2bd173c7-0d6d-553b-b6af-13a54713934c"
+WGLMakie = "276b4fcb-3e11-5398-bf8b-a0c2d153d008"
