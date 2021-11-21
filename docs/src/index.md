@@ -4,9 +4,11 @@
 
 ### Structures
   
-Let's start by loading a protein structure from the Protein Data Bank (PDB) with BioStructures.
+Start by loading a protein structure from the Protein Data Bank (PDB) with BioStructures.
 
 ````@example usage
+using Pkg # hide
+Pkg.activate() # hide
 using JSServe # hide
 Page(exportable=true, offline=true) # hide
 using WGLMakie # hide
@@ -16,7 +18,7 @@ using BioStructures
 struc = retrievepdb("2vb1")
 ````
 
-Now let's collect its atoms and make a 3D scatter plot. The `meshscatter` function returns a Makie `FigureAxisPlot`. The easiest
+Collect its atoms and make a 3D scatter plot. The `meshscatter` function returns a Makie `FigureAxisPlot`. The easiest
 way to work with those components is to specify variable names for three returned objects. These include the figure, axis or
 scene, and what we just plotted onto it.
 
@@ -26,7 +28,7 @@ cords = coordarray(atms);
 meshfig, ax, plt = meshscatter(cords; show_axis = false, resolution = (800,600))
 ````
 
-We could also have created the `Figure` first and then plotted onto it.
+You can also create the `Figure` first and then plot onto it.
 
 ````@example usage
 fig = Figure(resolution = (800,600))
@@ -38,8 +40,8 @@ fig
 
 Besides the excellent layouting capabilities, the real magic of Makie is in the `Node` system. Makie `Node`s are variables that
 other variables can listen to. Wrap the atom coordinates in a `Node` before plotting them so that the plotting machinery will be
-able to respond to manipulations/updates of its value, and other behavior you give it. We can include more `Node`s for things
-like sliders and other controllers. Let's also make the atom radius into a `Node` and pass it to `meshscatter` as `markersize`.
+able to respond. We can include more `Node`s for things like sliders and other controllers. Make the atom radius into a `Node`
+and pass it to `meshscatter` as `markersize`.
 
 There are at least 2 ways to make a `Node`:
 
