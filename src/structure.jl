@@ -1,5 +1,5 @@
 atomcoords(atoms) = coordarray(atoms) |> transpose |> collect
-atomcolors(atoms, color = elecolors) = [color[BioStructures.element(x)] for x in atoms]
+atomcolors(atoms; color = elecolors) = [color[BioStructures.element(x)] for x in atoms]
 atomradii(atoms) = [vdwrad[BioStructures.element(x)] for x in atoms]
 resids(residues) = resid.(residues)
 function resatoms(res; typ = :OrderedDict)

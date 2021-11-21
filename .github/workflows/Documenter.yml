@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - dev
+      - master
 jobs:
   docs:
     name: Julia ${{ matrix.version }} - ${{ matrix.os }} - ${{ matrix.arch }} - ${{ github.event_name }}
@@ -47,7 +48,7 @@ jobs:
            pkg"registry add https://github.com/JuliaRegistries/General";
            pkg"registry up General";
            # dev mono repo versions
-           pkg"dev . MakieCore CairoMakie WGLMakie GLMakie; add Documenter#master; instantiate"'
+           pkg"dev . MakieCore CairoMakie WGLMakie GLMakie; add Documenter#master; add BioStructures; instantiate"'
       - name: Build and deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
