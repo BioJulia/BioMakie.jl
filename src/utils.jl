@@ -76,11 +76,7 @@ pdbM(x; model = "1", group = "ATOM", kwargs...) = try
         pdbS(x; kwargs...)
     end
 anynan(x) = any(isnan.(x))
-indexshift(idxs, shift=1.0) = try
-		float.(idxs).+=shift .|> Int
-	catch
-		float.(idxs).+=shift
-end
+indexshift(idxs) = (idxs).+=1
 function tryint(number)
     return (try
         Int64(number)
