@@ -40,13 +40,4 @@ fig1 = viewmsa(vm)
 
 ![pf00062x](https://user-images.githubusercontent.com/26263436/141277817-16a4958d-6637-43b0-9946-1916c2947c3a.png)
 
-Open an issue or a pull request on github,
-
-or join the chat on Slack:
-https://julialang.slack.com
-
-or Zulip:
-https://julialang.zulipchat.com 
-
-or Julialang Discourse (specifically the *Visualization* and *Biology, Health and Medicine* domains):
-https://discourse.julialang.org/
+Contributions are very welcome, just open an issue or a pull request on github.
