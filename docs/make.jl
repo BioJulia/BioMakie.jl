@@ -1,6 +1,6 @@
 push!(LOAD_PATH, "../src")
 
-using Documenter, BioMakie
+using Documenter, BioMakie, WGLMakie, JSServe
 
 DocMeta.setdocmeta!(BioMakie, :DocTestSetup, :(begin
     using BioMakie;
