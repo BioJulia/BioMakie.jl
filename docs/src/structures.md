@@ -6,7 +6,7 @@ data. Use the `BioStructures` package to load a protein structure from the Prote
 ````@example usage
 using Pkg # hide
 Pkg.activate() # hide
-using BioStructures
+using BioStructures, WGLMakie
 struc = retrievepdb("2vb1")
 ````
 
