@@ -7,13 +7,6 @@ function resatoms(res; typ = :OrderedDict)
 	if typ in (:OrderedDict, :ordereddict, :odict, OrderedDict)
 		resvec2 = [(resvec1[i].name, coords(resvec1[i])) for i in 1:size(resvec1,1)]
 		return OrderedDict(resvec2)
-	elseif typ in (:Dict, :dict, Dict)
-		resvec2 = [(resvec1[i].name, coords(resvec1[i])) for i in 1:size(resvec1,1)]
-		return Dict(resvec2)
-	elseif typ in (:ComponentArray, :comp, ComponentArray)
-		resvec2 = [(resvec1[i].name, coords(resvec1[i])) for i in 1:size(resvec1,1)]
-		resvec3 = dict2ntuple(Dict(resvec2))
-		return ComponentArray(resvec3)
 	else
 		return [[resvec1[i].name, coords(resvec1[i])] for i in 1:size(resvec1,1)] |> combinedims |> _t
 	end
@@ -26,10 +19,10 @@ Create and return a Makie Figure for a PDB structure.
 # Examples
 ```julia
 using BioStructures
-struc = retrievepdb("2vb1", dir = "data\\") |> Node
+struc = retrievepdb("2vb1", dir = "data/") |> Observable
 sv = viewstruc(struc)
 
-struc = read("data\\2vb1_mutant1.pdb", BioStructures.PDB) |> Node
+struc = read("data/2vb1_mutant1.pdb", BioStructures.PDB) |> Observable
 sv = viewstruc(struc)
 ```
 Keyword arguments:
@@ -44,7 +37,7 @@ function viewstruc( struc::T,
 					atmcolors = "element",
 					atmscale = 1/3,
 					figdims = [13,10]
-					) where {T<:Node}
+					) where {T<:Observable}
     atms = @lift BioStructures.collectatoms($struc,selectors...)
     atmcords = @lift atomcoords($atms)
     colr = @lift atomcolors($atms; color = atmcolors)
@@ -56,7 +49,7 @@ function viewstruc( struc::T,
 	bbshps = @lift bondshape(SplitApplyCombine.flatten(backbonebonds.(collectchains($struc))))
 	resbnds = @lift normal_mesh.($resshps)
 	bckbnds = @lift normal_mesh.($bbshps)
-	mesh!(ly, resbnds, color = RGBAf0(0.5,0.5,0.5,0.8))
-	mesh!(ly, bckbnds, color = RGBAf0(0.5,0.5,0.5,0.8))
+	mesh!(ly, resbnds, color = RGBA(0.5,0.5,0.5,0.8))
+	mesh!(ly, bckbnds, color = RGBA(0.5,0.5,0.5,0.8))
     fig
 end

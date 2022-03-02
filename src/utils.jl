@@ -20,11 +20,6 @@ convert(::Type{String}, i::Int) = "$i"
 function convert(::Type{String}, f::T) where T<:Union{Float16,Float32,Float64}
 	"$f"
 end
-function varcall(name::String, body::Any)
-    name=Symbol(name)
-    @eval (($name) = ($body))
-	return Symbol(name)
-end
 function collectall(args...; maxdepth = 5, currentdepth = 1)
 	ff = []
 	f1 = collect([args...])
@@ -259,14 +254,14 @@ elecolors = Dict( "C" => :gray,
 				  "ZN" => :gray,
 				  "CL" => :gray
 )
-aquacolors = Dict("C" => RGBf0(0.5,0.5,0.5),
-                  "N" => RGBf0(0.472,0.211,0.499),
-                  "H" => RGBf0(0.65,0.96,0.70),
-                  "O" => RGBf0(0.111,0.37,0.999),
-                  "S" => RGBf0(0.992,0.753,0.525),
-				  "X" => RGBf0(0.5,0.5,0.5),
-				  "ZN" => RGBf0(0.5,0.5,0.5),
-				  "CL" => RGBf0(0.5,0.5,0.5)
+aquacolors = Dict("C" => RGB(0.5,0.5,0.5),
+                  "N" => RGB(0.472,0.211,0.499),
+                  "H" => RGB(0.65,0.96,0.70),
+                  "O" => RGB(0.111,0.37,0.999),
+                  "S" => RGB(0.992,0.753,0.525),
+				  "X" => RGB(0.5,0.5,0.5),
+				  "ZN" => RGB(0.5,0.5,0.5),
+				  "CL" => RGB(0.5,0.5,0.5)
 )
 SMILESaa = OrderedDict("A" => "N[C@@]([H])(C)C(=O)O",
         "R" => "N[C@@]([H])(CCCNC(=N)N)C(=O)O",
