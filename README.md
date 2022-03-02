@@ -35,6 +35,3 @@ fig1 = plot(vm)
 ```
 
 ![pf00062x](https://user-images.githubusercontent.com/26263436/141277817-16a4958d-6637-43b0-9946-1916c2947c3a.png)
-
-## Contributing
-Contributions are very welcome. Just open an issue or a pull request on github, or take a look at the roadmap.
