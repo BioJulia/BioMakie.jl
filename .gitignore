@@ -18,3 +18,4 @@ _research/
 *.vscode/*
 .vscode/biostuff.code-workspace
 research/
+/docsite/

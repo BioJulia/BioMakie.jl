@@ -15,9 +15,9 @@ export  bondshape,
         covrad,
         vdwrad
 
-using BioStructures, MolecularGraph, MIToS
-using Lazy, SplitApplyCombine, TensorCast
-using DataStructures, DelimitedFiles, JLD2, JSON3, HTTP
+using BioStructures, MolecularGraph#, MIToS
+using SplitApplyCombine, TensorCast
+using DataStructures, DelimitedFiles, HTTP
 using Distances, Distributions, GeometryBasics, Colors
 using FileIO, FastaIO, OrderedCollections
 using GraphMakie, JSServe, Meshes

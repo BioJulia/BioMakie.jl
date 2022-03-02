@@ -6,11 +6,11 @@ Create and return a Makie Figure for a AbstractMultipleSequenceAlignment.
 ```julia
 using MIToS.MSA
 downloadpfam("pf00062")
-vm = MIToS.MSA.read("pf00062.stockholm.gz",Stockholm) |> Node
+vm = MIToS.MSA.read("pf00062.stockholm.gz",Stockholm) |> Observable
 fig1 = viewmsa(vm)
 
 using FastaIO
-vm = FastaIO.readfasta("data/fasta1.fas") |> Node
+vm = FastaIO.readfasta("data/fasta1.fas") |> Observable
 fig1 = viewmsa(vm)
 ```
 Parameters:
@@ -25,7 +25,7 @@ function viewmsa(   msa::T;
                     colorscheme = :viridis,
                     colorval = 2,
                     positions = 0
-				) where {T<:Node}
+				) where {T<:Observable}
 	width1 = sheetsize[1]
 	height1 = sheetsize[2]
 	fig = Figure(resolution = resolution)
@@ -55,7 +55,7 @@ function viewmsa(   msa::T;
             positions = @lift [1:length($msa[1][2])...]
         end
         labels = @lift [$msa[i][1] for i in 1:size($msa,1)]
-	    nums = typeof(positions)<:Node ? (@lift collect($positions)) : Node(positions)
+	    nums = typeof(positions)<:Observable ? (@lift collect($positions)) : Observable(positions)
         strmsa = @lift [[$fas1[i][2]...] for i in 1:size($fas1,1)] |> combinedims .|> string
     else
         error("sorry methods for that input don't exist")
@@ -69,7 +69,7 @@ function viewmsa(   msa::T;
 	sl2 = GLMakie.Slider(fig[1:7,10], range = labelsrange, startvalue = 1, horizontal = false,
 		tellwidth = true, height = nothing)
 	sl2.value = labelssize[]
-    colorval = typeof(colorval)<:Node ? colorval : Node(colorval)
+    colorval = typeof(colorval)<:Observable ? colorval : Observable(colorval)
 	strmsavals = @lift [ _kdict(i) for i in $strmsa ]
 	strmsavals2 = @lift $strmsavals |> combinedims
 	labelshow = lift(X->labels[][(X+(height1-1):-1:X)],sl2.value)
