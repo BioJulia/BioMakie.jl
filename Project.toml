@@ -38,6 +38,7 @@ TensorCast = "02d47bb6-7ce6-556a-be16-bb1710789e2b"
 WGLMakie = "276b4fcb-3e11-5398-bf8b-a0c2d153d008"
 
 [compat]
+TableTraitsUtils = "1"
 julia = "1"
 
 [extras]
