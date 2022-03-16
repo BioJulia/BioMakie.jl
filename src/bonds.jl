@@ -1,20 +1,8 @@
-mutable struct BondAtoms{T}
-	atoms::AbstractArray{T}
-end
-import BioStructures.defaultatom, BioStructures.defaultresidue
-defaultatom(at::BioStructures.Atom) = at
-defaultresidue(res::BioStructures.Residue) = res
-convert(::BioStructures.Atom,disat::DisorderedAtom) = defaultatom(disat)
-BondAtoms(atom1::AbstractAtom, atom2::AbstractAtom) = BondAtoms([atom1,atom2])
-atoms(bond::BondAtoms) = bond.atoms
-function resbonds(	res::AbstractResidue,
-					selectors::Function...;
-					hres = true)
-	bonds = Vector{BondAtoms}()
+
+function resbonds(res::BioStructures.AbstractResidue; hres = true)
+	bonds = []
 	resatoms = res.atoms
-	# resatoms2 = collectatoms(res,selectors...) .|> defaultatom
-	# atmkeys = keys(resatoms) |> collect
-	resatomkeys = _stripkeys(resatoms)
+	resatomkeys = stripkeys(resatoms)
 	for heavybond in heavyresbonds[res.name]
 		firstatomname = "$(heavybond[1])"
 		secondatomname = "$(heavybond[2])"
@@ -41,7 +29,7 @@ function resbonds(	res::AbstractResidue,
 			else
 				println("unusual atom $(heavybond[2])")
 			end
-			push!(bonds, BondAtoms(resatoms[firstatomname], resatoms[secondatomname]))
+			push!(bonds, (resatoms[firstatomname], resatoms[secondatomname]))
 		end
 	end
 	if hres == true
@@ -71,44 +59,68 @@ function resbonds(	res::AbstractResidue,
 				else
 					println("unusual atom $(hresbond[2])")
 				end
-				push!(bonds, BondAtoms(resatoms[firstatomname], resatoms[secondatomname]))
+				push!(bonds, (resatoms[firstatomname], resatoms[secondatomname]))
 			end
 		end
 	end
 	return bonds
 end
+
 function backbonebonds(chn::BioStructures.Chain)
 	bbatoms = collectatoms(chn, backboneselector) .|> defaultatom
-	bonds = Vector{BondAtoms}()
+	bonds = []
+
 	for i = 1:(size(bbatoms,1)-1)
 		firstatomname = bbatoms[i].name
 		secondatomname = bbatoms[i+1].name
-		firstatomname == " N  " && secondatomname == " CA " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i+1])) < 1.8 && push!(bonds, BondAtoms(bbatoms[i], bbatoms[i+1]))
-		firstatomname == " CA " && secondatomname == " C  " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i+1])) < 1.8 && push!(bonds, BondAtoms(bbatoms[i], bbatoms[i+1]))
-		firstatomname == " C  " && secondatomname == " O  " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i+1])) < 1.8 && push!(bonds, BondAtoms(bbatoms[i], bbatoms[i+1]))
+		firstatomname == " N  " && secondatomname == " CA " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i+1])) < 1.8 && push!(bonds, (bbatoms[i], bbatoms[i+1]))
+		firstatomname == " CA " && secondatomname == " C  " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i+1])) < 1.8 && push!(bonds, (bbatoms[i], bbatoms[i+1]))
+		firstatomname == " C  " && secondatomname == " O  " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i+1])) < 1.8 && push!(bonds, (bbatoms[i], bbatoms[i+1]))
 		try
-			firstatomname == " N  " && bbatoms[i-2].name ==  " C  " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i-2])) < 1.8 && push!(bonds, BondAtoms(bbatoms[i], bbatoms[i-2]))
+			firstatomname == " N  " && bbatoms[i-2].name ==  " C  " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i-2])) < 1.8 && push!(bonds, (bbatoms[i], bbatoms[i-2]))
 		catch
-
+			println("error with backbone bonds")
 		end
 	end
 
 	return bonds
 end
-bonds(residues::AbstractArray{AbstractResidue}, selectors::Function...; hres = true) = resbonds.(residues; hres = hres)
-function bonds(chain::BioStructures.Chain, selectors::Function...; hres = true)
-	rbonds = bonds(collectresidues(chain, selectors...); hres = hres) |> SplitApplyCombine.flatten
-	bbonds = backbonebonds(chain)
+
+function getbonds(residues::AbstractArray{T}; kwargs...) where {T<:BioStructures.AbstractResidue}
+	return resbonds.(residues; kwargs...)
+end
+
+function getbonds(chn::BioStructures.Chain)
+	rbonds = getbonds(collectresidues(chn,standardselector)) |> SplitApplyCombine.flatten
+	bbonds = backbonebonds(chn)
 	chbonds = vcat(rbonds,bbonds)
 	return chbonds
 end
-function bondshape(bond::BondAtoms, bondwidth = 0.15)
-	twoatms = atoms(bond)
-    pnt1 = GeometryBasics.Point3f0(coords(twoatms[1])[1], coords(twoatms[1])[2], coords(twoatms[1])[3])
-    pnt2 = GeometryBasics.Point3f0(coords(twoatms[2])[1], coords(twoatms[2])[2], coords(twoatms[2])[3])
-    cyl = GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth))
-    return cyl
+
+# Default bond shape is a cylinder mesh. TODO: maybe add double and triple bond shapes.
+function bondshape(twoatoms::AbstractArray{T}; bondwidth = 0.15) where {T<:BioStructures.AbstractAtom}
+    @assert length(twoatoms) == 2
+	pnt1 = GeometryBasics.Point3f0(twoatoms[1].coords)
+    pnt2 = GeometryBasics.Point3f0(twoatoms[2].coords)
+    return GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth))
 end
-function bondshape(bonds::AbstractArray{T}) where {T<:BondAtoms}
-	return bondshape.(bonds)
+
+function bondshape(twopnts::AbstractArray{AbstractVector{T}}; bondwidth = 0.15) where {T<:AbstractFloat}
+    @assert length(twopnts) == 2
+	pnt1 = GeometryBasics.Point3f0(twopnts[1])
+    pnt2 = GeometryBasics.Point3f0(twopnts[2])
+    return GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth))
+end
+
+function bondshape(twopnts::AbstractMatrix{T}; bondwidth = 0.15) where {T<:AbstractFloat}
+    if size(twopnts,1) == 3 && size(twopnts,2) == 2
+		pnt1 = GeometryBasics.Point3f0(twopnts[:,1])
+    	pnt2 = GeometryBasics.Point3f0(twopnts[:,2])
+	elseif size(twopnts,1) == 2 && size(twopnts,2) == 3
+		pnt1 = GeometryBasics.Point3f0(twopnts[1,:])
+    	pnt2 = GeometryBasics.Point3f0(twopnts[2,:])
+	else
+		println("problem making bondshape from matrix")
+	end
+    return GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth))
 end

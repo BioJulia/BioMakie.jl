@@ -1,5 +1,9 @@
 using MolecularGraph: UndirectedGraph
 import Base.convert
+import BioStructures.defaultatom, BioStructures.defaultresidue
+defaultatom(at::BioStructures.Atom) = at
+defaultresidue(res::BioStructures.Residue) = res
+convert(::BioStructures.Atom,disat::DisorderedAtom) = defaultatom(disat)
 
 function convert(::Type{T}, arr::Array{T,1}) where {T<:Number}
     if size(arr,1) > 1
@@ -240,11 +244,11 @@ transposed(arr::AbstractArray) = transpose(arr) |> collect
 _t(arr::AbstractArray) = transposed(arr)
 _v(arr::AbstractArray) = reverse(arr; dims = 1)
 _h(arr::AbstractArray) = reverse(arr; dims = 2)
-function _stripkeys(dict::AbstractDict)
+function stripkeys(dict::AbstractDict)
     ks = string.(strip.(keys(dict)))
     return ks
 end
-_stripallkeys(dicts::AbstractArray) =  _stripkeys.(dicts)
+stripallkeys(dicts::AbstractArray) =  stripkeys.(dicts)
 elecolors = Dict( "C" => :gray,
                   "N" => :blue,
                   "H" => :white,

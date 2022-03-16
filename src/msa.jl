@@ -21,7 +21,7 @@ positions ----- Residue positions, Default - 1:(length of msa)
 """
 function viewmsa(   msa::T;
 					sheetsize = [40,20],
-					resolution = (1500, 600),
+					resolution = (1100, 400),
                     colorscheme = :viridis,
                     colorval = 2,
                     positions = 0
@@ -97,6 +97,9 @@ function viewmsa(   msa::T;
 	ax.yticklabelspace[] = 10
 	points1 = [Point2f0(x,y) for x in widthrange for y in heightrange] |> collect
 	charvec = @lift SplitApplyCombine.flatten($charshow)
+	heatmap!(ax, msashow, show_grid = true, 
+	       colormap = colorscheme
+           )
 	scatter!(ax,
 	        points1,
 	        marker = charvec,
@@ -104,9 +107,7 @@ function viewmsa(   msa::T;
 			color = :black,
 			strokecolor = :black
 	        )
-	heatmap!(ax, msashow, show_grid = true, show_axis = true,
-	       colormap = colorscheme
-           )
+	
     ax.attributes.xaxisposition[] = :top
     deregister_interaction!(fig.current_axis.x,:rectanglezoom)
 	return fig

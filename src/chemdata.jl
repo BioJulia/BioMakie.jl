@@ -1,30 +1,35 @@
 using MolecularGraph: ATOMTABLE, ATOMSYMBOLMAP, ATOM_COVALENT_RADII, ATOM_VANDERWAALS_RADII
 
 ATOMSYMBOLKEYS = ATOMSYMBOLMAP |> collectkeys
-ATOMSYMBOLVALS = ATOMSYMBOLMAP |> collectvals
-sp = sortperm(ATOMSYMBOLMAP |> collectvals)
-atomicmasses = OrderedDict(ATOMSYMBOLKEYS[sp].=>[ATOMTABLE[ATOMSYMBOLMAP[x]]["Weight"] for x in ATOMSYMBOLKEYS[sp]])
 
+atomicmasses = Dict{String,Float32}(ATOMSYMBOLKEYS.=>[ATOMTABLE[ATOMSYMBOLMAP[x]]["Weight"] for x in ATOMSYMBOLKEYS])
+
+# Collection of radii using MolecularGraph.jl constants.
 _covrad = []
-for x in ATOMSYMBOLKEYS[sp]
+for x in ATOMSYMBOLKEYS
 	try
-		push!(_covrad,OrderedDict(x=>ATOM_COVALENT_RADII[ATOMTABLE[ATOMSYMBOLMAP[x]]["Number"]]))
+		push!(_covrad,Dict{String,Float32}(x=>ATOM_COVALENT_RADII[ATOMTABLE[ATOMSYMBOLMAP[x]]["Number"]]))
 	catch
-			
+
 	end
+	push!(_covrad,Dict{String,Float32}("Csp2" => 0.73, "Csp3" => 0.76, "Csp" => 0.69, "C" => 0.76))
+	push!(_covrad,Dict{String,Float32}("Mn h.s." => 1.61, "Mn l.s." => 1.39))
+	push!(_covrad,Dict{String,Float32}("Fe h.s." => 1.52, "Fe l.s." => 1.32))
+	push!(_covrad,Dict{String,Float32}("Co h.s." => 1.5, "Co l.s." => 1.26))
 end
-covrad = merge(_covrad...)
+covalentradii = merge(_covrad...)
 
 _vdwrad = []
-for x in ATOMSYMBOLKEYS[sp]
+for x in ATOMSYMBOLKEYS
 	try
-		push!(_vdwrad,OrderedDict(x=>ATOM_VANDERWAALS_RADII[ATOMTABLE[ATOMSYMBOLMAP[x]]["Number"]]))
+		push!(_vdwrad,Dict(x=>ATOM_VANDERWAALS_RADII[ATOMTABLE[ATOMSYMBOLMAP[x]]["Number"]]))
 	catch
-			
+		println("error involving vanderwaals radii")
 	end
 end
-vdwrad = merge(_vdwrad...)
+vanderwaalsradii = merge(_vdwrad...)
 
+# Standard residue letter representations.
 res3letters = ["ARG", "MET", "ASN", "GLU", "PHE",
 	"ILE", "ASP", "LEU", "ALA", "GLN",
 	"GLY", "CYS", "TRP", "TYR", "LYS",
@@ -88,6 +93,8 @@ resletterdict = OrderedDict(
 	"X" => "XAA",
 	"J" => "XLE"
 )
+
+# Collection of known heavy bonds, for a PDB structure file.
 heavyresbonds = Dict(
                 "ARG" => [["C","O"],["C","CA"],["CA","N"],["CA","CB"],["CB","CG"],
 						["CG","CD"],["CD","NE"],["NE","CZ"],["CZ","NH1"],["CZ","NH2"],["C","OXT"]],
@@ -128,6 +135,7 @@ heavyresbonds = Dict(
 						["CG","ND1"],["CG","CD2"],["ND1","CE1"],["CD2","NE2"],["NE2","CE1"],["C","OXT"]],
 				" ZN" => []
 )
+# Collection of known hydrogen covalent bonds, for a PDB structure file.
 hresbonds = Dict(
                 "ARG" => [["N","H1"],["N","H2"],["N","H3"],["N","H"],["CA","HA"],["CA","HA2"],["CB","HB3"],["CB","HB2"],
 						["CG","HG2"],["CG","HG3"],["CD","HD2"],["CD","HD3"],["NE","HE"],

@@ -15,7 +15,7 @@ export  bondshape,
         covrad,
         vdwrad
 
-using BioStructures, MolecularGraph#, MIToS
+using BioStructures, MolecularGraph, MIToS
 using SplitApplyCombine, TensorCast
 using DataStructures, DelimitedFiles, HTTP
 using Distances, Distributions, GeometryBasics, Colors
