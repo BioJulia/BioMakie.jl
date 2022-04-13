@@ -1,3 +1,8 @@
+export atomcoords,
+       atomradii,
+       plotstruc!,
+       plotstruc             
+
 """
     atomcoords(atoms)
 
@@ -12,9 +17,9 @@ Collect atom radii for plotting.
 Uses BioStructures to get radii based on atomic element.
 
 Keyword arguments:
-radiustype = :vdw for vanderwaals, :cov for covalent. (Default is covalent)
+radiustype --- :covalent | Options - :cov, :covalent, :vdw, :vanderwaals
 """
-function atomradii(atoms; radiustype = :cov)
+function atomradii(atoms; radiustype = :covalent)
 	if radiustype == :cov || radiustype == :covalent
 		return [covalentradii[BioStructures.element(x)] for x in atoms]
 	elseif radiustype == :vdw || radiustype == :vanderwaals
@@ -25,18 +30,7 @@ function atomradii(atoms; radiustype = :cov)
 end
 
 """
-    resatoms(res)
-
-Collect the atoms from a residue as an OrderedDict.
-"""
-function resatoms(res::AbstractResidue)
-	resvec1 = [k for k in res]
-	resvec2 = [(resvec1[i].name, coords(resvec1[i])) for i in 1:size(resvec1,1)]
-	return OrderedDict(resvec2)
-end
-
-"""
-    plotstruc!(figure, structure)
+    plotstruc!( fig, structure )
 
 Plot a protein structure into a Figure. Position can be specified with the 
 gridposition keyword argument.
@@ -52,42 +46,45 @@ struc = read("data/2vb1_mutant1.pdb", BioStructures.PDB) |> Observable
 sv = plotstruc!(fig, struc)
 ```
 Keyword Arguments:
-selectors ----- Default - [standardselector]
-resolution ---- Default - (800,800)
-gridposition -- Default - (1,1)
-plottype ------ Default - :ballandstick, another option is :spacefilling
-atomcolors ---- Default - elecolors, another option is aquacolors, or define your own dict for atoms like: "N" => :blue
+selectors ----- [standardselector]
+resolution ---- (800,800)
+gridposition -- (1,1)
+plottype ------ :ballandstick, another option is :spacefilling
+atomcolors ---- elecolors, another option is aquacolors, or define your own dict for atoms like: "N" => :blue
 """
-function plotstruc!(fig::Figure, struc::T;
+function plotstruc!(fig::Figure, struc::Observable;
                     selectors = [standardselector],
                     resolution = (800,800),
                     gridposition = (1,1),
-                    plottype = :ballandstick,
-                    atomcolors = elecolors
-                    ) where {T<:BioStructures.StructuralElementOrList}
+                    plottype = :covalent,
+                    atomcolors = elecolors,
+                    markersize = 1.0,
+                    kwargs...
+                    ) 
 	#
-    atms = @lift BioStructures.collectatoms($struc,selectors...)
+    atms = @lift defaultatom.(BioStructures.collectatoms($struc,selectors...))
     atmcords = @lift coordarray($atms) |> transpose |> collect
     colrs = @lift [atomcolors[BioStructures.element(x)] for x in $atms]
-    bnds = @lift BioMakie.getbonds(collectresidues($struc,selectors...))
-    bbnds = @lift backbonebonds.(collectchains($struc))
 
     if plottype == :spacefilling
-        marksize = @lift atomradii($atms; radiustype = :vdw)
+        markersize = @lift atomradii($atms; radiustype = :vdw)
         lscene = LScene(fig[gridposition...]; show_axis = false)
-        meshscatter!(lscene, atmcords; color = colrs, markersize = marksize)
+        meshscatter!(lscene, atmcords; color = colrs, markersize = markersize, kwargs...)
     elseif plottype == :ballandstick
-        marksize = @lift atomradii($atms; radiustype = :cov)
         lscene = LScene(fig[gridposition...]; show_axis = false)
-        meshscatter!(lscene, atmcords; color = colrs, markersize = marksize)
+        meshscatter!(lscene, atmcords; color = colrs, markersize = markersize, kwargs...)
 		# :ballandstick shows the bonds (/sticks) as cylinder meshes in the same space as the atom meshscatter.
 		# Could it be improved by making different shapes for single, double, and triple bonds? 
-        resshps = @lift bondshape.(SplitApplyCombine.flatten(BioMakie.getbonds(collectresidues($struc,selectors...))))
+        resshps = @lift bondshape.(SplitApplyCombine.flatten(getbonds(defaultresidue.(collectresidues($struc,selectors...)))))
         bbshps = @lift bondshape.(SplitApplyCombine.flatten(backbonebonds.(collectchains($struc))))
         resbnds = @lift normal_mesh.($resshps)
         bckbnds = @lift normal_mesh.($bbshps)
         mesh!(lscene, resbnds, color = RGBA(0.5,0.5,0.5,0.8))
         mesh!(lscene, bckbnds, color = RGBA(0.5,0.5,0.5,0.8))
+    elseif plottype == :covalent
+        markersize = @lift atomradii($atms; radiustype = :cov)
+        lscene = LScene(fig[gridposition...]; show_axis = false)
+        meshscatter!(lscene, atmcords; color = colrs, markersize = markersize, kwargs...)
     else
         println("bad plottype")
     end
@@ -108,25 +105,26 @@ sv = plotstruc(struc)
 struc = read("data/2vb1_mutant1.pdb", BioStructures.PDB) |> Observable
 sv = plotstruc(struc)
 ```
+
 Keyword Arguments:
-selectors ----- Default - [standardselector]
-resolution ---- Default - (800,800)
-gridposition -- Default - (1,1)
-plottype ------ Default - :ballandstick, another option is :spacefilling
-atomcolors ---- Default - elecolors, another option is aquacolors, or define your own dict for atoms like: "N" => :blue
+selectors ----- [standardselector]
+resolution ---- (800,800)
+gridposition -- (1,1)
+plottype ------ :ballandstick, another option is :spacefilling
+atomcolors ---- elecolors, another option is aquacolors, or define your own dict for atoms like: "N" => :blue
 """
-function plotstruc(struc; kwargs...)
+function plotstruc(struc; returnobservables = true, kwargs...)
 	fig = Figure()
 
-	# It wants the struc to be an Observable.
-	if typeof(struc) != Observable
-		struc = Observable(struc)
-		plotstruc!(fig, struc; kwargs...)
+    if !(typeof(struc) <:Observable)
+        struc = Observable(struc)
+    end
 
-		# If it wasn't given an Observable from the user, it also returns the Observable.
+    plotstruc!(fig, struc; kwargs...)
+
+    if returnobservables == true
 		return fig, struc
 	else
-		plotstruc!(fig, struc; kwargs...)
 		return fig
 	end
 end
