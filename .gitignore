@@ -19,3 +19,6 @@ _research/
 .vscode/biostuff.code-workspace
 research/
 /docsite/
+*.fasta
+*.xml
+*.png

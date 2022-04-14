@@ -1,21 +1,33 @@
 module BioMakie
 
-export  bondshape,
-        resletterdict,
-        viewmsa,
-		atomcolors,
-        atomcoords,
-        atomradii, 
-		viewstruc,
-        resatoms,
-        resbonds,
-        backbonebonds,
-        defaultatom,
-        defaultresidue,
-        covrad,
-        vdwrad
+export resmass,
+       resvdw,
+       elecolors,
+       aquacolors,
+       SMILESaa,
+       protsmiles,
+       kideradict,
+       distancebonds,
+	   covalentbonds,
+	   sidechainbonds,
+	   backbonebonds,
+	   getbonds,
+	   bondshape,
+       getplottingdata,
+       msavalues,
+       plotmsa!,
+       plotmsa,
+       atomcoords,
+       atomradii,
+       plotstruc!,
+       plotstruc,
+       atomicmasses,
+	   covalentradii,
+	   vanderwaalsradii,
+	   resletterdict
 
-using BioStructures, MolecularGraph#, MIToS
+using BioStructures, MolecularGraph, MIToS
+using MIToS.Information, MIToS.MSA, MIToS.Pfam, MIToS.SIFTS, MIToS.Utils
 using SplitApplyCombine, TensorCast
 using DataStructures, DelimitedFiles, HTTP
 using Distances, Distributions, GeometryBasics, Colors
