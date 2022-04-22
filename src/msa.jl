@@ -53,7 +53,6 @@ function msavalues(msamatrix::AbstractMatrix, resdict = kideradict; kf = 2)
 	
 	return matrixvals
 end
-#TODO Add more options for colors.
 
 """
     plotmsa!( fig, msa, msavalues )
