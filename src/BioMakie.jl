@@ -13,6 +13,7 @@ export resmass,
 	   backbonebonds,
 	   getbonds,
 	   bondshape,
+       bondshapes,
        getplottingdata,
        msavalues,
        plotmsa!,
@@ -33,9 +34,10 @@ using DataStructures, DelimitedFiles, HTTP
 using Distances, Distributions, GeometryBasics, Colors
 using FileIO, FastaIO, OrderedCollections
 using GraphMakie, JSServe, Meshes
-using GLMakie, WGLMakie
+using Makie
+using Makie: @lift
 GLMakie.activate!()
-using GLMakie: @lift
+
 
 include("../src/utils.jl")
 include("../src/chemdata.jl")

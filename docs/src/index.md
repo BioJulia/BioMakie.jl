@@ -14,7 +14,7 @@ package mode by pressing ] and run:
 
 ## Usage
 
-To view a protein, use the `plotstruc` function with a BioStructures PDB structure.
+To view a protein, use the `plotstruc` or `plotstruc!` function with a BioStructures PDB structure.
 
 ```@example
 using BioStructures
@@ -28,7 +28,7 @@ plotstruc!(fig, struc; plottype = :covalent, gridposition = (1,2))
 ```
 ![structure examples](../assets/vdwcov.png)
 
-To view a multiple sequence alignment, use the `plotmsa` function with a Pfam MSA or fasta file.
+To view a multiple sequence alignment, use the `plotmsa` or `plotmsa!` function with a Pfam MSA or fasta file.
 
 ```@example
 using MIToS.MSA
