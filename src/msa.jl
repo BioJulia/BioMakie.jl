@@ -8,8 +8,9 @@ export getplottingdata,
 
 Collects data for plotting (residue string matrix, x labels, and y labels).
 
-This function converts an AbstractMultipleSequenceAlignment (from MIToS.MSA) or 
-a Vector{Tuple{String,String}} (from FastaIO) to a matrix of residue characters, x labels, and y labels.
+This function converts an AbstractMultipleSequenceAlignment (from MIToS.MSA), or 
+a Vector{Tuple{String,String}} (from FastaIO), or a Vector{FASTX.FASTA.Record} 
+to a matrix of residue characters, x labels, and y labels.
 """
 function getplottingdata(msa)
 	# For MIToS MSAs
@@ -23,6 +24,14 @@ function getplottingdata(msa)
         xlabels = [msa[i][1] for i in 1:size(msa,1)]
 	    ylabels = [1:length(msa[1][2])...] |> collect .|> string
         msamatrix = [[msa[i][2]...] for i in 1:size(msa,1)] |> combinedims .|> string
+		@cast msamatrix[i,j] := msamatrix[j,i]
+		msamatrix = msamatrix[:,:]
+
+	# For fasta files loaded with FASTX
+	elseif msa isa Vector{FASTX.FASTA.Record}
+		xlabels = [identifier(msa[i]) for i in 1:size(msa,1)]
+		ylabels = [1:length(msa)...] |> collect .|> string
+		msamatrix = [[sequence(seqs[i])...] for i in 1:size(seqs,1)] |> combinedims .|> string
 		@cast msamatrix[i,j] := msamatrix[j,i]
 		msamatrix = msamatrix[:,:]
     else
@@ -68,15 +77,16 @@ plotmsa!( fig::Figure, msamatrix::Matrix{String}, matrixvals::Matrix{Float32};
 		  ylabels = ylabels1,
 		  kwargs... )
 ```
-Keyword arguments:
-xlabels ------- {1:height}
-ylabels ------- {1:width}
-sheetsize ----- [40,20]
-gridposition -- (1,1)
-colorscheme --- :viridis
-markersize ---- (11.0,11.0)
-markercolor --- :black
-kwargs...    # forwarded to scatter plot
+
+### Optional Arguments:
+- xlabels ------- {1:height}
+- ylabels ------- {1:width}
+- sheetsize ----- [40,20]
+- gridposition -- (1,1)
+- colorscheme --- :viridis
+- markersize ---- (11.0,11.0)
+- markercolor --- :black
+- kwargs...   					# forwarded to scatter plot
 """
 function plotmsa!( fig::Figure, msamatrix::Observable, matrixvals::Observable;
 				   xlabels = nothing, 	
@@ -88,7 +98,7 @@ function plotmsa!( fig::Figure, msamatrix::Observable, matrixvals::Observable;
 				   markercolor = :black,
 				   kwargs... )
 
-	grid1 = fig[gridposition...] = GridLayout()
+	grid1 = fig[gridposition...] = GridLayout(resolution = (1100,400))
 	ax = Axis(grid1[1:7,3:9];)
 	
 	width1 = sheetsize[1]
@@ -181,17 +191,17 @@ plotmsa( msamatrix::Matrix{String};
          kwargs... )
 ```
 
-Keyword arguments:
-xlabels ----------- {1:height}
-ylabels ----------- {1:width}
-resolution -------- (1100, 400)
-sheetsize --------- [40,20]
-gridposition ------ (1,1)
-colorscheme ------- :viridis
-resdict ----------- kideradict    # Dictionary of values (::Dict{String,Float}, "Y" => 1.48) for heatmap.
-kf ---------------- 2             # If resdict == kideradict, this is the Kidera Factor. KF2 is size/volume-related.
-returnobservables - true          # Return Observables for interaction.
-kwargs...    # forwarded to scatter plot
+### Optional Arguments:
+- xlabels ----------- {1:height}
+- ylabels ----------- {1:width}
+- resolution -------- (1100, 400)
+- sheetsize --------- [40,20]
+- gridposition ------ (1,1)
+- colorscheme ------- :viridis
+- resdict ----------- kideradict    # Dictionary of values (::Dict{String,Float}, "Y" => 1.48) for heatmap.
+- kf ---------------- 2             # If resdict == kideradict, this is the Kidera Factor. KF2 is size/volume-related.
+- returnobservables - true          # Return Observables for interaction.
+- kwargs...    						# forwarded to scatter plot
 """
 function plotmsa(msa; resolution = (1100, 400), resdict = kideradict, kf = 2, returnobservables = true, kwargs...)
 	if typeof(msa) <:Observable

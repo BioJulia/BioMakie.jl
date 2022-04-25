@@ -16,8 +16,8 @@ atomcoords(atoms) = coordarray(atoms) |> transpose |> collect
 Collect atom radii for plotting.
 Uses BioStructures to get radii based on atomic element.
 
-Keyword arguments:
-radiustype --- :covalent | Options - :cov, :covalent, :vdw, :vanderwaals
+### Optional Arguments:
+- radiustype --- :covalent | Options - :cov, :covalent, :vdw, :vanderwaals
 """
 function atomradii(atoms; radiustype = :covalent)
 	if radiustype == :cov || radiustype == :covalent
@@ -45,12 +45,13 @@ sv = plotstruc!(fig, struc)
 struc = read("data/2vb1_mutant1.pdb", BioStructures.PDB) |> Observable
 sv = plotstruc!(fig, struc)
 ```
-Keyword Arguments:
-selectors ----- [standardselector]
-resolution ---- (800,800)
-gridposition -- (1,1)
-plottype ------ :ballandstick, another option is :spacefilling
-atomcolors ---- elecolors, another option is aquacolors, or define your own dict for atoms like: "N" => :blue
+
+### Optional Arguments:
+- selectors ----- [standardselector]
+- resolution ---- (800,800)
+- gridposition -- (1,1)
+- plottype ------ :ballandstick, another option is :spacefilling
+- atomcolors ---- elecolors, another option is aquacolors, or define your own dict for atoms like: "N" => :blue
 """
 function plotstruc!(fig::Figure, struc::Observable;
                     selectors = [standardselector],
@@ -58,7 +59,8 @@ function plotstruc!(fig::Figure, struc::Observable;
                     gridposition = (1,1),
                     plottype = :covalent,
                     atomcolors = elecolors,
-                    markersize = 1.0,
+                    markersize = 0.5,
+                    algo = :knowledgebased,
                     kwargs...
                     ) 
 	#
@@ -75,12 +77,9 @@ function plotstruc!(fig::Figure, struc::Observable;
         meshscatter!(lscene, atmcords; color = colrs, markersize = markersize, kwargs...)
 		# :ballandstick shows the bonds (/sticks) as cylinder meshes in the same space as the atom meshscatter.
 		# Could it be improved by making different shapes for single, double, and triple bonds? 
-        resshps = @lift bondshape.(SplitApplyCombine.flatten(getbonds(defaultresidue.(collectresidues($struc,selectors...)))))
-        bbshps = @lift bondshape.(SplitApplyCombine.flatten(backbonebonds.(collectchains($struc))))
-        resbnds = @lift normal_mesh.($resshps)
-        bckbnds = @lift normal_mesh.($bbshps)
-        mesh!(lscene, resbnds, color = RGBA(0.5,0.5,0.5,0.8))
-        mesh!(lscene, bckbnds, color = RGBA(0.5,0.5,0.5,0.8))
+        bndshapes = @lift bondshapes($struc, selectors...; )
+        bndmeshes = @lift normal_mesh.($bndshapes)
+        mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
     elseif plottype == :covalent
         markersize = @lift atomradii($atms; radiustype = :cov)
         lscene = LScene(fig[gridposition...]; show_axis = false)
@@ -106,12 +105,12 @@ struc = read("data/2vb1_mutant1.pdb", BioStructures.PDB) |> Observable
 sv = plotstruc(struc)
 ```
 
-Keyword Arguments:
-selectors ----- [standardselector]
-resolution ---- (800,800)
-gridposition -- (1,1)
-plottype ------ :ballandstick, another option is :spacefilling
-atomcolors ---- elecolors, another option is aquacolors, or define your own dict for atoms like: "N" => :blue
+### Optional Arguments:
+- selectors ----- [standardselector]
+- resolution ---- (800,800)
+- gridposition -- (1,1)
+- plottype ------ :ballandstick, another option is :spacefilling
+- atomcolors ---- elecolors, another option is aquacolors, or define your own dict for atoms like: "N" => :blue
 """
 function plotstruc(struc; returnobservables = true, kwargs...)
 	fig = Figure()
