@@ -75,8 +75,7 @@ function plotstruc!(fig::Figure, struc::Observable;
     elseif plottype == :ballandstick
         lscene = LScene(fig[gridposition...]; show_axis = false)
         meshscatter!(lscene, atmcords; color = colrs, markersize = markersize, kwargs...)
-		# :ballandstick shows the bonds (/sticks) as cylinder meshes in the same space as the atom meshscatter.
-		# Could it be improved by making different shapes for single, double, and triple bonds? 
+		# :ballandstick shows the bonds (/sticks) as cylinder meshes
         bndshapes = @lift bondshapes($struc, selectors...; )
         bndmeshes = @lift normal_mesh.($bndshapes)
         mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))

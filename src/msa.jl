@@ -31,7 +31,7 @@ function getplottingdata(msa)
 	elseif msa isa Vector{FASTX.FASTA.Record}
 		xlabels = [identifier(msa[i]) for i in 1:size(msa,1)]
 		ylabels = [1:length(msa)...] |> collect .|> string
-		msamatrix = [[sequence(seqs[i])...] for i in 1:size(seqs,1)] |> combinedims .|> string
+		msamatrix = [[sequence(msa[i])...] for i in 1:size(msa,1)] |> combinedims .|> string
 		@cast msamatrix[i,j] := msamatrix[j,i]
 		msamatrix = msamatrix[:,:]
     else
@@ -73,9 +73,9 @@ Plot a multiple sequence alignment (MSA) into a Figure.
 fig = Figure(resolution = (1100, 400))
 
 plotmsa!( fig::Figure, msamatrix::Matrix{String}, matrixvals::Matrix{Float32};
-		  xlabels = xlabels1, 	
-		  ylabels = ylabels1,
-		  kwargs... )
+		xlabels = xlabels1, 	
+		ylabels = ylabels1,
+		kwargs... )
 ```
 
 ### Optional Arguments:
@@ -228,15 +228,16 @@ plotmsa( msamatrix::Matrix{String},
 		 ylabels = ylabel::Vector{String}, 
 		 kwargs... )
 ```
-Keyword arguments:
-xlabels ----------- {1:height}
-ylabels ----------- {1:width}
-resolution -------- (1100, 400)
-sheetsize --------- [40,20]
-gridposition ------ (1,1)
-colorscheme ------- :viridis
-returnobservables - true          # Return data Observables for interaction.
-kwargs...                         # forwarded to scatter plot
+
+### Optional Arguments:
+- xlabels ----------- {1:height}
+- ylabels ----------- {1:width}
+- resolution -------- (1100, 400)
+- sheetsize --------- [40,20]
+- gridposition ------ (1,1)
+- colorscheme ------- :viridis
+- returnobservables - true          # Return Observables for interaction.
+- kwargs...    						# forwarded to scatter plot
 """
 function plotmsa(msa, matrixvals; resolution = (1100, 400), returnobservables = true, kwargs...)
 	fig = Figure(resolution = resolution)

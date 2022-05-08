@@ -4,7 +4,8 @@ export resmass,
        aquacolors,
        SMILESaa,
        protsmiles,
-       kideradict
+       kideradict,
+       downloadpfam
 
 using MolecularGraph: UndirectedGraph
 import Base.convert
