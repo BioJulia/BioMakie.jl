@@ -1,7 +1,3 @@
-```@meta
-EditURL = "<unknown>/docs/src/index.jl"
-```
-
 # BioMakie.jl
 
 ## Installation
@@ -25,7 +21,7 @@ The main plotting functions are **plotstruc** and **plotmsa**, along with their 
 versions, **plotstruc!** and **plotmsa!**. The mutating functions allow the user to add multiple
 plots to the same Figure, using grid positions.
 
-````@example index
+````julia
 using GLMakie # hide
 GLMakie.activate!() # hide
 set_theme!(resolution=(800, 400)) # hide
@@ -37,7 +33,7 @@ struc = retrievepdb("2vb1"; dir = "assets/") |> Observable
 struc = read("assets/2vb1.pdb", BioStructures.PDB) |> Observable
 ````
 
-````@example index
+````julia
 fig = Figure()
 plotstruc!(fig, struc; plottype = :spacefilling, gridposition = (1,1), atomcolors = aquacolors)
 plotstruc!(fig, struc; plottype = :covalent, gridposition = (1,2))
@@ -55,7 +51,7 @@ loaded with FastaIO.jl or [FASTX.jl].
 
 To view a multiple sequence alignment, use the `plotmsa` or `plotmsa!` function with a Pfam MSA or fasta file.
 
-````@example index
+````julia
 using MIToS # hide
 using MIToS.MSA
 msa = MIToS.MSA.read("assets/pf00062.stockholm.gz",Stockholm) |> Observable
