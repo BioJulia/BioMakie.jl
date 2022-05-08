@@ -9,11 +9,11 @@ using GLMakie: Observable
 DocMeta.setdocmeta!(BioMakie, :DocTestSetup, :(using BioMakie); recursive=true)
 
 examples = [
-    joinpath(@__DIR__, "src\\index.jl"),
+    "src/index.jl",
 ]
 
 for ex in examples
-    Literate.markdown(ex, joinpath(@__DIR__, "src"))
+    Literate.markdown(ex, "src")
 end
 
 makedocs(; modules=[BioMakie], authors="Daniel Kool",
