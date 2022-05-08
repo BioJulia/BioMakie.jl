@@ -8,13 +8,13 @@ using GLMakie: Observable
 
 DocMeta.setdocmeta!(BioMakie, :DocTestSetup, :(using BioMakie); recursive=true)
 
-examples = [
-    "./src/index.jl",
-]
+# examples = [
+#     "./src/index.jl",
+# ]
 
-for ex in examples
-    Literate.markdown(ex, "src")
-end
+# for ex in examples
+#     Literate.markdown(ex, "src")
+# end
 
 makedocs(; modules=[BioMakie], authors="Daniel Kool",
          repo="https://github.com/kool7d/BioMakie.jl/blob/{commit}{path}#{line}",
