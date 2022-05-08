@@ -3,6 +3,7 @@ using Documenter
 using Literate
 using PkgDeps
 using MIToS
+using GLMakie
 using GLMakie: Observable
 
 DocMeta.setdocmeta!(BioMakie, :DocTestSetup, :(using BioMakie); recursive=true)
