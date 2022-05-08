@@ -9,7 +9,7 @@ using GLMakie: Observable
 DocMeta.setdocmeta!(BioMakie, :DocTestSetup, :(using BioMakie); recursive=true)
 
 examples = [
-    "src/index.jl",
+    "./src/index.jl",
 ]
 
 for ex in examples
