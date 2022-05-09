@@ -50,7 +50,7 @@ msafig, plotdata... = plotmsa(msamatrix;
 
 Documentation for advanced plotting will be available soon. 
 Selection and multiple plots linked:
-<p align="center"><img src="assets/selectres.png"></p>
+<p align="center"><img src="docs/src/assets/selectres.png"></p>
 
 Animation of a mesh through different trajectories:
 <p align="center"><img src="docs/src/assets/shapeanimation.gif"></p>
