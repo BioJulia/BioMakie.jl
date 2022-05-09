@@ -22,10 +22,6 @@ versions, **plotstruc!** and **plotmsa!**. The mutating functions allow the user
 plots to the same Figure, using grid positions.
 
 ````julia
-using GLMakie # hide
-GLMakie.activate!() # hide
-set_theme!(resolution=(800, 400)) # hide
-using GLMakie: lift, @lift, Observable # hide
 using BioMakie
 using BioStructures
 struc = retrievepdb("2vb1"; dir = "assets/") |> Observable
@@ -37,7 +33,6 @@ struc = read("assets/2vb1.pdb", BioStructures.PDB) |> Observable
 fig = Figure()
 plotstruc!(fig, struc; plottype = :spacefilling, gridposition = (1,1), atomcolors = aquacolors)
 plotstruc!(fig, struc; plottype = :covalent, gridposition = (1,2))
-nothing # hide
 ````
 
 ![strucs](assets/vdwcov.png)
@@ -52,7 +47,6 @@ loaded with FastaIO.jl or [FASTX.jl].
 To view a multiple sequence alignment, use the `plotmsa` or `plotmsa!` function with a Pfam MSA or fasta file.
 
 ````julia
-using MIToS # hide
 using MIToS.MSA
 msa = MIToS.MSA.read("assets/pf00062.stockholm.gz",Stockholm) |> Observable
 # or
@@ -65,7 +59,6 @@ msamatrix, xlabel, ylabel = getplottingdata(msa) .|> Observable
 msafig, plotdata... = plotmsa(msamatrix;
 				xlabels = xlabel,
 				ylabels = ylabel, colorscheme = :buda)
-nothing # hide
 ````
 
 ![MSA](assets/msa.png)
