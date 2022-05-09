@@ -8,11 +8,12 @@ export resmass,
        protsmiles,
        kideradict,
        distancebonds,
-	   covalentbonds,
-	   sidechainbonds,
-	   backbonebonds,
-	   getbonds,
-	   bondshape,
+       covalentbonds,
+       sidechainbonds,
+       backbonebonds,
+       getbonds,
+       bondshape,
+       bondshapes,
        getplottingdata,
        msavalues,
        plotmsa!,
@@ -22,20 +23,23 @@ export resmass,
        plotstruc!,
        plotstruc,
        atomicmasses,
-	   covalentradii,
-	   vanderwaalsradii,
-	   resletterdict
+       covalentradii,
+       vanderwaalsradii,
+       resletterdict,
+       downloadpfam
+#
 
-using BioStructures, MolecularGraph, MIToS
-using MIToS.Information, MIToS.MSA, MIToS.Pfam, MIToS.SIFTS, MIToS.Utils
+using BioStructures, MolecularGraph
+using MIToS, MIToS.Information, MIToS.MSA, MIToS.Pfam, MIToS.SIFTS, MIToS.Utils
 using SplitApplyCombine, TensorCast
 using DataStructures, DelimitedFiles, HTTP
 using Distances, Distributions, GeometryBasics, Colors
-using FileIO, FastaIO, OrderedCollections
-using GraphMakie, JSServe, Meshes
-using GLMakie, WGLMakie
+using FileIO, FastaIO, FASTX, OrderedCollections
+using JSServe
+# using Makie, Meshes, Graphs
+using GLMakie
+using GLMakie: @lift, Observable, lift
 GLMakie.activate!()
-using GLMakie: @lift
 
 include("../src/utils.jl")
 include("../src/chemdata.jl")
