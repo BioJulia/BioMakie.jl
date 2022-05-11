@@ -1,5 +1,5 @@
 # BioMakie.jl
-
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://kool7d.github.io/BioMakie.jl/dev)
 ## Installation
 
 Julia is required. This package is being developed with Julia 1.7, so some features may not work 
