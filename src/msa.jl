@@ -146,7 +146,8 @@ function plotmsa!( fig::Figure, msamatrix::Observable, matrixvals::Observable;
 	ax.yticklabelsize = 11
 	ax.xzoomlock[] = true
 	ax.yzoomlock[] = true
-	ax.yticklabelspace[] = 10
+	ax.yticklabelspace[] = 10.0
+	
 	points1 = [Point2f0(x,y) for x in widthrange for y in heightrange] |> collect
 	charvec = @lift SplitApplyCombine.flatten($charshow)
 
