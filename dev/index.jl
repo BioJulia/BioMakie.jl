@@ -47,19 +47,19 @@ nothing # hide
 
 # To view a multiple sequence alignment, use the `plotmsa` or `plotmsa!` function with a Pfam MSA or fasta file.
 
+using FASTX
+reader = open(FASTX.FASTA.Reader, "docs/src/assets/PF00062_full.fasta")
+msa = [reader...] |> Observable
+close(reader)
+## or 
 using MIToS # hide
 using MIToS.MSA
 msa = MIToS.MSA.read("assets/pf00062.stockholm.gz",Stockholm) |> Observable
-## or 
-using FASTX
-reader = open(FASTX.FASTA.Reader, "assets/PF00062_full.fasta")
-msa = [record for record in reader]
-close(reader)
 
 msamatrix, xlabel, ylabel = getplottingdata(msa) .|> Observable
 msafig, plotdata... = plotmsa(msamatrix;
 				xlabels = xlabel, 	
-				ylabels = ylabel, colorscheme = :buda)
+				ylabels = ylabel, colorscheme = :tableau_blue_green)
 nothing # hide
 
 # ![MSA](assets/msa.png)
@@ -70,7 +70,7 @@ nothing # hide
 # selected in the MSA will be selected on the protein structure, if the structure has a residue
 # for that position. 
 
-# ![MSA-struc connect](assets/selectres.png)
+# ![MSA-struc connect](assets/selectres1.png)
 
 # Animation of a mesh through different trajectories:
 
