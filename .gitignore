@@ -21,3 +21,4 @@ research/
 /docsite/
 *.fasta
 *.xml
+*.json

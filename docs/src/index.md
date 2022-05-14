@@ -47,18 +47,19 @@ loaded with FastaIO.jl or [FASTX.jl].
 To view a multiple sequence alignment, use the `plotmsa` or `plotmsa!` function with a Pfam MSA or fasta file.
 
 ````julia
-using MIToS.MSA
-msa = MIToS.MSA.read("assets/pf00062.stockholm.gz",Stockholm) |> Observable
-# or
 using FASTX
 reader = open(FASTX.FASTA.Reader, "assets/PF00062_full.fasta")
-msa = [record for record in reader]
+msa = [reader...] |> Observable
 close(reader)
+## or 
+using MIToS # hide
+using MIToS.MSA
+msa = MIToS.MSA.read("assets/pf00062.stockholm.gz",Stockholm) |> Observable
 
 msamatrix, xlabel, ylabel = getplottingdata(msa) .|> Observable
 msafig, plotdata... = plotmsa(msamatrix;
 				xlabels = xlabel,
-				ylabels = ylabel, colorscheme = :buda)
+				ylabels = ylabel, colorscheme = :tableau_blue_green)
 ````
 
 ![MSA](assets/msa.png)

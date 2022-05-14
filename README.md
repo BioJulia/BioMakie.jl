@@ -29,20 +29,12 @@ To view a multiple sequence alignment, use the `plotmsa` function with a Pfam MS
 using MIToS.MSA
 downloadpfam("pf00062")
 msa = MIToS.MSA.read("pf00062.stockholm.gz",Stockholm) |> Observable
-# or #
-using FASTX
-reader = open(FASTX.FASTA.Reader, "PF00062_full.fasta")
-msa = [record for record in reader]
-close(reader)
-# or #
-using FastaIO
-msa = FastaIO.readfasta("PF00062_full.fasta") |> Observable
 
 msamatrix, xlabel, ylabel = getplottingdata(msa) .|> Observable
 
 msafig, plotdata... = plotmsa(msamatrix;
 				xlabels = xlabel, 	
-				ylabels = ylabel, colorscheme = :buda)
+				ylabels = ylabel, colorscheme = :tableau_blue_green)
 ```
 <p align="center"><img src="docs/src/assets/msa.png"></p>
 
@@ -50,7 +42,7 @@ msafig, plotdata... = plotmsa(msamatrix;
 
 Documentation for advanced plotting will be available soon. 
 Selection and multiple plots linked:
-<p align="center"><img src="docs/src/assets/selectres.png"></p>
+<p align="center"><img src="docs/src/assets/selectres1.png"></p>
 
 Animation of a mesh through different trajectories:
 <p align="center"><img src="docs/src/assets/shapeanimation.gif"></p>
