@@ -344,6 +344,20 @@ function downloadpfam(pfamcode::String; filename::String="$pfamcode.stockholm.gz
     end
 end
 typefields(thing) = typeof(thing) |> fieldnames
+macro trycatch(ex1, ex2=nothing)
+    quote
+        try
+            $(esc(ex1))
+        catch
+            if $(esc(ex2)) == nothing
+                # do nothing
+            else
+                $(esc(ex2))
+            end
+        end
+    end
+end
+
 # Dictionary for Kidera physical property factors, from:
 # Kenta Nakai, Akinori Kidera, Minoru Kanehisa, Cluster analysis of amino acid indices for prediction of protein structure and function, 
 # Protein Engineering, Design and Selection, Volume 2, Issue 2, July 1988, Pages 93–100, https://doi.org/10.1093/protein/2.2.93 

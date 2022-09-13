@@ -76,7 +76,7 @@ function plotstruc!(fig::Figure, struc::Observable;
         lscene = LScene(fig[gridposition...]; show_axis = false)
         meshscatter!(lscene, atmcords; color = colrs, markersize = markersize, kwargs...)
 		# :ballandstick shows the bonds (/sticks) as cylinder meshes
-        bndshapes = @lift bondshapes($struc, selectors...; )
+        bndshapes = @lift bondshapes($struc, selectors...; algo = algo)
         bndmeshes = @lift normal_mesh.($bndshapes)
         mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
     elseif plottype == :covalent
