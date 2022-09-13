@@ -142,7 +142,7 @@ function plotmsa!( fig::Figure, msamatrix::Observable, matrixvals::Observable;
 	on(ylabelshow) do ns
 		ax.xticks = ([1:width1...], ns)
 	end
-	ax.xticklabelsize = 9
+	ax.xticklabelsize = 10
 	ax.yticklabelsize = 11
 	ax.xzoomlock[] = true
 	ax.yzoomlock[] = true
