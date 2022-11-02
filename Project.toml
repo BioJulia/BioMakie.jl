@@ -59,7 +59,6 @@ PkgDeps = "0.6"
 SplitApplyCombine = "1.2"
 TableTraitsUtils = "1"
 TensorCast = "0.4"
-Transducers = "0.4"
 julia = "1"
 
 [extras]
