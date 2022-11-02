@@ -54,12 +54,12 @@ Lazy = "0.15"
 Literate = "2"
 MIToS = "2.9"
 MolecularGraph = "0.11, 0.12"
+Makie = "0.18"
 OrderedCollections = "1.4"
 PkgDeps = "0.6"
 SplitApplyCombine = "1.2"
 TableTraitsUtils = "1"
 TensorCast = "0.4"
-Transducers = "0.4"
 julia = "1"
 
 [extras]
