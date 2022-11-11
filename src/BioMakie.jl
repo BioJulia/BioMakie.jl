@@ -36,7 +36,6 @@ using DataStructures, DelimitedFiles, HTTP
 using Distances, Distributions, GeometryBasics, Colors
 using FileIO, FastaIO, FASTX, OrderedCollections
 using JSServe
-using Makie
 using GLMakie
 GLMakie.activate!()
 
