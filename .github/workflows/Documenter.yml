@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - '1.6'
+          - '1.8'
         os:
           - ubuntu-18.04
         arch:
@@ -48,7 +48,7 @@ jobs:
            pkg"registry add https://github.com/JuliaRegistries/General";
            pkg"registry up General";
            # dev mono repo versions
-           pkg"dev . GLMakie; add Documenter#master; instantiate"'
+           pkg"dev . Makie; add Documenter#master; instantiate"'
       - name: Build and deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
