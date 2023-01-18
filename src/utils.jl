@@ -1,19 +1,9 @@
-export resmass,
-       resvdw,
-       elecolors,
-       aquacolors,
-       SMILESaa,
-       protsmiles,
-       kideradict,
-       downloadpfam
-
-using MolecularGraph: UndirectedGraph
 import Base.convert
 import BioStructures.defaultatom, BioStructures.defaultresidue
+
 defaultatom(at::BioStructures.Atom) = at
 defaultresidue(res::BioStructures.Residue) = res
 convert(::BioStructures.Atom,disat::DisorderedAtom) = defaultatom(disat)
-
 function convert(::Type{T}, arr::Array{T,1}) where {T<:Number}
     if size(arr,1) > 1
         return T.(arr)
@@ -33,275 +23,169 @@ convert(::Type{String}, i::Int) = "$i"
 function convert(::Type{String}, f::T) where T<:Union{Float16,Float32,Float64}
 	"$f"
 end
-function collectall(args...; maxdepth = 5, currentdepth = 1)
-	ff = []
-	f1 = collect([args...])
-	f2 = collect([Base.Iterators.flatten(f1)...])
-
-    for x in f2
-		if typeof(x) <: Union{AbstractArray,AbstractRange} && currentdepth < maxdepth
-			xx = try
-                collect([Base.Iterators.flatten(x)...])
-            catch
-                collect(x)
-            end
-			push!(ff,collectall(xx; maxdepth, currentdepth = currentdepth+1)...)
-		else
-			push!(ff,x)
-		end
-	end
-
-	typ = typeof(ff[1])
-    try
-        ff = Vector{typ}(ff)
-    catch
-
-    end
-
-	return ff
-end
-function collectkeys(args)
-    return keys(args) |> collect
-end
-function collectvals(args)
-    return values(args) |> collect
-end
-function reversekv(dict::AbstractDict{K,V}) where {K,V}
-	vkdict = [x[2].=>x[1] for x in dict]
-    if typeof(dict) <: OrderedDict
-        return OrderedDict{V,K}(vkdict)
-    end
-	return Dict{V,K}(vkdict)
-end
-function printkv(dict::AbstractDict)
-	keys1 = collectkeys(dict)
-	vals1 = collectvals(dict)
-	println.(["$(keys1[i]) -> $(vals1[i])" for i in 1:size(keys1,1)])
-	return nothing
-end
-pdbS(x; kwargs...) = try
-        retrievepdb(x; kwargs...)
-    catch
-        println("$(x) doesn't work, sorry")
-    end
-pdbM(x; model = "1", group = "ATOM", kwargs...) = try
-        read("$pdbdir\\$(x).pdb", MIToS.PDB.PDBFile, model = "1", group = "ATOM", kwargs...)
-    catch
-        pdbS(x; kwargs...)
-    end
-anynan(x) = any(isnan.(x))
-indexshift(idxs) = (idxs).+=1
-function tryint(number)
-    return (try
-        Int64(number)
-    catch
-        number
-    end)
-end
-function tryfloat(number)
-    return (try
-        Float64(number)
-    catch
-        number
-    end)
-end
-function tryfloat32(number)
-    return (try
-        Float32(number)
-    catch
-        number
-    end)
-end
-function unitrange(arr::AbstractVector{T}) where {T<:Int}
-    start_value = arr[1]
-    end_value = arr[end]
-    end_value == start_value && error("the start and end points are the same value")
-	end_value < start_value && error("the last value is lower than the first")
-    for i in 2:size(arr,1)
-        if arr[i]-arr[i-1] != 1
-            error("inconsistent step for unit range")
-        end
-    end
-    return UnitRange(start_value,end_value)
-end
-function steprange(arr::AbstractVector{T}) where {T<:Real}
-    start_value = arr[1]
-    end_value = arr[end]
-	start_value == end_value && error("the start and end points are the same value")
-    step = 1
-    for i in 2:size(arr,1)
-        if i == 2
-            step = arr[i]-arr[i-1]
-        end
-        if arr[i]-arr[i-1] != step
-            error("inconsistent step for step range")
-        end
-    end
-    return StepRangeLen(start_value,step,length(arr))
-end
-splatrange(range) = [(range...)]
-function splatranges(ranges...)
-    splattedrange = []
-    for range in ranges
-        splattedrange = vcat(splattedrange, splatrange(range))
-    end
-    return eval([Int64.(splattedrange)...])
-end
-function internaldistances(atms::AbstractVector{AbstractAtom})
-    internaldists = zeros(Float64, (size(atms,1),size(atms,1)))
-    for (i,x) in enumerate(atms)
-        for (j,y) in enumerate(atms)
-            internaldists[i,j] = Distances.euclidean(BioStructures.coords(x),BioStructures.coords(y))
-        end
-    end
-    return internaldists
-end
-function internaldistances(vals::AbstractArray{Number})
-    internaldists = zeros(Float64, (size(vals,1),size(vals,1)))
-    for (i,x) in enumerate(vals)
-        for (j,y) in enumerate(vals)
-            internaldists[i,j] = Distances.euclidean(x,y)
-        end
-    end
-    return internaldists
-end
-function internaldistances(vals::AbstractArray)
-    internaldists = zeros(Float64, (size(vals,1),size(vals,1)))
-    for i in 1:size(vals,1)
-        for j in 1:size(vals,1)
-            internaldists[i,j] = Distances.euclidean(vals[i,:],vals[j,:])
-        end
-    end
-    return internaldists
-end
-function internaldistorders(internaldists::AbstractArray)
-    orders = zeros(Float64, (size(internaldists,1),size(internaldists,2)))
-    for i = 1:size(internaldists,1)
-        orders[i,:] = sortperm(sortperm(internaldists[i,:]))
-    end
-    return orders
-end
-function resmass(res::BioStructures.Residue)
-    total = 0.0
-    for atm in res
-        total+=atomicmasses["$(element(atm, strip=true))"]
-    end
-    return total
-end
-function resvdw(res::BioStructures.Residue; scale = 1.0)
-    total = 0.0
-    for atm in res
-        total+=vdwrad["$(element(atm, strip=true))"]
-    end
-    return total*scale
-end
-function makeclrgrad(vec::AbstractArray{T}, colrmap::AbstractArray) where {T<:Real}
-    softmaxvec = Flux.softmax(vec)
-    scalefactor = size(colrmap,1) / maximum(softmaxvec)
-    colorindices = round.(Int64, softmaxvec .* scalefactor)
-    indexedcolors = colrmap[colorindices]
-    return indexedcolors
-end
-∑(x) = sum(x)
-function centerofpoints(points::AbstractArray{T}) where {T<:Number}
-    xs = points[:,1]
-    ys = points[:,2]
-    zs = points[:,3]
-    return centerofpoints = [ ∑(xs)/size(xs,1), ∑(ys)/size(ys,1), ∑(zs)/size(zs,1) ]
-end
-function centerofmass(atms::AbstractArray)
-    masses = []
-    positions = coordarray(atms)
-    xs = positions[1,:]
-    ys = positions[2,:]
-    zs = positions[3,:]
-    totalmass = 0.0
-    for i = 1:length(atms)
-        if element(atms[i]) == "C"
-            push!(masses, 12.0107)
-            totalmass += 12.0107
-        elseif element(atms[i]) == "N"
-            push!(masses, 14.0067)
-            totalmass += 14.0067
-        elseif element(atms[i]) == "H"
-            push!(masses,1.0079)
-            totalmass += 1.0079
-        elseif element(atms[i]) == "O"
-            push!(masses, 15.9994)
-            totalmass += 15.9994
-        elseif element(atms[i]) == "S"
-            push!(masses, 32.065)
-            totalmass += 32.065
-        else
-            push!(masses, 0.0)
-            totalmass += 0.0
-        end
-    end
-    return centerofmass = [ ∑(masses.*xs)/totalmass, ∑(masses.*ys)/totalmass, ∑(masses.*zs)/totalmass ]
-end
-function surfacearea(coordinates, connectivity)
-    totalarea = 0.0
-    for i = 1:size(connectivity,1)
-        totalarea += area(GeometryBasics.Point3f0.(coordinates[connectivity[i,1],:],
-						coordinates[connectivity[i,2],:], coordinates[connectivity[i,3],:]))
-    end
-    return totalarea
-end
-function linesegs(arr::AbstractArray{T,3}) where {T<:AbstractFloat}
-    new_arr::AbstractArray{Point3f0} = []
-    for i in 1:size(arr,1)
-        push!(new_arr, Makie.Point3f0(arr[i,1,:]))
-        push!(new_arr, Makie.Point3f0(arr[i,2,:]))
-    end
-    return new_arr |> combinedims |> transpose |> collect
-end
-transposed(arr::AbstractArray) = transpose(arr) |> collect
-_t(arr::AbstractArray) = transposed(arr)
-_v(arr::AbstractArray) = reverse(arr; dims = 1)
-_h(arr::AbstractArray) = reverse(arr; dims = 2)
-function stripkeys(dict::AbstractDict)
-    ks = string.(strip.(keys(dict)))
-    return ks
-end
-stripallkeys(dicts::AbstractArray) =  stripkeys.(dicts)
 elecolors = Dict( "C" => :gray,
                   "N" => :blue,
                   "H" => :white,
                   "O" => :red,
                   "S" => :yellow,
-				  "X" => :gray,
 				  "ZN" => :gray,
-				  "CL" => :gray
+				  "CL" => :gray,
+                  "X" => :gray
+)
+elecolors = Dict( "C" => :gray,
+                  "N" => :blue,
+                  "H" => :white,
+                  "O" => :red,
+                  "S" => :yellow,
+				  "ZN" => :gray,
+				  "CL" => :gray,
+                  "X" => :gray
+)
+cpkcolors = Dict( "C" => RGB(200.0,200.0,200.0),
+                  "N" => RGB(143.0,143.0,255.0),
+                  "H" => RGB(255.0,255.0,255.0),
+                  "O" => RGB(240.0,0.0,0.0),
+                  "S" => RGB(255.0,200.0,50.0),
+                  "P" => RGB(255.0,165.0,0.0),
+                  "CL" => RGB(0.0,255.0,0.0),
+                  "BR" => RGB(165.0,42.0,42.0),
+				  "ZN" => RGB(165.0,42.0,42.0),
+                  "NA" => RGB(0.0,0.0,255.0),
+                  "FE" => RGB(255.0,165.0,0.0),
+                  "CA" => RGB(128.0,128.0,144.0),
+                  "X" => RGB(255.0,20.0,147.0)			  
 )
 aquacolors = Dict("C" => RGB(0.5,0.5,0.5),
                   "N" => RGB(0.472,0.211,0.499),
                   "H" => RGB(0.65,0.96,0.70),
                   "O" => RGB(0.111,0.37,0.999),
                   "S" => RGB(0.992,0.753,0.525),
-				  "X" => RGB(0.5,0.5,0.5),
 				  "ZN" => RGB(0.5,0.5,0.5),
-				  "CL" => RGB(0.5,0.5,0.5)
+				  "CL" => RGB(0.5,0.5,0.5),
+                  "X" => RGB(0.5,0.5,0.5)
 )
-SMILESaa = OrderedDict("A" => "N[C@@]([H])(C)C(=O)O",
-        "R" => "N[C@@]([H])(CCCNC(=N)N)C(=O)O",
-        "N" => "N[C@@]([H])(CC(=O)N)C(=O)O",
-        "D" => "N[C@@]([H])(CC(=O)O)C(=O)O",
-        "C" => "N[C@@]([H])(CS)C(=O)O",
-        "Q" => "N[C@@]([H])(CCC(=O)N)C(=O)O",
-        "E" => "N[C@@]([H])(CCC(=O)O)C(=O)O",
-        "G" => "NCC(=O)O",
-        "H" => "N[C@@]([H])(CC1=CN=C-N1)C(=O)O",
-        "I" => "N[C@@]([H])([C@]([H])(CC)C)C(=O)O",
-        "L" => "N[C@@]([H])(CC(C)C)C(=O)O",
-        "K" => "N[C@@]([H])(CCCCN)C(=O)O",
-        "M" => "N[C@@]([H])(CCSC)C(=O)O",
-        "F" => "N[C@@]([H])(Cc1ccccc1)C(=O)O",
-        "P" => "N1[C@@]([H])(CCC1)C(=O)O",
-        "S" => "N[C@@]([H])(CO)C(=O)O",
-        "T" => "N[C@@]([H])([C@]([H])(O)C)C(=O)O",
-        "W" => "N[C@@]([H])(CC(=CN2)C1=C2C=CC=C1)C(=O)O",
-        "Y" => "N[C@@]([H])(Cc1ccc(O)cc1)C(=O)O",
-        "V" => "N[C@@]([H])(C(C)C)C(=O)O")
+shapelycolors = OrderedDict(
+    "A" => RGB(200.0,200.0,200.0),
+    "R" => RGB(20.0,90.0,255.0),
+    "N" => RGB(0.0,220.0,220.0),
+    "D" => RGB(230.0,10.0,10.0),
+    "C" => RGB(230.0,230.0,0.0),
+    "Q" => RGB(0.0,220.0,220.0),
+    "E" => RGB(230.0,10.0,10.0),
+    "G" => RGB(235.0,235.0,235.0),
+    "H" => RGB(130.0,130.0,210.0),
+    "I" => RGB(15.0,130.0,15.0),
+    "L" => RGB(15.0,130.0,15.0),
+    "K" => RGB(20.0,90.0,255.0),
+    "M" => RGB(230.0,230.0,0.0),
+    "F" => RGB(50.0,50.0,170.0),
+    "P" => RGB(220.0,150.0,130.0),
+    "S" => RGB(250.0,150.0,0.0),
+    "T" => RGB(250.0,150.0,0.0),
+    "W" => RGB(180.0,90.0,180.0),
+    "Y" => RGB(50.0,50.0,170.0),
+    "V" => RGB(15.0,130.0,15.0),
+    "B" => :gray,
+    "Z" => :gray,
+    "X" => :gray
+)
+leskcolors = OrderedDict(
+    "A" => :orange,
+    "R" => :blue,
+    "N" => :magenta,
+    "D" => :red,
+    "C" => :green,
+    "Q" => :magenta,
+    "E" => :red,
+    "G" => :orange,
+    "H" => :magenta,
+    "I" => :green,
+    "L" => :green,
+    "K" => :blue,
+    "M" => :green,
+    "F" => :green,
+    "P" => :green,
+    "S" => :orange,
+    "T" => :orange,
+    "W" => :green,
+    "Y" => :green,
+    "V" => :green,
+    "B" => :gray,
+    "Z" => :gray,
+    "X" => :gray
+)
+maecolors = OrderedDict(
+    "A" => :lightgreen,
+    "R" => :orange,
+    "N" => :darkgreen,
+    "D" => :darkgreen,
+    "C" => :green,
+    "Q" => :darkgreen,
+    "E" => :darkgreen,
+    "G" => :lightgreen,
+    "H" => :darkblue,
+    "I" => :blue,
+    "L" => :blue,
+    "K" => :orange,
+    "M" => :blue,
+    "F" => :purple,
+    "P" => :pink,
+    "S" => :red,
+    "T" => :red,
+    "W" => :purple,
+    "Y" => :purple,
+    "V" => :blue,
+    "B" => :gray,
+    "Z" => :gray,
+    "X" => :gray
+)
+cinemacolors = OrderedDict(
+    "A" => :white,
+    "R" => :blue,
+    "N" => :green,
+    "D" => :red,
+    "C" => :yellow,
+    "Q" => :green,
+    "E" => :red,
+    "G" => :brown,
+    "H" => :blue,
+    "I" => :white,
+    "L" => :white,
+    "K" => :blue,
+    "M" => :white,
+    "F" => :magenta,
+    "P" => :brown,
+    "S" => :green,
+    "T" => :green,
+    "W" => :magenta,
+    "Y" => :magenta,
+    "V" => :white,
+    "B" => :gray,
+    "Z" => :gray,
+    "X" => :gray
+)
+SMILESaa = OrderedDict(
+    "A" => "N[C@@]([H])(C)C(=O)O",
+    "R" => "N[C@@]([H])(CCCNC(=N)N)C(=O)O",
+    "N" => "N[C@@]([H])(CC(=O)N)C(=O)O",
+    "D" => "N[C@@]([H])(CC(=O)O)C(=O)O",
+    "C" => "N[C@@]([H])(CS)C(=O)O",
+    "Q" => "N[C@@]([H])(CCC(=O)N)C(=O)O",
+    "E" => "N[C@@]([H])(CCC(=O)O)C(=O)O",
+    "G" => "NCC(=O)O",
+    "H" => "N[C@@]([H])(CC1=CN=C-N1)C(=O)O",
+    "I" => "N[C@@]([H])([C@]([H])(CC)C)C(=O)O",
+    "L" => "N[C@@]([H])(CC(C)C)C(=O)O",
+    "K" => "N[C@@]([H])(CCCCN)C(=O)O",
+    "M" => "N[C@@]([H])(CCSC)C(=O)O",
+    "F" => "N[C@@]([H])(Cc1ccccc1)C(=O)O",
+    "P" => "N1[C@@]([H])(CCC1)C(=O)O",
+    "S" => "N[C@@]([H])(CO)C(=O)O",
+    "T" => "N[C@@]([H])([C@]([H])(O)C)C(=O)O",
+    "W" => "N[C@@]([H])(CC(=CN2)C1=C2C=CC=C1)C(=O)O",
+    "Y" => "N[C@@]([H])(Cc1ccc(O)cc1)C(=O)O",
+    "V" => "N[C@@]([H])(C(C)C)C(=O)O"
+)
 #
 function protsmiles(aas::T) where {T}
     sm = ""
@@ -343,21 +227,71 @@ function downloadpfam(pfamcode::String; filename::String="$pfamcode.stockholm.gz
         throw(ErrorException("$pfamcode is not a correct Pfam code"))
     end
 end
-typefields(thing) = typeof(thing) |> fieldnames
-macro trycatch(ex1, ex2=nothing)
-    quote
-        try
-            $(esc(ex1))
-        catch
-            if $(esc(ex2)) == nothing
-                # do nothing
-            else
-                $(esc(ex2))
-            end
-        end
-    end
-end
 
+# Standard protein residue letter representations.
+res3letters = ["ARG", "MET", "ASN", "GLU", "PHE",
+	"ILE", "ASP", "LEU", "ALA", "GLN",
+	"GLY", "CYS", "TRP", "TYR", "LYS",
+	"PRO", "THR", "SER", "VAL", "HIS",
+	"ASX", "GLX", "XAA", "XLE", "-", ".", "*"]
+resletters = ["R", "M", "N", "E", "F",
+	"I", "D", "L", "A", "Q",
+	"G", "C", "W", "Y", "K",
+	"P", "T", "S", "V", "H",
+	"B", "Z", "X", "J", "-", ".", "*"]
+resletterdict = OrderedDict(
+	"ALA" => "A",
+	"ARG" => "R",
+	"ASN" => "N",
+	"ASP" => "D",
+	"ASX" => "B",
+	"CYS" => "C",
+	"GLN" => "Q",
+	"GLU" => "E",
+	"GLX" => "Z",
+	"GLY" => "G",
+	"HIS" => "H",
+	"ILE" => "I",
+	"LEU" => "L",
+	"LYS" => "K",
+	"MET" => "M",
+	"PHE" => "F",
+	"PRO" => "P",
+	"SER" => "S",
+	"THR" => "T",
+	"TRP" => "W",
+	"TYR" => "Y",
+	"VAL" => "V",
+	"XAA" => "X",
+	"XLE" => "J",
+	"*" => "*",
+	"-" => "-",
+	"." => ".",
+	"A" => "ALA",
+	"R" => "ARG",
+	"N" => "ASN",
+	"D" => "ASP",
+	"B" => "ASX",
+	"C" => "CYS",
+	"Q" => "GLN",
+	"E" => "GLU",
+	"Z" => "GLX",
+	"G" => "GLY",
+	"H" => "HIS",
+	"I" => "ILE",
+	"L" => "LEU",
+	"K" => "LYS",
+	"M" => "MET",
+	"F" => "PHE",
+	"P" => "PRO",
+	"S" => "SER",
+	"T" => "THR",
+	"W" => "TRP",
+	"Y" => "TYR",
+	"V" => "VAL",
+	"X" => "XAA",
+	"J" => "XLE"
+)
 # Dictionary for Kidera physical property factors, from:
 # Kenta Nakai, Akinori Kidera, Minoru Kanehisa, Cluster analysis of amino acid indices for prediction of protein structure and function, 
 # Protein Engineering, Design and Selection, Volume 2, Issue 2, July 1988, Pages 93–100, https://doi.org/10.1093/protein/2.2.93 

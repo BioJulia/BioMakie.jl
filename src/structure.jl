@@ -1,14 +1,5 @@
-export atomcoords,
-       atomradii,
-       plotstruc!,
+export plotstruc!,
        plotstruc             
-
-"""
-    atomcoords(atoms)
-
-Convenience function for collecting atom coordinates for plotting.
-"""
-atomcoords(atoms) = coordarray(atoms) |> transpose |> collect
 
 """
     atomradii(atoms)

@@ -1,39 +1,20 @@
 module BioMakie
 
-export resmass,
-       resvdw,
-       elecolors,
-       aquacolors,
-       SMILESaa,
-       protsmiles,
-       kideradict,
-       distancebonds,
-       covalentbonds,
-       sidechainbonds,
-       backbonebonds,
-       getbonds,
-       bondshape,
-       bondshapes,
+export protsmiles,
        getplottingdata,
        msavalues,
        plotmsa!,
        plotmsa,
-       atomcoords,
-       atomradii,
        plotstruc!,
-       plotstruc,
-       atomicmasses,
-       covalentradii,
-       vanderwaalsradii,
-       resletterdict,
-       downloadpfam
+       plotstruc
 #
 
 using BioStructures, MolecularGraph
 using MIToS, MIToS.Information, MIToS.MSA, MIToS.Pfam, MIToS.SIFTS, MIToS.Utils
 using SplitApplyCombine, TensorCast
 using DataStructures, DelimitedFiles, HTTP
-using Distances, Distributions, GeometryBasics, Colors
+using Distances, Distributions, GeometryBasics
+using Colors, ColorSchemes, ColorTypes, ImageCore
 using FileIO, FastaIO, FASTX, OrderedCollections
 using JSServe
 using GLMakie

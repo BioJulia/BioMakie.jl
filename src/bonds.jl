@@ -1,11 +1,3 @@
-export distancebonds,
-	   covalentbonds,
-	   sidechainbonds,
-	   backbonebonds,
-	   getbonds,
-	   bondshape,
-	   bondshapes
-
 function distancebonds(atms::Vector{T}; cutoff = 1.9, hydrogencutoff = 1.14) where {T<:BioStructures.AbstractAtom}
     mat = zeros(length(atms),length(atms)) |> BitMatrix
 

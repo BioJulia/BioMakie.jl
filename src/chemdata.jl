@@ -1,12 +1,6 @@
-export atomicmasses,
-	   covalentradii,
-	   vanderwaalsradii,
-	   resletterdict
-
 using MolecularGraph: ATOMTABLE, ATOMSYMBOLMAP, ATOM_COVALENT_RADII, ATOM_VANDERWAALS_RADII
 
-ATOMSYMBOLKEYS = ATOMSYMBOLMAP |> collectkeys
-
+ATOMSYMBOLKEYS = keys(ATOMSYMBOLMAP) |> collect
 atomicmasses = Dict{String,Float32}(ATOMSYMBOLKEYS.=>[ATOMTABLE[ATOMSYMBOLMAP[x]]["Weight"] for x in ATOMSYMBOLKEYS])
 
 # Collection of radii using MolecularGraph.jl constants.
@@ -35,71 +29,6 @@ for x in ATOMSYMBOLKEYS
 	end
 end
 vanderwaalsradii = merge(_vdwrad...)
-
-# Standard protein residue letter representations.
-res3letters = ["ARG", "MET", "ASN", "GLU", "PHE",
-	"ILE", "ASP", "LEU", "ALA", "GLN",
-	"GLY", "CYS", "TRP", "TYR", "LYS",
-	"PRO", "THR", "SER", "VAL", "HIS",
-	"ASX", "GLX", "XAA", "XLE", "-", ".", "*"]
-resletters = ["R", "M", "N", "E", "F",
-	"I", "D", "L", "A", "Q",
-	"G", "C", "W", "Y", "K",
-	"P", "T", "S", "V", "H",
-	"B", "Z", "X", "J", "-", ".", "*"]
-resletterdict = OrderedDict(
-	"ALA" => "A",
-	"ARG" => "R",
-	"ASN" => "N",
-	"ASP" => "D",
-	"ASX" => "B",
-	"CYS" => "C",
-	"GLN" => "Q",
-	"GLU" => "E",
-	"GLX" => "Z",
-	"GLY" => "G",
-	"HIS" => "H",
-	"ILE" => "I",
-	"LEU" => "L",
-	"LYS" => "K",
-	"MET" => "M",
-	"PHE" => "F",
-	"PRO" => "P",
-	"SER" => "S",
-	"THR" => "T",
-	"TRP" => "W",
-	"TYR" => "Y",
-	"VAL" => "V",
-	"XAA" => "X",
-	"XLE" => "J",
-	"*" => "*",
-	"-" => "-",
-	"." => ".",
-	"A" => "ALA",
-	"R" => "ARG",
-	"N" => "ASN",
-	"D" => "ASP",
-	"B" => "ASX",
-	"C" => "CYS",
-	"Q" => "GLN",
-	"E" => "GLU",
-	"Z" => "GLX",
-	"G" => "GLY",
-	"H" => "HIS",
-	"I" => "ILE",
-	"L" => "LEU",
-	"K" => "LYS",
-	"M" => "MET",
-	"F" => "PHE",
-	"P" => "PRO",
-	"S" => "SER",
-	"T" => "THR",
-	"W" => "TRP",
-	"Y" => "TYR",
-	"V" => "VAL",
-	"X" => "XAA",
-	"J" => "XLE"
-)
 
 # Collection of known heavy bonds, for a PDB structure file. Note only the 20 amino acids have knowledge-based bonds defined here so far.
 heavyresbonds = Dict(
@@ -142,7 +71,6 @@ heavyresbonds = Dict(
 						["CG","ND1"],["CG","CD2"],["ND1","CE1"],["CD2","NE2"],["NE2","CE1"],["C","OXT"]],
 				" ZN" => []
 )
-
 # Collection of known hydrogen covalent bonds, for a PDB structure file. Note only the 20 amino acids have knowledge-based bonds defined here so far.
 hresbonds = Dict(
                 "ARG" => [["N","H1"],["N","H2"],["N","H3"],["N","H"],["CA","HA"],["CA","HA2"],["CB","HB3"],["CB","HB2"],
