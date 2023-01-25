@@ -16,6 +16,7 @@ using DataStructures, DelimitedFiles, HTTP
 using Distances, Distributions, GeometryBasics
 using Colors, ColorSchemes, ColorTypes, ImageCore
 using FileIO, FastaIO, FASTX, OrderedCollections
+using Makie
 using JSServe
 using GLMakie
 GLMakie.activate!()
