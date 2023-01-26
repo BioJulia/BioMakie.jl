@@ -2,6 +2,7 @@ import Makie.heatmap
 using PairwiseListMatrices, NamedArrays
 
 using MIToS.PDB
+
 """
     heatmap( dmap; kwargs... )
 
@@ -61,6 +62,7 @@ function heatmap!(fig::Figure, dmap::NamedMatrix{Float64, PairwiseListMatrix{Flo
     DataInspector(fig)
     fig
 end
+
 """
     heatmap( cmap; kwargs... )
 
@@ -118,6 +120,7 @@ function heatmap!(fig::Figure, cmap::NamedMatrix{Bool, PairwiseListMatrix{Bool, 
     DataInspector(fig)
     fig
 end
+
 """
     heatmap( dmap; kwargs... )
 
@@ -170,6 +173,7 @@ function heatmap!(fig::Figure, dmap::DistanceMap; xlabel = "Residue 2", ylabel =
     DataInspector(fig)
     fig
 end
+
 """
     heatmap( cmap; kwargs... )
 

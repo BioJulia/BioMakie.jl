@@ -23,12 +23,20 @@ end
 """
     plotstruc!( fig, structure )
 
-Plot a protein structure into a Figure. Position can be specified with the 
-gridposition keyword argument.
+Plot a protein structure(/chain/residues/atoms) into a Figure. 
 
 # Examples
 ```julia
 fig = Figure()
+
+using MIToS.PDB
+pdbfile = MIToS.PDB.downloadpdb("2HHB")
+struc = MIToS.PDB.read(pdbfile, PDBML) |> Observable
+sv = plotstruc!(fig, struc)
+
+chain_A = pdb = @residues struc model "1" chain "A" group "ATOM" residue all
+sv = plotstruc!(fig, chain_A)
+
 using BioStructures
 struc = retrievepdb("2vb1", dir = "data/") |> Observable
 sv = plotstruc!(fig, struc)
@@ -39,51 +47,84 @@ sv = plotstruc!(fig, struc)
 
 ### Optional Arguments:
 - selectors ----- [standardselector]
-- resolution ---- (800,800)
+- resolution ---- (800,600)
 - gridposition -- (1,1)
 - plottype ------ :ballandstick, another option is :spacefilling
 - atomcolors ---- elecolors, another option is aquacolors, or define your own dict for atoms like: "N" => :blue
+
 """
 function plotstruc!(fig::Figure, struc::Observable;
                     selectors = [standardselector],
-                    resolution = (800,800),
+                    resolution = (800,600),
                     gridposition = (1,1),
                     plottype = :covalent,
                     atomcolors = elecolors,
-                    markersize = 0.5,
+                    markersize = 0.0,
+                    markerscale = 1.0,
                     algo = :knowledgebased,
                     kwargs...
                     ) 
 	#
+    # if struc[] isa BioStructures.StructuralElementOrList
+    #     atms = @lift defaultatom.(BioStructures.collectatoms($struc,selectors...))
+    #     atmcords = @lift coordarray($atms) |> transpose |> collect
+    #     colrs = @lift [atomcolors[BioStructures.element(x)] for x in $atms]
+    # elseif struc[] isa Vector{MIToS.PDB.PDBResidue}
+    #     atms = @lift defaultatom.(BioStructures.collectatoms($struc,selectors...))
+    #     atmcords = @lift coordarray($atms) |> transpose |> collect
+    #     colrs = @lift [atomcolors[BioStructures.element(x)] for x in $atms]
+    # end
     atms = @lift defaultatom.(BioStructures.collectatoms($struc,selectors...))
     atmcords = @lift coordarray($atms) |> transpose |> collect
     colrs = @lift [atomcolors[BioStructures.element(x)] for x in $atms]
+    pxwidths = fig.scene.px_area[].widths
+    needresize = false
+    # the figure needs to be resized if there's a preexisting MSA plot (with default resolution)
+    if pxwidths == [1100,400]
+        needresize = true
+    end
 
     if plottype == :spacefilling
-        markersize = @lift atomradii($atms; radiustype = :vdw)
-        lscene = LScene(fig[gridposition...]; show_axis = false)
-        meshscatter!(lscene, atmcords; color = colrs, markersize = markersize, kwargs...)
+        markersize = @lift atomradii($atms; radiustype = :vdw) .* markerscale
+        lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
+        ms = meshscatter!(lscene, atmcords; color = colrs, markersize = markersize, inspector_label = (self, i, p) -> "$(atms[][i].residue)\n$(atms[][i])", kwargs...)
     elseif plottype == :ballandstick
-        lscene = LScene(fig[gridposition...]; show_axis = false)
-        meshscatter!(lscene, atmcords; color = colrs, markersize = markersize, kwargs...)
+        if markersize == 0.0
+            markersize = @lift atomradii($atms; radiustype = :cov) .* markerscale .* 0.7
+        end
+        lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
+        ms = meshscatter!(lscene, atmcords; color = colrs, markersize = markersize, inspector_label = (self, i, p) -> "$(atms[][i].residue)\n$(atms[][i])", kwargs...)
 		# :ballandstick shows the bonds (/sticks) as cylinder meshes
         bndshapes = @lift bondshapes($struc, selectors...; algo = algo)
         bndmeshes = @lift normal_mesh.($bndshapes)
-        mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
+        bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
     elseif plottype == :covalent
-        markersize = @lift atomradii($atms; radiustype = :cov)
-        lscene = LScene(fig[gridposition...]; show_axis = false)
-        meshscatter!(lscene, atmcords; color = colrs, markersize = markersize, kwargs...)
+        markersize = @lift atomradii($atms; radiustype = :cov) .* markerscale
+        lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
+        ms = meshscatter!(lscene, atmcords; color = colrs, markersize = markersize, inspector_label = (self, i, p) -> "$(atms[][i].residue)\n$(atms[][i])", kwargs...)
     else
         println("bad plottype")
     end
+    bmesh.inspectable[] = false
+    # the window has to be reopened to resize at the moment
+    if needresize == true
+        fig.scene.px_area[] = HyperRectangle{2, Int64}([0, 0], [pxwidths[1], pxwidths[2]+resolution[2]])
+        Makie.update_state_before_display!(fig)
+    end
+    
+    DataInspector(lscene)
+    fig
 end
-
+function plotstruc!(fig, struc; kwargs...)
+    if !(typeof(struc)<:Observable)
+        struc = Observable(struc)
+    end
+    plotstruc!(fig, struc; kwargs...)
+end
 """
     plotstruc(structure)
 
-Create and return a Makie Figure for a protein structure, 
-along with the structure wrapped in an Observable if it wasn't Observable already. 
+Create and return a Makie Figure for a protein structural element. 
 
 # Examples
 ```julia
@@ -97,23 +138,15 @@ sv = plotstruc(struc)
 
 ### Optional Arguments:
 - selectors ----- [standardselector]
-- resolution ---- (800,800)
+- resolution ---- (800,600)
 - gridposition -- (1,1)
 - plottype ------ :ballandstick, another option is :spacefilling
 - atomcolors ---- elecolors, another option is aquacolors, or define your own dict for atoms like: "N" => :blue
 """
-function plotstruc(struc; returnobservables = true, kwargs...)
+function plotstruc(struc; kwargs...)
 	fig = Figure()
-
-    if !(typeof(struc) <:Observable)
+    if !(typeof(struc)<:Observable)
         struc = Observable(struc)
     end
-
     plotstruc!(fig, struc; kwargs...)
-
-    if returnobservables == true
-		return fig, struc
-	else
-		return fig
-	end
 end

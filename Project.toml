@@ -4,6 +4,8 @@ authors = ["Daniel Kool"]
 version = "0.2.1"
 
 [deps]
+BioAlignments = "00701ae9-d1dc-5365-b64a-a3a3ebf5695e"
+BioSequences = "7e6ae17a-c86d-528c-b3b9-7f778a29fe59"
 BioStructures = "de9282ab-8554-53be-b2d6-f6c222edabfc"
 ColorSchemes = "35d6a980-a343-548e-a6ea-1d62b119f2f4"
 ColorTypes = "3da002f7-5984-5a60-b8a6-cbb66c0b333f"
@@ -16,6 +18,7 @@ Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 FASTX = "c2308a5c-f048-11e8-3e8a-31650f418d12"
 FastaIO = "a0c94c4b-ebed-5953-b5fc-82fe598ac79f"
 FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
+GLFW = "f7f18e0c-5ee9-5ccd-a5bf-e8befd85ed98"
 GLMakie = "e9467ef8-e4e7-5192-8a1a-b1aee30e663a"
 GeometryBasics = "5c1252a2-5f33-56bf-86c9-59e7332b4326"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"

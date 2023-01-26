@@ -122,25 +122,16 @@ function backbonebonds(chn::BioStructures.Chain; cutoff = 1.6)
 	bbatoms = collectatoms(chn, backboneselector) .|> defaultatom
 	bondmatrix = zeros(size(bbatoms,1),size(bbatoms,1)) |> BitMatrix
 
-	for i = 1:(size(bbatoms,1)-1)
-		firstatomname = bbatoms[i].name
-		secondatomname = bbatoms[i+1].name
-		if firstatomname == " N  " && secondatomname == " CA " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i+1])) < cutoff
-			bondmatrix[i,(i+1)] = 1
-			bondmatrix[(i+1),i] = 1
-		elseif firstatomname == " CA " && secondatomname == " C  " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i+1])) < cutoff
-			bondmatrix[i,(i+1)] = 1
-			bondmatrix[(i+1),i] = 1
-		elseif firstatomname == " C  " && secondatomname == " O  " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i+1])) < cutoff
-			bondmatrix[i,(i+1)] = 1
-			bondmatrix[(i+1),i] = 1
-		elseif firstatomname == " N  " && bbatoms[i-2].name ==  " C  " && euclidean(atomcoords(bbatoms[i]), atomcoords(bbatoms[i-2])) < cutoff
-			try	
-				bondmatrix[i,i-2] = 1
-				bondmatrix[i-2,i] = 1
-			catch
+	for i in 1:size(bbatoms,1)
+		for j in (i+1):size(bbatoms,1)
+			firstatomname = strip(bbatoms[i].name)
+			secondatomname = strip(bbatoms[j].name)
+			if firstatomname in ["N","CA","C","O"] && secondatomname in ["N","CA","C","O"]
+				if euclidean(coordarray(bbatoms[i]) |> transpose |> collect, coordarray(bbatoms[j]) |> transpose |> collect) < cutoff
+					bondmatrix[i,j] = 1
+					bondmatrix[j,i] = 1
+				end
 			end
-		else
 		end
 	end
 
@@ -238,25 +229,16 @@ function getbonds(chn::BioStructures.Chain, selectors...;
 				end
 			end
 		end
-		for i = 1:(size(atms,1)-1)
-			firstatomname = atms[i].name
-			secondatomname = atms[i+1].name
-			if firstatomname == " N  " && secondatomname == " CA " && euclidean(atomcoords(atms[i]), atomcoords(atms[i+1])) < cutoff
-				bondmatrix[i,(i+1)] = 1
-				bondmatrix[(i+1),i] = 1
-			elseif firstatomname == " CA " && secondatomname == " C  " && euclidean(atomcoords(atms[i]), atomcoords(atms[i+1])) < cutoff
-				bondmatrix[i,(i+1)] = 1
-				bondmatrix[(i+1),i] = 1
-			elseif firstatomname == " C  " && secondatomname == " O  " && euclidean(atomcoords(atms[i]), atomcoords(atms[i+1])) < cutoff
-				bondmatrix[i,(i+1)] = 1
-				bondmatrix[(i+1),i] = 1
-			elseif firstatomname == " N  " && atms[i-2].name ==  " C  " && euclidean(atomcoords(atms[i]), atomcoords(atms[i-2])) < cutoff
-				try	
-					bondmatrix[i,i-2] = 1
-					bondmatrix[i-2,i] = 1
-				catch
+		for i in 1:size(atms,1)
+			for j in (i+1):size(atms,1)
+				firstatomname = strip(atms[i].name)
+				secondatomname = strip(atms[j].name)
+				if firstatomname in ["N","CA","C","O"] && secondatomname in ["N","CA","C","O"]
+					if euclidean(coordarray(atms[i]) |> transpose |> collect, coordarray(atms[j]) |> transpose |> collect) < cutoff
+						bondmatrix[i,j] = 1
+						bondmatrix[j,i] = 1
+					end
 				end
-			else
 			end
 		end
 		return bondmatrix
@@ -272,7 +254,7 @@ function getbonds(chn::BioStructures.Chain, selectors...;
 	return nothing
 end
 # Default bond shape is a cylinder mesh. TODO: maybe add double and triple bond shapes.
-function bondshape(twoatoms::Tuple{T}; bondwidth = 0.3) where {T<:BioStructures.AbstractAtom}
+function bondshape(twoatoms::Tuple{T}; bondwidth = 0.2) where {T<:BioStructures.AbstractAtom}
     @assert length(twoatoms) == 2
 	atm1 = defaultatom(twoatoms[1])
 	atm2 = defaultatom(twoatoms[2])
@@ -280,7 +262,7 @@ function bondshape(twoatoms::Tuple{T}; bondwidth = 0.3) where {T<:BioStructures.
     pnt2 = GeometryBasics.Point3f0(atm2.coords)
     return GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth))
 end
-function bondshape(twopnts::AbstractMatrix{T}; bondwidth = 0.3) where {T<:AbstractFloat}
+function bondshape(twopnts::AbstractMatrix{T}; bondwidth = 0.2) where {T<:AbstractFloat}
     if size(twopnts,1) == 3 && size(twopnts,2) == 2
 		pnt1 = GeometryBasics.Point3f0(twopnts[:,1])
     	pnt2 = GeometryBasics.Point3f0(twopnts[:,2])
@@ -292,7 +274,7 @@ function bondshape(twopnts::AbstractMatrix{T}; bondwidth = 0.3) where {T<:Abstra
 	end
     return GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth))
 end
-function bondshapes(chn::BioStructures.Chain, selectors...; algo = :covalent, bondwidth = 0.3)
+function bondshapes(chn::BioStructures.Chain, selectors...; algo = :covalent, bondwidth = 0.2)
     bshapes = Cylinder3{Float32}[]
 	bnds = getbonds(chn, selectors...; algo = algo)
 	atms = collectatoms(chn, selectors...)
@@ -308,6 +290,28 @@ function bondshapes(chn::BioStructures.Chain, selectors...; algo = :covalent, bo
 			end
 		end
 	end
+
+    return bshapes
+end
+function bondshapes(struc::BioStructures.ProteinStructure, selectors...; algo = :covalent, bondwidth = 0.2)
+    bshapes = Cylinder3{Float32}[]
+	chns = collectchains(struc)
+	bnds = getbonds.(chns, selectors...; algo = algo)
+	atms = collectatoms.(chns, selectors...)
+	for k in 1:size(bnds,1)
+		for i in 1:size(bnds[k],1)
+			for j in (i+1):size(bnds[k],1)
+				if bnds[k][i,j] == 1
+					atm1 = defaultatom(atms[k][i])
+					atm2 = defaultatom(atms[k][j])
+					pnt1 = GeometryBasics.Point3f0(atm1.coords)
+					pnt2 = GeometryBasics.Point3f0(atm2.coords)
+					push!(bshapes, GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth)))
+				end
+			end
+		end
+	end
+	
 
     return bshapes
 end

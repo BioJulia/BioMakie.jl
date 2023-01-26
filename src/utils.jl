@@ -23,6 +23,21 @@ convert(::Type{String}, i::Int) = "$i"
 function convert(::Type{String}, f::T) where T<:Union{Float16,Float32,Float64}
 	"$f"
 end
+function reversekv(dict::AbstractDict{K,V}) where {K,V}
+	vkdict = [x[2].=>x[1] for x in dict]
+    if typeof(dict) <: OrderedDict
+        return OrderedDict{V,K}(vkdict)
+    end
+	return Dict{V,K}(vkdict)
+end
+function printkv(dict::AbstractDict)
+	keys1 = collectkeys(dict)
+	vals1 = collectvals(dict)
+	println.(["$(keys1[i]) -> $(vals1[i])" for i in 1:size(keys1,1)])
+	return nothing
+end
+typefields(thing) = typeof(thing) |> fieldnames
+tyf(thing) = typefields(thing)
 elecolors = Dict( "C" => :gray,
                   "N" => :blue,
                   "H" => :white,
@@ -227,7 +242,114 @@ function downloadpfam(pfamcode::String; filename::String="$pfamcode.stockholm.gz
         throw(ErrorException("$pfamcode is not a correct Pfam code"))
     end
 end
-
+function internaldistances(atms::AbstractVector{AbstractAtom})
+    internaldists = zeros(Float64, (size(atms,1),size(atms,1)))
+    for (i,x) in enumerate(atms)
+        for (j,y) in enumerate(atms)
+            internaldists[i,j] = Distances.euclidean(BioStructures.coords(x),BioStructures.coords(y))
+        end
+    end
+    return internaldists
+end
+function internaldistances(vals::AbstractArray{Number})
+    internaldists = zeros(Float64, (size(vals,1),size(vals,1)))
+    for (i,x) in enumerate(vals)
+        for (j,y) in enumerate(vals)
+            internaldists[i,j] = Distances.euclidean(x,y)
+        end
+    end
+    return internaldists
+end
+function internaldistances(vals::AbstractArray)
+    internaldists = zeros(Float64, (size(vals,1),size(vals,1)))
+    for i in 1:size(vals,1)
+        for j in 1:size(vals,1)
+            internaldists[i,j] = Distances.euclidean(vals[i,:],vals[j,:])
+        end
+    end
+    return internaldists
+end
+function internaldistorders(internaldists::AbstractArray)
+    orders = zeros(Float64, (size(internaldists,1),size(internaldists,2)))
+    for i = 1:size(internaldists,1)
+        orders[i,:] = sortperm(sortperm(internaldists[i,:]))
+    end
+    return orders
+end
+function resmass(res::BioStructures.Residue)
+    total = 0.0
+    for atm in res
+        total+=atomicmasses["$(element(atm, strip=true))"]
+    end
+    return total
+end
+function resvdw(res::BioStructures.Residue)
+    total = 0.0
+    for atm in res
+        total+=vdw["$(element(atm, strip=true))"]
+    end
+    return total
+end
+function makeclrgrad(vec::AbstractArray{T}, colrmap::AbstractArray) where T<:Real
+    softmaxvec = Flux.softmax(vec)
+    scalefactor = size(colrmap,1) / maximum(softmaxvec)
+    colorindices = round.(Int64, softmaxvec .* scalefactor)
+    indexedcolors = colrmap[colorindices]
+    return indexedcolors
+end
+∑(x) = sum(x)
+function centerofpoints(points::AbstractArray{T}) where T <: Number
+    xs = points[:,1]
+    ys = points[:,2]
+    zs = points[:,3]
+    return centerofpoints = [ ∑(xs)/size(xs,1), ∑(ys)/size(ys,1), ∑(zs)/size(zs,1) ] |> _g
+end
+function centerofmass(atms::AbstractArray{AbstractAtom})
+    masses = []
+    positions = coordarray(atms)
+    xs = positions[1,:]
+    ys = positions[2,:]
+    zs = positions[3,:]
+    totalmass = 0.0
+    for i = 1:length(atms)
+        if element(atms[i]) == "C"
+            push!(masses, 12.0107)
+            totalmass += 12.0107
+        elseif element(atms[i]) == "N"
+            push!(masses, 14.0067)
+            totalmass += 14.0067
+        elseif element(atms[i]) == "H"
+            push!(masses,1.0079)
+            totalmass += 1.0079
+        elseif element(atms[i]) == "O"
+            push!(masses, 15.9994)
+            totalmass += 15.9994
+        elseif element(atms[i]) == "S"
+            push!(masses, 32.065)
+            totalmass += 32.065
+        else
+            push!(masses, 0.0)
+            totalmass += 0.0
+        end
+    end
+    return centerofmass = [ ∑(masses.*xs)/totalmass, ∑(masses.*ys)/totalmass, ∑(masses.*zs)/totalmass ]
+end
+function surfacearea(coordinates, connectivity)
+    totalarea = 0.0
+    for i = 1:size(connectivity,1)
+        totalarea += measure(Ngon(Meshes.Point3.(coordinates[connectivity[i,1],:],
+						coordinates[connectivity[i,2],:], coordinates[connectivity[i,3],:])))
+    end
+    return totalarea
+end
+function linesegs(arr::AbstractArray{T,3}) where T<:AbstractFloat
+    new_arr::AbstractArray{Point3f0} = []
+    for i in 1:size(arr,1)
+        push!(new_arr, Makie.Point3f0(arr[i,1,:]))
+        push!(new_arr, Makie.Point3f0(arr[i,2,:]))
+    end
+    return new_arr |> combinedims |> transpose |> collect
+end
 # Standard protein residue letter representations.
 res3letters = ["ARG", "MET", "ASN", "GLU", "PHE",
 	"ILE", "ASP", "LEU", "ALA", "GLN",
@@ -349,3 +471,15 @@ kideradict = Dict(
     "XAA" => [0,0,0,0,0,0,0,0,0,0],
     "XLE" => [-0.885,-0.08,0.775,-0.935,-0.545,-1.01,0.065,-0.125,0.555,-0.425] 
 )
+function kdict(str::AbstractString)
+    if length(str) == 3
+        kideradict3["$(str |> string)"]
+    elseif length(str) == 1
+        kideradict["$(str |> string)"]
+    elseif length(str) > 3
+        return [kideradict[(string(str[i]))] for i in 1:length(str)]
+    else
+        throw(ErrorException("can't get kdict for $str"))
+    end
+end
+kdict(c::Char) = kdict(string(c))

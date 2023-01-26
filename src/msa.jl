@@ -91,14 +91,14 @@ plotmsa!( fig::Figure, msamatrix::Matrix{String}, matrixvals::Matrix{Float32},
 function plotmsa!( fig::Figure, msamatrix::Observable, matrixvals::Observable, 
 				   xlabels = Observable(nothing), ylabels = Observable(nothing);	# row/column indices by default
 				   sheetsize = [40,20],
-				   gridposition = (1,1),
+				   gridposition = (1,1:3),
 				   colorscheme = :buda,
 				   markersize = 12,
 				   markercolor = :black,
 				   kwargs... )
 
 	grid1 = fig[gridposition...] = GridLayout(resolution = (1100,400))
-	ax = Axis(grid1[1:7,3:9];)
+	ax = Axis(grid1[1:7,3:9]; height = 300, width = 800)
 	
 	width1 = sheetsize[1]
 	height1 = sheetsize[2]
@@ -117,10 +117,10 @@ function plotmsa!( fig::Figure, msamatrix::Observable, matrixvals::Observable,
 	xlabelsize =  @lift size($xlabels,1) - (width1-1)
 	xlabelrange = @lift 1:1:$xlabelsize
 
-	sl1 = GLMakie.Slider(grid1[end+1,3:9], range = xlabelrange, startvalue = 1)
+	sl1 = GLMakie.Slider(grid1[end+1,3:9], range = xlabelrange, startvalue = 1, width = 800)
 	sl1.value[] = 1
 	sl2 = GLMakie.Slider(grid1[1:7,10], range = ylabelrange, startvalue = 1, horizontal = false,
-		tellwidth = true, height = nothing)
+		height = 300)
 	sl2.value[] = 1
 
 	ylabelshow = lift(X->ylabels[][(X+(height1-1):-1:X)],sl2.value)	# currently shown y labels, updated with vertical right slider (sl2)
@@ -260,7 +260,7 @@ function plotmsa(msamatrix, matrixvals, xlabels, ylabels; resolution = (1100, 40
 	fig = Figure(resolution = resolution)
 
 	# Is this the right way to do this? I feel like there's a better way...
-	if !(typeof(msamat) <:Observable)
+	if !(typeof(msamatrix) <:Observable)
 		msamatrix = Observable(msamatrix)
 	end
 	if !(typeof(matrixvals) <:Observable)
