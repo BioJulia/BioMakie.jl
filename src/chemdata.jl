@@ -1,3 +1,8 @@
+export atomicmasses,
+	   covalentradii,
+	   vanderwaalsradii
+	   
+
 using MolecularGraph: ATOMTABLE, ATOMSYMBOLMAP, ATOM_COVALENT_RADII, ATOM_VANDERWAALS_RADII
 
 ATOMSYMBOLKEYS = keys(ATOMSYMBOLMAP) |> collect
