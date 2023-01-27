@@ -1,3 +1,11 @@
+export distancebonds,
+	   covalentbonds,
+	   sidechainbonds,
+	   backbonebonds,
+	   getbonds,
+	   bondshape,
+	   bondshapes
+
 function distancebonds(atms::Vector{T}; cutoff = 1.9, hydrogencutoff = 1.14) where {T<:BioStructures.AbstractAtom}
     mat = zeros(length(atms),length(atms)) |> BitMatrix
 
@@ -145,7 +153,6 @@ function getbonds(chn::BioStructures.Chain, selectors...;
 				  H = true,
 				  cutoff = 1.9,
 				  extradistance = 0.05)
-	# this could definitely use some optimization...
 	atms = collectatoms(chn, selectors...) .|> defaultatom
 	numatoms = size(atms, 1)
 	bondmatrix = zeros(numatoms, numatoms) |> BitMatrix
@@ -274,9 +281,9 @@ function bondshape(twopnts::AbstractMatrix{T}; bondwidth = 0.2) where {T<:Abstra
 	end
     return GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth))
 end
-function bondshapes(chn::BioStructures.Chain, selectors...; algo = :covalent, bondwidth = 0.2)
+function bondshapes(chn::BioStructures.Chain, selectors...; algo = :covalent, distance = 1.9, bondwidth = 0.2)
     bshapes = Cylinder3{Float32}[]
-	bnds = getbonds(chn, selectors...; algo = algo)
+	bnds = getbonds(chn, selectors...; algo = algo, cutoff = distance)
 	atms = collectatoms(chn, selectors...)
 
 	for i in 1:size(bnds,1)
@@ -293,11 +300,12 @@ function bondshapes(chn::BioStructures.Chain, selectors...; algo = :covalent, bo
 
     return bshapes
 end
-function bondshapes(struc::BioStructures.ProteinStructure, selectors...; algo = :covalent, bondwidth = 0.2)
+function bondshapes(struc::BioStructures.ProteinStructure, selectors...; algo = :covalent, distance = 1.9, bondwidth = 0.2)
     bshapes = Cylinder3{Float32}[]
 	chns = collectchains(struc)
-	bnds = getbonds.(chns, selectors...; algo = algo)
+	bnds = getbonds.(chns, selectors...; algo = algo, cutoff = distance)
 	atms = collectatoms.(chns, selectors...)
+
 	for k in 1:size(bnds,1)
 		for i in 1:size(bnds[k],1)
 			for j in (i+1):size(bnds[k],1)
@@ -312,6 +320,5 @@ function bondshapes(struc::BioStructures.ProteinStructure, selectors...; algo = 
 		end
 	end
 	
-
     return bshapes
 end

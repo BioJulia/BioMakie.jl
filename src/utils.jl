@@ -1,3 +1,16 @@
+export elecolors,
+       cpkcolors, 
+       aquacolors, 
+       shapelycolors, 
+       leskcolors, 
+       maecolors, 
+       cinemacolors,
+       getbiocolors,
+       reversekv,
+       printkv,
+       typefields,
+       tyf
+
 import Base.convert
 import BioStructures.defaultatom, BioStructures.defaultresidue
 
@@ -38,15 +51,7 @@ function printkv(dict::AbstractDict)
 end
 typefields(thing) = typeof(thing) |> fieldnames
 tyf(thing) = typefields(thing)
-elecolors = Dict( "C" => :gray,
-                  "N" => :blue,
-                  "H" => :white,
-                  "O" => :red,
-                  "S" => :yellow,
-				  "ZN" => :gray,
-				  "CL" => :gray,
-                  "X" => :gray
-)
+# current basic color schemes for atoms and residues
 elecolors = Dict( "C" => :gray,
                   "N" => :blue,
                   "H" => :white,
@@ -179,6 +184,9 @@ cinemacolors = OrderedDict(
     "Z" => :gray,
     "X" => :gray
 )
+function getbiocolors()
+    return [elecolors, cpkcolors, aquacolors, shapelycolors, leskcolors, maecolors, cinemacolors]
+end
 SMILESaa = OrderedDict(
     "A" => "N[C@@]([H])(C)C(=O)O",
     "R" => "N[C@@]([H])(CCCNC(=N)N)C(=O)O",

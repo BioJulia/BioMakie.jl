@@ -181,6 +181,40 @@ function plotmsa!( fig::Figure, msamatrix::Observable, matrixvals::Observable,
 	display(fig)
 	fig
 end
+function plotmsa!(fig, msamatrix, matrixvals, xlabels, ylabels; resolution = (1100, 400), kwargs...)
+	if !(typeof(msamatrix) <:Observable)
+		msamatrix = Observable(msamatrix)
+	end
+	if !(typeof(matrixvals) <:Observable)
+		matrixvals = Observable(matrixvals)
+	end
+	if !(typeof(xlabels) <:Observable)
+		xlabels = Observable(xlabels)
+	end
+	if !(typeof(ylabels) <:Observable)
+		ylabels = Observable(ylabels)
+	end
+
+	plotmsa!(fig, msamatrix, matrixvals, xlabels, ylabels; kwargs...)
+end
+function plotmsa!(msamatrix, matrixvals, xlabels, ylabels; resolution = (1100, 400), kwargs...)
+	fig = Figure(resolution = resolution)
+
+	if !(typeof(msamatrix) <:Observable)
+		msamatrix = Observable(msamatrix)
+	end
+	if !(typeof(matrixvals) <:Observable)
+		matrixvals = Observable(matrixvals)
+	end
+	if !(typeof(xlabels) <:Observable)
+		xlabels = Observable(xlabels)
+	end
+	if !(typeof(ylabels) <:Observable)
+		ylabels = Observable(ylabels)
+	end
+
+	plotmsa!(fig, msamatrix, matrixvals, xlabels, ylabels; kwargs...)
+end
 
 """
     plotmsa( msa )
@@ -204,7 +238,6 @@ plotmsa( msa; kwargs... )
 - colorscheme ------- :viridis
 - resdict ----------- kideradict    # Dictionary of values (::Dict{String,Float}, "Y" => 1.48) for heatmap.
 - kf ---------------- 2             # If resdict == kideradict, this is the Kidera Factor. KF2 is size/volume-related.
-- returnobservables - true          # Return Observables for interaction.
 - kwargs...    						# forwarded to scatter plot
 """
 function plotmsa(msa; kwargs...)
@@ -216,7 +249,7 @@ function plotmsa(msa; kwargs...)
 		msamatrix, xlabels, ylabels = getplottingdata(msa) .|> Observable
 		matrixvals = @lift msavalues($msamatrix, resdict; kf = kf)
 	end
-	plotmsa(msamatrix, matrixvals, xlabels, ylabels; returnobservables, kwargs...)
+	plotmsa(msamatrix, matrixvals, xlabels, ylabels; kwargs...)
 end
 
 """
@@ -227,6 +260,7 @@ a Figure and Observables for interaction.
 
 # Examples
 ```julia
+using MIToS.MSA
 downloadpfam("PF00062")
 msa = MIToS.MSA.read("PF00062.stockholm.gz", Stockholm, 
 					generatemapping =true, useidcoordinates=true)
@@ -241,7 +275,6 @@ plotmsa( msa, matrixvals; kwargs... )
 - sheetsize --------- [40,20]
 - gridposition ------ (1,1)
 - colorscheme ------- :viridis
-- returnobservables - true          # Return Observables for interaction.
 - kwargs...    						# forwarded to scatter plot
 """
 function plotmsa(msa, matrixvals; kwargs...)
@@ -250,16 +283,14 @@ function plotmsa(msa, matrixvals; kwargs...)
 end
 
 """
-	plotmsa!( fig, msamatrix, msavalues, xlabels, ylabels )
+	plotmsa( fig, msamatrix, msavalues, xlabels, ylabels )
 
-Plot a multiple sequence alignment (MSA) on a Figure. Returns a Figure, or
-a Figure and Observables for interaction.
+Plot a multiple sequence alignment (MSA) on a Figure. 
 
 """
-function plotmsa(msamatrix, matrixvals, xlabels, ylabels; resolution = (1100, 400), returnobservables = true, kwargs...)
+function plotmsa(msamatrix, matrixvals, xlabels, ylabels; resolution = (1100, 400), kwargs...)
 	fig = Figure(resolution = resolution)
 
-	# Is this the right way to do this? I feel like there's a better way...
 	if !(typeof(msamatrix) <:Observable)
 		msamatrix = Observable(msamatrix)
 	end
@@ -274,10 +305,4 @@ function plotmsa(msamatrix, matrixvals, xlabels, ylabels; resolution = (1100, 40
 	end
 
 	plotmsa!(fig, msamatrix, matrixvals, xlabels, ylabels; kwargs...)
-	
-	if returnobservables == true
-		return fig, msamatrix, matrixvals, xlabels, ylabels
-	else
-		return fig
-	end
 end
