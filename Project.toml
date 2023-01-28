@@ -44,6 +44,7 @@ TensorCast = "02d47bb6-7ce6-556a-be16-bb1710789e2b"
 Transducers = "28d57a85-8fef-5791-bfe6-a80928e7c999"
 
 [compat]
+BioSequences = "3"
 BioStructures = "1"
 ColorSchemes = "3"
 ColorTypes = "0.11"
