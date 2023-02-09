@@ -1,8 +1,3 @@
-export atomicmasses,
-	   covalentradii,
-	   vanderwaalsradii
-	   
-
 using MolecularGraph: ATOMTABLE, ATOMSYMBOLMAP, ATOM_COVALENT_RADII, ATOM_VANDERWAALS_RADII
 
 ATOMSYMBOLKEYS = keys(ATOMSYMBOLMAP) |> collect
@@ -46,7 +41,7 @@ heavyresbonds = Dict(
                 "GLU" => [["C","O"],["C","CA"],["CA","N"],["CA","CB"],["CB","CG"],
 						["CG","CD"],["CD","OE1"],["CD","OE2"],["C","OXT"]],
                 "PHE" => [["C","O"],["C","CA"],["CA","N"],["CA","CB"],["CB","CG"],
-						["CG","CD1"],["CG","CD1"],["CD1","CE1"],["CD2","CE2"],["CE1","CZ"],["CE2","CZ"],["C","OXT"]],
+						["CG","CD1"],["CG","CD1"],["CG","CD2"],["CD1","CE1"],["CD2","CE2"],["CE1","CZ"],["CE2","CZ"],["C","OXT"]],
                 "ILE" => [["C","O"],["C","CA"],["CA","N"],["CA","CB"],["CB","CG1"],
 						["CB","CG2"],["CG1","CD1"],["C","OXT"]],
                 "ASP" => [["C","O"],["C","CA"],["CA","N"],["CA","CB"],["CB","CG"],
@@ -82,7 +77,7 @@ hresbonds = Dict(
 						["CG","HG2"],["CG","HG3"],["CD","HD2"],["CD","HD3"],["NE","HE"],
 						["NH1","HH11"],["NH1","HH12"],["NH2","HH21"],["NH2","HH22"]],
                 "MET" => [["N","H1"],["N","H2"],["N","H3"],["N","H"],["CA","HA"],["CA","HA2"],["CB","HB3"],["CB","HB2"],
-						["CG","HG1"],["CG","HG2"],["CE","HE1"],["CE","HE2"],["CE","HE3"]],
+						["CG","HG1"],["CG","HG2"],["CG","HG3"],["CE","HE1"],["CE","HE2"],["CE","HE3"]],
                 "ASN" => [["N","H1"],["N","H2"],["N","H3"],["N","H"],["CA","HA"],["CA","HA2"],["CB","HB3"],["CB","HB2"],
 						["ND2","HD21"],["ND2","HD22"]],
                 "GLU" => [["N","H1"],["N","H2"],["N","H3"],["N","H"],["CA","HA"],["CA","HA2"],["CB","HB3"],["CB","HB2"],
