@@ -5,8 +5,25 @@ export protsmiles,
        msavalues,
        plotmsa!,
        plotmsa,
+       atomradii,
+       atomradius,
        plotstruc!,
-       plotstruc
+       plotstruc,
+       distancebonds,
+	   covalentbonds,
+	   sidechainbonds,
+	   backbonebonds,
+	   getbonds,
+	   bondshape,
+	   bondshapes,
+       elecolors,
+       cpkcolors, 
+       aquacolors, 
+       shapelycolors, 
+       leskcolors, 
+       maecolors, 
+       cinemacolors,
+       getbiocolors
 #
 
 using BioStructures, MolecularGraph

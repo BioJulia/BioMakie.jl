@@ -1,9 +1,10 @@
 export atomradii,
+       atomradius,
        plotstruc!,
        plotstruc             
 
 """
-    atomradii(atoms)
+    atomradii( atoms::Vector{T} )
 
 Collect atom radii based on element for plotting.
 
@@ -16,6 +17,7 @@ function atomradii(atoms::Vector{T}; radiustype = :covalent) where T<:BioStructu
 	elseif radiustype == :vdw || radiustype == :vanderwaals
 		return [vanderwaalsradii[BioStructures.element(x)] for x in atoms]
 	else
+        println("radiustype not recognized, using covalent radii")
 		return [covalentradii[BioStructures.element(x)] for x in atoms]
 	end
 end
@@ -25,8 +27,38 @@ function atomradii(atoms::Vector{T}; radiustype = :covalent) where T<:MIToS.PDB.
 	elseif radiustype == :vdw || radiustype == :vanderwaals
 		return [vanderwaalsradii[x.element] for x in atoms]
 	else
+        println("radiustype not recognized, using covalent radii")
 		return [covalentradii[x.element] for x in atoms]
 	end
+end
+
+"""
+    atomradius( atom )
+
+Collect atom radius based on element for plotting.
+
+### Optional Arguments:
+- radiustype --- :covalent | Options - :cov, :covalent, :vdw, :vanderwaals
+"""
+function atomradius(atom::T; radiustype = :covalent) where T<:BioStructures.AbstractAtom
+    if radiustype == :cov || radiustype == :covalent
+		return covalentradii[BioStructures.element(atom)]
+	elseif radiustype == :vdw || radiustype == :vanderwaals
+		return vanderwaalsradii[BioStructures.element(atom)]
+	else
+        println("radiustype not recognized, using covalent radii")
+		return covalentradii[BioStructures.element(atom)]
+	end
+end
+function atomradius(atom::T; radiustype = :covalent) where T<:MIToS.PDB.PDBAtom
+    if radiustype == :cov || radiustype == :covalent
+        return covalentradii[atom.element]
+    elseif radiustype == :vdw || radiustype == :vanderwaals
+        return vanderwaalsradii[atom.element]
+    else
+        println("radiustype not recognized, using covalent radii")
+        return covalentradii[atom.element]
+    end
 end
 
 """
@@ -61,16 +93,17 @@ strucplot = plotstruc!(fig, chain_A)
 ```
 
 ### Optional Arguments:
-- selectors ----- [standardselector]
-- resolution ---- (800,600)
-- gridposition -- (1,1)
-- plottype ------ :covalent, :ballandstick, or :spacefilling
-- atomcolors ---- elecolors, other options, or define your own dict for atoms like: "N" => :blue
-- markersize ---- 0.0
-- markerscale --- 1.0
-- bonds --------- :knowledgebased, :covalent, or :distance
-- distance ------ 1.9  # distance cutoff for bonds
-- kwargs... ----- keyword arguments passed to atom `meshscatter`
+- selectors ------ [standardselector]  # for BioStructures
+- resolution ----- (800,600)
+- gridposition --- (1,1)  # if an MSA is already plotted, (2,1:3) works well
+- plottype ------- :covalent, :ballandstick, or :spacefilling
+- atomcolors ----- elecolors, others in `getbiocolors`, or provide a dict for atoms/residues like: "N" => :blue
+- markersize ----- 0.0
+- markerscale ---- 1.0
+- bonds ---------- :knowledgebased, :covalent, or :distance
+- distance ------- 1.9  # distance cutoff for covalent bonds
+- inspectorlabel - :default, or define your own function like: (self, i, p) -> "atom: ... coords: ..."
+- kwargs... ------ keyword arguments passed to the atom `meshscatter`
 
 """
 function plotstruc!(fig::Figure, struc::Observable;
@@ -83,26 +116,40 @@ function plotstruc!(fig::Figure, struc::Observable;
                     markerscale = 1.0,
                     bonds = :knowledgebased,
                     distance = 1.9,
+                    inspectorlabel = :default,
                     kwargs...
-                    ) 
+                    )
 	#
     if struc[] isa BioStructures.StructuralElementOrList
         atms = @lift defaultatom.(BioStructures.collectatoms($struc,selectors...))
         atmcords = @lift coordarray($atms) |> transpose |> collect
         colrs = @lift [atomcolors[BioStructures.element(x)] for x in $atms]
-        inspectorlabel = (self, i, p) -> "$(atms[][i].residue)\n$(atms[][i])"
+        if inspectorlabel == :default
+            inspectorlabel = @lift (self, i, p) -> "chain: $(($atms[i].residue.chain).id)   " *
+                "res: $($atms[i].residue.name)   number: $($atms[i].residue.number)   index: $(i)\n" *
+                "atom: $($atms[i].name)   element: $($atms[i].element)   " *
+                "serial: $($atms[i].serial)\ncoordinates: $($atms[i].coords)    B: $($atms[i].temp_factor)"
+        end
     elseif struc[] isa Vector{MIToS.PDB.PDBResidue}
-        atms = @lift [$struc[i].atoms for i in 1:length($struc)] |> flatten
+        atms = @lift [bestoccupancy($struc[i].atoms) for i in 1:length($struc)] |> flatten
         atmcords = @lift atmcords = [[$atms[i].coordinates[1],$atms[i].coordinates[2],$atms[i].coordinates[3]] for i in 1:length($atms)] |> combinedims |> transpose |> collect
         colrs = @lift [atomcolors[x.element] for x in $atms]
-        inspectorlabel = (self, i, p) -> "atom: $(atm1.atom)   element: $(atm1.element)   coordinates: $(atm1.coordinates)\noccupancy: $(atm1.occupancy)   B: $(atm1.B)"
+        if inspectorlabel == :default
+            inspectorlabel = @lift (self, i, p) -> "atom: $($atms[i].atom)   element: $($atms[i].element)   index: $(i)\n" *
+                "coordinates: $($atms[i].coordinates)\n" *
+                "occupancy: $($atms[i].occupancy)    B: $($atms[i].B)"
+        end
     elseif struc[] isa Vector{MIToS.PDB.PDBAtom}
         atms = struc
         atmcords = @lift atmcords = [[$atms[i].coordinates[1],$atms[i].coordinates[2],$atms[i].coordinates[3]] for i in 1:length($atms)] |> combinedims |> transpose |> collect
         colrs = @lift [atomcolors[x.element] for x in $atms]
-        inspectorlabel = (self, i, p) -> "atom: $(atm1.atom)   element: $(atm1.element)   coordinates: $(atm1.coordinates)\noccupancy: $(atm1.occupancy)   B: $(atm1.B)"
+        if inspectorlabel == :default
+            inspectorlabel = @lift (self, i, p) -> "atom: $($atms[i].atom)   element: $($atms[i].element)   index: $(i)\n" *
+                "coordinates: $($atms[i].coordinates)\n" *
+                "occupancy: $($atms[i].occupancy)    B: $($atms[i].B)"
+        end
     else
-        error("plotstruc! not implemented for this type of structure: $(typeof(struc[]))")
+        error("plotstruc! not implemented for this type of structure yet: $(typeof(struc[]))")
     end
     pxwidths = fig.scene.px_area[].widths
     needresize = false
@@ -120,14 +167,23 @@ function plotstruc!(fig::Figure, struc::Observable;
         end
         lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, atmcords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
-        bndshapes = @lift bondshapes($struc, selectors...; algo = bonds, distance = distance)
+        if struc[] isa BioStructures.StructuralElementOrList
+            bndshapes = @lift bondshapes($struc, selectors...; algo = bonds, distance = distance)
+        elseif struc[] isa Vector{MIToS.PDB.PDBResidue}
+            bndshapes = @lift bondshapes($struc; algo = bonds, distance = distance)
+        end
+        
         bndmeshes = @lift normal_mesh.($bndshapes)
         bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
         bmesh.inspectable[] = false
     elseif plottype == :covalent
         markersize = @lift atomradii($atms; radiustype = :cov) .* markerscale
         if markerscale < 1.0
-            bndshapes = @lift bondshapes($struc, selectors...; algo = bonds, distance = distance)
+            if struc[] isa BioStructures.StructuralElementOrList
+                bndshapes = @lift bondshapes($struc, selectors...; algo = bonds, distance = distance)
+            elseif struc[] isa Vector{MIToS.PDB.PDBResidue}
+                bndshapes = @lift bondshapes($struc; algo = bonds, distance = distance)
+            end
             bndmeshes = @lift normal_mesh.($bndshapes)
             bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
             bmesh.inspectable[] = false

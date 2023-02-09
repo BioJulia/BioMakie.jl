@@ -6,126 +6,371 @@ export distancebonds,
 	   bondshape,
 	   bondshapes
 
-function distancebonds(atms::Vector{T}; cutoff = 1.9, hydrogencutoff = 1.14) where {T<:BioStructures.AbstractAtom}
-    mat = zeros(length(atms),length(atms)) |> BitMatrix
+"""
+	distancebonds( atms::Vector{T} )
 
-    for (i,a1) in enumerate(atms), (j,a2) in enumerate(atms)
-		if BioStructures.element(a1) == "H" || BioStructures.element(a2) == "H"
-			if i != j && euclidean(coords(a1),coords(a2)) < hydrogencutoff
-				mat[i,j] = 1
+Returns a matrix of all bonds in `atms`. 
+
+### Optional Arguments:
+- cutoff ----------- 1.9   # distance cutoff for bonds between heavy atoms
+- hydrogencutoff --- 1.14  # distance cutoff for bonds with hydrogen atoms
+- H ---------------- true  # include bonds with hydrogen atoms
+- disulfides ------- false # include disulfide bonds
+"""
+function distancebonds(atms::Vector{T}; 
+						cutoff = 1.9, 
+						hydrogencutoff = 1.14, 
+						H = true,
+						disulfides = false) where {T<:BioStructures.AbstractAtom}
+	numatoms = size(atms, 1)
+	bondmatrix = zeros(numatoms, numatoms) |> BitMatrix
+
+	for i in 1:numatoms
+		resatoms = collectatoms(atms[i].residue) .|> defaultatom
+		numresatoms = size(resatoms,1)
+		nextresatms = (i+numresatoms)
+		if (i+numresatoms) > numatoms
+			nextresatms = numatoms
+		end
+		for j in (i+1):nextresatms
+			### backbone bonds ###
+			if strip(atms[i].name) in ["N","CA","C","O"] && strip(atms[j].name) in ["N","CA","C","O"]
+				if euclidean(coords(atms[i]), coords(atms[j])) < cutoff
+					bondmatrix[i,j] = 1
+					bondmatrix[j,i] = 1
+				end
 			end
-		else
-			if i != j && euclidean(coords(a1),coords(a2)) < cutoff
-				mat[i,j] = 1
+			if bondmatrix[i,j] == 1
+				continue
+			end
+			### residue bonds ###
+			if atms[i].residue == atms[j].residue
+				if H == true
+					if !(strip(atms[i].element) == "H" || strip(atms[j].element) == "H")
+						if euclidean(coords(atms[i]), coords(atms[j])) < cutoff
+							bondmatrix[i,j] = 1
+							bondmatrix[j,i] = 1
+						end
+					else
+						if euclidean(coords(atms[i]), coords(atms[j])) < hydrogencutoff
+							bondmatrix[i,j] = 1
+							bondmatrix[j,i] = 1
+						end
+					end
+				else
+					if !(strip(atms[i].element) == "H" || strip(atms[j].element) == "H")
+						if euclidean(coords(atms[i]), coords(atms[j])) < cutoff
+							bondmatrix[i,j] = 1
+							bondmatrix[j,i] = 1
+						end
+					end
+				end
 			end
 		end
-    end
+		### disulfide bonds ###
+		if disulfides == true
+			for k in 1:numatoms
+				if i != k && strip(atms[i].element) == "S" && strip(atms[k].element) == "S"
+					if euclidean(coords(atms[i]), coords(atms[k])) < 2.1
+						bondmatrix[i,k] = 1
+						bondmatrix[k,i] = 1
+					end
+				end
+			end
+		end
+	end
 
-    return mat
+	return bondmatrix
 end
-function covalentbonds(atms::Vector{T}; extradistance = 0.05) where {T<:BioStructures.AbstractAtom}
-    mat = zeros(length(atms),length(atms)) |> BitMatrix
+function distancebonds(resz::Vector{T}; 
+						cutoff = 1.9, 
+						hydrogencutoff = 1.14, 
+						H = true,
+						disulfides = false) where {T<:MIToS.PDB.PDBResidue}
+	atms = [bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
+	resindices = [[i for j in 1:size(bestoccupancy(resz[i].atoms),1)] for i in 1:length(resz)] |> flatten
+	resnames = [[resz[i].id.name for j in 1:size(bestoccupancy(resz[i].atoms),1)] for i in 1:length(resz)] |> flatten
+	numatoms = size(atms, 1)
+	bondmatrix = zeros(numatoms, numatoms) |> BitMatrix
 
-    for (i,a1) in enumerate(atms), (j,a2) in enumerate(atms)
-		if i != j && euclidean(coords(a1),coords(a2)) < (covalentradii[BioStructures.element(a1)] + covalentradii[BioStructures.element(a2)] + extradistance) 
-            mat[i,j] = 1
-        end
-    end
+	for i in 1:numatoms
+		resatoms = bestoccupancy(resz[resindices[i]].atoms)
+		numresatoms = size(resatoms,1)
+		nextresatms = (i+numresatoms)
+		if (i+numresatoms) > numatoms
+			nextresatms = numatoms
+		end
+		for j in (i+1):nextresatms
+			if atms[i].atom in ["N","CA","C","O"] && atms[j].atom in ["N","CA","C","O"]
+				if euclidean(atms[i].coordinates, atms[j].coordinates) < cutoff
+					bondmatrix[i,j] = 1
+					bondmatrix[j,i] = 1
+				end
+			end
+			if bondmatrix[i,j] == 1
+				continue
+			end
+			if resindices[i] == resindices[j]
+				if H == true
+					if atms[i].element == "H" || atms[j].element == "H"
+						if euclidean(atms[i].coordinates,atms[j].coordinates) < hydrogencutoff
+							bondmatrix[i,j] = 1
+							bondmatrix[j,i] = 1
+						end
+					elseif !(atms[i].element == "H" || atms[j].element == "H")
+						if euclidean(atms[i].coordinates,atms[j].coordinates) < cutoff
+							bondmatrix[i,j] = 1
+							bondmatrix[j,i] = 1
+						end
+					end
+				else
+					if !(atms[i].element == "H" || atms[j].element == "H")
+						if euclidean(atms[i].coordinates,atms[j].coordinates) < cutoff
+							bondmatrix[i,j] = 1
+							bondmatrix[j,i] = 1
+						end
+					end
+				end
+			end
+		end
+		### disulfide bonds ###
+		if disulfides == true
+			for k in 1:numatoms
+				if i != k && atms[i].element == "S" && atms[k].element == "S"
+					if euclidean(atms[i].coordinates, atms[k].coordinates) < 2.1
+						bondmatrix[i,k] = 1
+						bondmatrix[k,i] = 1
+					end
+				end
+			end
+		end
+	end
 
-    return mat
+	return bondmatrix
 end
+
+"""
+	covalentbonds( atms::Vector{T} )
+
+Returns a matrix of all bonds in `atms`. 
+
+### Optional Arguments:
+- extradistance ---- 0.14  # fudge factor for better inclusion
+- H ---------------- true  # include bonds with hydrogen atoms
+- disulfides ------- false # include disulfide bonds
+"""
+function covalentbonds(atms::Vector{T}; 
+						extradistance = 0.14, 
+						H = true,
+						disulfides = false) where {T<:BioStructures.AbstractAtom}
+	numatoms = size(atms, 1)
+	bondmatrix = zeros(numatoms, numatoms) |> BitMatrix
+
+	for i in 1:numatoms
+		resatoms = collectatoms(atms[i].residue) .|> defaultatom
+		numresatoms = size(resatoms,1)
+		nextresatms = (i+numresatoms)
+		if (i+numresatoms) > numatoms
+			nextresatms = numatoms
+		end
+		for j in (i+1):nextresatms
+			### backbone bonds ###
+			if strip(atms[i].name) in ["N","CA","C","O"] && strip(atms[j].name) in ["N","CA","C","O"]
+				if euclidean(coords(atms[i]), coords(atms[j])) < (covalentradii[BioStructures.element(atms[i])] + 
+						covalentradii[BioStructures.element(atms[j])] + extradistance)
+					bondmatrix[i,j] = 1
+					bondmatrix[j,i] = 1
+				end
+			end
+			if bondmatrix[i,j] == 1
+				continue
+			end
+			### residue bonds ###
+			if atms[i].residue == atms[j].residue
+				if H == true
+					if euclidean(coords(atms[i]), coords(atms[j])) < (covalentradii[strip(atms[i].element)] + 
+							covalentradii[strip(atms[j].element)] + extradistance)
+						bondmatrix[i,j] = 1
+						bondmatrix[j,i] = 1
+					end
+				else
+					if !(strip(atms[i].element) == "H" || strip(atms[j].element) == "H")
+						if euclidean(coords(atms[i]), coords(atms[j])) < (covalentradii[strip(atms[i].element)] + 
+								covalentradii[strip(atms[j].element)] + extradistance)
+							bondmatrix[i,j] = 1
+							bondmatrix[j,i] = 1
+						end
+					end
+				end
+			end
+		end
+		### disulfide bonds ###
+		if disulfides == true
+			for k in 1:numatoms
+				if i != k && strip(atms[i].element) == "S" && strip(atms[k].element) == "S"
+					if euclidean(coords(atms[i]), coords(atms[k])) < 2.1
+						bondmatrix[i,k] = 1
+						bondmatrix[k,i] = 1
+					end
+				end
+			end
+		end
+	end
+
+	return bondmatrix
+end
+function covalentbonds(resz::Vector{T}; 
+						extradistance = 0.14, 
+						H = true,
+						disulfides = false) where {T<:MIToS.PDB.PDBResidue}
+	atms = [bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
+	resindices = [[i for j in 1:size(bestoccupancy(resz[i].atoms),1)] for i in 1:length(resz)] |> flatten
+	resnames = [[resz[i].id.name for j in 1:size(bestoccupancy(resz[i].atoms),1)] for i in 1:length(resz)] |> flatten
+	numatoms = size(atms, 1)
+	bondmatrix = zeros(numatoms, numatoms) |> BitMatrix
+
+	for i in 1:numatoms
+		resatoms = bestoccupancy(resz[resindices[i]].atoms)
+		numresatoms = size(resatoms,1)
+		nextresatms = (i+numresatoms)
+		if (i+numresatoms) > numatoms
+			nextresatms = numatoms
+		end
+		for j in (i+1):nextresatms
+			### backbone bonds ###
+			if atms[i].atom in ["N","CA","C","O"] && atms[j].atom in ["N","CA","C","O"]
+				if euclidean(atms[i].coordinates, atms[j].coordinates) < (covalentradii[atms[i].element] + 
+						covalentradii[atms[j].element] + extradistance)
+					bondmatrix[i,j] = 1
+					bondmatrix[j,i] = 1
+				end
+			end
+			if bondmatrix[i,j] == 1
+				continue
+			end
+			### residue bonds ###
+			if resindices[i] == resindices[j]
+				if H == true
+					if euclidean(atms[i].coordinates,atms[j].coordinates) < (covalentradii[atms[i].element] + 
+							covalentradii[atms[j].element] + extradistance)
+						bondmatrix[i,j] = 1
+						bondmatrix[j,i] = 1
+					end
+				else
+					if !(atms[i].element == "H" || atms[j].element == "H")
+						if euclidean(atms[i].coordinates,atms[j].coordinates) < (covalentradii[atms[i].element] + 
+								covalentradii[atms[j].element] + extradistance)
+							bondmatrix[i,j] = 1
+							bondmatrix[j,i] = 1
+						end
+					end
+				end
+			end
+		end
+		### disulfide bonds ###
+		if disulfides == true
+			for k in 1:numatoms
+				if i != k && atms[i].element == "S" && atms[k].element == "S"
+					if euclidean(atms[i].coordinates, atms[k].coordinates) < 2.1
+						bondmatrix[i,k] = 1
+						bondmatrix[k,i] = 1
+					end
+				end
+			end
+		end
+	end
+
+	return bondmatrix
+end
+
+"""
+	sidechainbonds( res::BioStructures.AbstractResidue, selectors... )
+
+Returns a matrix of sidechain bonds in `res`. 
+
+### Optional Arguments:
+- algo ------------- :knowledgebased 	# (:distance, :covalent) algorithm to find bonds
+- H ---------------- true				# include bonds with hydrogen atoms
+- cutoff ----------- 1.9				# distance cutoff for bonds between heavy atoms
+- extradistance ---- 0.14				# fudge factor for better inclusion
+"""
 function sidechainbonds(res::BioStructures.AbstractResidue, selectors...; 
 						algo = :knowledgebased, 
 						H = true,
 						cutoff = 1.9,
-						extradistance = 0.05)
+						extradistance = 0.14)
 	resatomdict = res.atoms
-	resatoms = collectatoms(res, selectors...) .|> defaultatom
-	numatoms = size(resatoms, 1)
+	atms = collectatoms(res, selectors...) .|> defaultatom
+	numatoms = size(atms, 1)
 	bondmatrix = zeros(numatoms, numatoms) |> BitMatrix
-	resatmkeys = strip.([resatoms[i].name for i in 1:size(resatoms,1)]) .|> string
-	srl2idx = Dict([(resatoms[i].serial => i) for i in 1:size(resatoms,1)])
-	serial2index(ser) = srl2idx[ser]
 
 	if algo == :knowledgebased
-		position1 = nothing
-		position2 = nothing
-		for heavybond in heavyresbonds[res.name]
-			firstatomname = "$(heavybond[1])"
-			secondatomname = "$(heavybond[2])"
-			if firstatomname in resatmkeys && secondatomname in resatmkeys
-				if length(heavybond[1]) == 1
-					firstatomname = " $(heavybond[1])  "
-				elseif length(heavybond[1]) == 2
-					firstatomname = " $(heavybond[1]) "
-				elseif length(heavybond[1]) == 3
-					firstatomname = " $(heavybond[1])"
-				elseif length(heavybond[1]) == 4
-					firstatomname = "$(heavybond[1])"
-				else
-					# println("unusual atom $(heavybond[1])")
-				end
-				if length(heavybond[2]) == 1
-					secondatomname = " $(heavybond[2])  "
-				elseif length(heavybond[2]) == 2
-					secondatomname = " $(heavybond[2]) "
-				elseif length(heavybond[2]) == 3
-					secondatomname = " $(heavybond[2])"
-				elseif length(heavybond[2]) == 4
-					secondatomname = "$(heavybond[2])"
-				else
-					# println("unusual atom $(heavybond[2])")
-				end
-				position1 = defaultatom(resatomdict[firstatomname]).serial |> serial2index
-				position2 = defaultatom(resatomdict[secondatomname]).serial |> serial2index
-				bondmatrix[position1,position2] = 1
-				bondmatrix[position2,position1] = 1
+		for i in 1:numatoms
+			resatoms = collectatoms(atms[i].residue, selectors...) .|> defaultatom
+			numresatoms = size(resatoms,1)
+			nextresatms = (i+numresatoms)
+			if (i+numresatoms) > numatoms
+				nextresatms = numatoms
 			end
-		end
-		if H == true
-			for hresbond in hresbonds[res.name]
-				firstatomname = "$(hresbond[1])"
-				secondatomname = "$(hresbond[2])"
-				if firstatomname in resatmkeys && secondatomname in resatmkeys
-					if length(hresbond[1]) == 1
-						firstatomname = " $(hresbond[1])  "
-					elseif length(hresbond[1]) == 2
-						firstatomname = " $(hresbond[1]) "
-					elseif length(hresbond[1]) == 3
-						firstatomname = " $(hresbond[1])"
-					elseif length(hresbond[1]) == 4
-						firstatomname = "$(hresbond[1])"
-					else
-						# println("unusual atom $(hresbond[1])")
+			for j in (i+1):nextresatms
+				### backbone atoms ###
+				firstatomname = atms[i].name |> strip
+				secondatomname = atms[j].name |> strip
+				if firstatomname in ["N","CA","C","O"] && secondatomname in ["N","CA","C","O"]
+					if euclidean(coords(atms[i]), coords(atms[j])) < cutoff
+						bondmatrix[i,j] = 0
+						bondmatrix[j,i] = 0
 					end
-					if length(hresbond[2]) == 1
-						secondatomname = " $(hresbond[2])  "
-					elseif length(hresbond[2]) == 2
-						secondatomname = " $(hresbond[2]) "
-					elseif length(hresbond[2]) == 3
-						secondatomname = " $(hresbond[2])"
-					elseif length(hresbond[2]) == 4
-						secondatomname = "$(hresbond[2])"
-					else
-						# println("unusual atom $(hresbond[2])")
+				end
+				if bondmatrix[i,j] == 1
+					continue
+				end
+				### residue atoms ###
+				if atms[i].residue == atms[j].residue
+					atmres = atms[i].residue
+					heavybondresz = heavyresbonds[atmres.name] |> combinedims
+					heavylength = size(heavybondresz,2)
+					for k in 1:heavylength
+						if firstatomname == heavybondresz[1,k] && secondatomname == heavybondresz[2,k] ||
+								firstatomname == heavybondresz[2,k] && secondatomname == heavybondresz[1,k]
+							bondmatrix[i,j] = 1
+							bondmatrix[j,i] = 1
+							break
+						end
 					end
-					position1 = defaultatom(resatomdict[firstatomname]).serial |> serial2index
-					position2 = defaultatom(resatomdict[secondatomname]).serial |> serial2index
-					bondmatrix[position1,position2] = 1
-					bondmatrix[position2,position1] = 1
+					### hydrogen atoms ###
+					if H == true
+						hbondresz = hresbonds[atmres.name] |> combinedims
+						hlength = size(hbondresz,2)
+						for k in 1:hlength
+							if firstatomname == hbondresz[1,k] && secondatomname == hbondresz[2,k]
+								bondmatrix[i,j] = 1
+								bondmatrix[j,i] = 1
+								break
+							end
+						end
+					end
 				end
 			end
 		end
 		return bondmatrix
-
 	elseif algo == :distance
-		return distancebonds(resatoms; cutoff = cutoff)
+		return distancebonds(resatoms; cutoff = cutoff, H = H)
 	elseif algo == :covalent
-		return covalentbonds(resatoms; extradistance = extradistance)
+		return covalentbonds(resatoms; extradistance = extradistance, H = H)
 	else # just do the same as :covalent for now
-		return covalentbonds(resatoms; extradistance = extradistance)
+		return covalentbonds(resatoms; extradistance = extradistance, H = H)
 	end
 end
+
+"""
+	backbonebonds( chn::BioStructures.Chain )
+
+Returns a matrix of backbone bonds in `chn`. 
+
+### Optional Arguments:
+- cutoff ----------- 1.6		# distance cutoff for bonds
+"""
 function backbonebonds(chn::BioStructures.Chain; cutoff = 1.6)
 	bbatoms = collectatoms(chn, backboneselector) .|> defaultatom
 	bondmatrix = zeros(size(bbatoms,1),size(bbatoms,1)) |> BitMatrix
@@ -145,120 +390,274 @@ function backbonebonds(chn::BioStructures.Chain; cutoff = 1.6)
 
 	return bondmatrix
 end
-function getbonds(residues::AbstractArray{T}; kwargs...) where {T<:BioStructures.AbstractResidue}
-	return sidechainbonds.(residues; kwargs...)
-end
+
+"""
+	getbonds( chn::BioStructures.Chain )
+
+Returns a matrix of all bonds in `atms`. 
+
+### Optional Arguments:
+- algo ------------- :knowledgebased 	# (:distance, :covalent) algorithm to find bonds
+- H ---------------- true				# include bonds with hydrogen atoms
+- cutoff ----------- 1.9				# distance cutoff for bonds between heavy atoms
+- extradistance ---- 0.14				# fudge factor for better inclusion
+- disulfides ------- false				# include disulfide bonds
+"""
 function getbonds(chn::BioStructures.Chain, selectors...;
-				  algo = :covalent, 
-				  H = true,
-				  cutoff = 1.9,
-				  extradistance = 0.05)
+				algo = :knowledgebased, 
+				H = true,
+				cutoff = 1.9,
+				extradistance = 0.14,
+				disulfides = false)
 	atms = collectatoms(chn, selectors...) .|> defaultatom
 	numatoms = size(atms, 1)
 	bondmatrix = zeros(numatoms, numatoms) |> BitMatrix
-	atmkeys = strip.([atms[i].name for i in 1:size(atms,1)]) .|> string
-	srl2idx = Dict([(atms[i].serial => i) for i in 1:size(atms,1)])
-	serial2index(ser) = srl2idx[ser]
 
 	if algo == :knowledgebased
-		reslist = collectresidues(chn, standardselector) .|> defaultresidue
-		for res in reslist
-			resatomdict = res.atoms
-			resatoms = collectatoms(res, selectors...) .|> defaultatom
-			numresatoms = size(resatoms, 1)
-			resatmkeys = strip.([resatoms[i].name for i in 1:size(resatoms,1)]) .|> string
-			position1 = nothing
-			position2 = nothing
-			for heavybond in heavyresbonds[res.name]
-				firstatomname = "$(heavybond[1])"
-				secondatomname = "$(heavybond[2])"
-				if firstatomname in resatmkeys && secondatomname in resatmkeys
-					if length(heavybond[1]) == 1
-						firstatomname = " $(heavybond[1])  "
-					elseif length(heavybond[1]) == 2
-						firstatomname = " $(heavybond[1]) "
-					elseif length(heavybond[1]) == 3
-						firstatomname = " $(heavybond[1])"
-					elseif length(heavybond[1]) == 4
-						firstatomname = "$(heavybond[1])"
-					else
-						# println("unusual atom $(heavybond[1])")
-					end
-					if length(heavybond[2]) == 1
-						secondatomname = " $(heavybond[2])  "
-					elseif length(heavybond[2]) == 2
-						secondatomname = " $(heavybond[2]) "
-					elseif length(heavybond[2]) == 3
-						secondatomname = " $(heavybond[2])"
-					elseif length(heavybond[2]) == 4
-						secondatomname = "$(heavybond[2])"
-					else
-						# println("unusual atom $(heavybond[2])")
-					end
-					position1 = defaultatom(resatomdict[firstatomname]).serial |> serial2index
-					position2 = defaultatom(resatomdict[secondatomname]).serial |> serial2index
-					bondmatrix[position1,position2] = 1
-					bondmatrix[position2,position1] = 1
-				end
+		for i in 1:numatoms
+			resatoms = collectatoms(atms[i].residue, selectors...) .|> defaultatom
+			numresatoms = size(resatoms,1)
+			resatmkeys = [resatoms[i].name for i in 1:numresatoms]
+			nextresatms = (i+numresatoms)
+			if (i+numresatoms) > numatoms
+				nextresatms = numatoms
 			end
-			if H == true
-				for hresbond in hresbonds[res.name]
-					firstatomname = "$(hresbond[1])"
-					secondatomname = "$(hresbond[2])"
-					if firstatomname in resatmkeys && secondatomname in resatmkeys
-						if length(hresbond[1]) == 1
-							firstatomname = " $(hresbond[1])  "
-						elseif length(hresbond[1]) == 2
-							firstatomname = " $(hresbond[1]) "
-						elseif length(hresbond[1]) == 3
-							firstatomname = " $(hresbond[1])"
-						elseif length(hresbond[1]) == 4
-							firstatomname = "$(hresbond[1])"
-						else
-							# println("unusual atom $(hresbond[1])")
-						end
-						if length(hresbond[2]) == 1
-							secondatomname = " $(hresbond[2])  "
-						elseif length(hresbond[2]) == 2
-							secondatomname = " $(hresbond[2]) "
-						elseif length(hresbond[2]) == 3
-							secondatomname = " $(hresbond[2])"
-						elseif length(hresbond[2]) == 4
-							secondatomname = "$(hresbond[2])"
-						else
-							# println("unusual atom $(hresbond[2])")
-						end
-						position1 = defaultatom(resatomdict[firstatomname]).serial |> serial2index
-						position2 = defaultatom(resatomdict[secondatomname]).serial |> serial2index
-						bondmatrix[position1,position2] = 1
-						bondmatrix[position2,position1] = 1
-					end
-				end
-			end
-		end
-		for i in 1:size(atms,1)
-			for j in (i+1):size(atms,1)
-				firstatomname = strip(atms[i].name)
-				secondatomname = strip(atms[j].name)
+			for j in (i+1):nextresatms
+				### backbone atoms ###
+				firstatomname = atms[i].name |> strip
+				secondatomname = atms[j].name |> strip
 				if firstatomname in ["N","CA","C","O"] && secondatomname in ["N","CA","C","O"]
-					if euclidean(coordarray(atms[i]) |> transpose |> collect, coordarray(atms[j]) |> transpose |> collect) < cutoff
+					if euclidean(coords(atms[i]), coords(atms[j])) < cutoff
 						bondmatrix[i,j] = 1
 						bondmatrix[j,i] = 1
+					end
+				end
+				if bondmatrix[i,j] == 1
+					continue
+				end
+				### residue atoms ###
+				if atms[i].residue == atms[j].residue
+					atmres = atms[i].residue
+					heavybondresz = heavyresbonds[atmres.name] |> combinedims
+					heavylength = size(heavybondresz,2)
+					for k in 1:heavylength
+						if firstatomname == heavybondresz[1,k] && secondatomname == heavybondresz[2,k] ||
+								firstatomname == heavybondresz[2,k] && secondatomname == heavybondresz[1,k]
+							bondmatrix[i,j] = 1
+							bondmatrix[j,i] = 1
+							break
+						end
+					end
+					### hydrogen atoms ###
+					if H == true
+						hbondresz = hresbonds[atmres.name] |> combinedims
+						hlength = size(hbondresz,2)
+						for k in 1:hlength
+							if firstatomname == hbondresz[1,k] && secondatomname == hbondresz[2,k]
+								bondmatrix[i,j] = 1
+								bondmatrix[j,i] = 1
+								break
+							end
+						end
 					end
 				end
 			end
 		end
 		return bondmatrix
+		# reslist = collectresidues(chn, standardselector) .|> defaultresidue
+		# for res in reslist
+		# 	resatomdict = res.atoms
+		# 	resatoms = collectatoms(res, selectors...) .|> defaultatom
+		# 	numresatoms = size(resatoms, 1)
+		# 	resatmkeys = strip.([resatoms[i].name for i in 1:size(resatoms,1)]) .|> string
+		# 	position1 = nothing
+		# 	position2 = nothing
+		# 	for heavybond in heavyresbonds[res.name]
+		# 		firstatomname = "$(heavybond[1])"
+		# 		secondatomname = "$(heavybond[2])"
+		# 		if firstatomname in resatmkeys && secondatomname in resatmkeys
+		# 			if length(heavybond[1]) == 1
+		# 				firstatomname = " $(heavybond[1])  "
+		# 			elseif length(heavybond[1]) == 2
+		# 				firstatomname = " $(heavybond[1]) "
+		# 			elseif length(heavybond[1]) == 3
+		# 				firstatomname = " $(heavybond[1])"
+		# 			elseif length(heavybond[1]) == 4
+		# 				firstatomname = "$(heavybond[1])"
+		# 			else
+		# 				# println("unusual atom $(heavybond[1])")
+		# 			end
+		# 			if length(heavybond[2]) == 1
+		# 				secondatomname = " $(heavybond[2])  "
+		# 			elseif length(heavybond[2]) == 2
+		# 				secondatomname = " $(heavybond[2]) "
+		# 			elseif length(heavybond[2]) == 3
+		# 				secondatomname = " $(heavybond[2])"
+		# 			elseif length(heavybond[2]) == 4
+		# 				secondatomname = "$(heavybond[2])"
+		# 			else
+		# 				# println("unusual atom $(heavybond[2])")
+		# 			end
+		# 			position1 = defaultatom(resatomdict[firstatomname]).serial |> serial2index
+		# 			position2 = defaultatom(resatomdict[secondatomname]).serial |> serial2index
+		# 			bondmatrix[position1,position2] = 1
+		# 			bondmatrix[position2,position1] = 1
+		# 		end
+		# 	end
+		# 	if H == true
+		# 		for hresbond in hresbonds[res.name]
+		# 			firstatomname = "$(hresbond[1])"
+		# 			secondatomname = "$(hresbond[2])"
+		# 			if firstatomname in resatmkeys && secondatomname in resatmkeys
+		# 				if length(hresbond[1]) == 1
+		# 					firstatomname = " $(hresbond[1])  "
+		# 				elseif length(hresbond[1]) == 2
+		# 					firstatomname = " $(hresbond[1]) "
+		# 				elseif length(hresbond[1]) == 3
+		# 					firstatomname = " $(hresbond[1])"
+		# 				elseif length(hresbond[1]) == 4
+		# 					firstatomname = "$(hresbond[1])"
+		# 				else
+		# 					# println("unusual atom $(hresbond[1])")
+		# 				end
+		# 				if length(hresbond[2]) == 1
+		# 					secondatomname = " $(hresbond[2])  "
+		# 				elseif length(hresbond[2]) == 2
+		# 					secondatomname = " $(hresbond[2]) "
+		# 				elseif length(hresbond[2]) == 3
+		# 					secondatomname = " $(hresbond[2])"
+		# 				elseif length(hresbond[2]) == 4
+		# 					secondatomname = "$(hresbond[2])"
+		# 				else
+		# 					# println("unusual atom $(hresbond[2])")
+		# 				end
+		# 				position1 = defaultatom(resatomdict[firstatomname]).serial |> serial2index
+		# 				position2 = defaultatom(resatomdict[secondatomname]).serial |> serial2index
+		# 				bondmatrix[position1,position2] = 1
+		# 				bondmatrix[position2,position1] = 1
+		# 			end
+		# 		end
+		# 	end
+		# end
+		# for i in 1:size(atms,1)
+		# 	for j in (i+1):size(atms,1)
+		# 		firstatomname = strip(atms[i].name)
+		# 		secondatomname = strip(atms[j].name)
+		# 		if firstatomname in ["N","CA","C","O"] && secondatomname in ["N","CA","C","O"]
+		# 			if euclidean(coordarray(atms[i]) |> transpose |> collect, coordarray(atms[j]) |> transpose |> collect) < cutoff
+		# 				bondmatrix[i,j] = 1
+		# 				bondmatrix[j,i] = 1
+		# 			end
+		# 		end
+		# 	end
+		# end
+		# return bondmatrix
 
 	elseif algo == :distance
-		return distancebonds(atms; cutoff = cutoff)
+		return distancebonds(atms; cutoff = cutoff, H = H, disulfides = disulfides)
 	elseif algo == :covalent
-		return covalentbonds(atms; extradistance = extradistance)
+		return covalentbonds(atms; extradistance = extradistance, H = H, disulfides = disulfides)
 	else # just do the same as :covalent for now
-		return covalentbonds(atms; extradistance = extradistance)
+		return covalentbonds(atms; extradistance = extradistance, H = H, disulfides = disulfides)
 	end
 
 	return nothing
+end
+
+"""
+	getbonds( resz::Vector{MIToS.PDB.PDBResidue} )
+
+Returns a matrix of all bonds in `resz`. 
+
+### Optional Arguments:
+- algo ------------- :knowledgebased 	# (:distance, :covalent) algorithm to find bonds
+- H ---------------- true				# include bonds with hydrogen atoms
+- cutoff ----------- 1.9				# distance cutoff for bonds between heavy atoms
+- extradistance ---- 0.14				# fudge factor for better inclusion
+- disulfides ------- false				# include disulfide bonds
+"""
+function getbonds(resz::Vector{MIToS.PDB.PDBResidue};
+				algo = :knowledgebased, 
+				H = true,
+				cutoff = 1.9,
+				extradistance = 0.14,
+				disulfides = false)
+	atms = [bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
+	resindices = [[i for j in 1:size(bestoccupancy(resz[i].atoms),1)] for i in 1:length(resz)] |> flatten
+	resnames = [[resz[i].id.name for j in 1:size(bestoccupancy(resz[i].atoms),1)] for i in 1:length(resz)] |> flatten
+	numatoms = size(atms, 1)
+	bondmatrix = zeros(numatoms, numatoms) |> BitMatrix
+	if algo == :knowledgebased
+		for i in 1:numatoms
+			resatoms = bestoccupancy(resz[resindices[i]].atoms)
+			numresatoms = size(resatoms,1)
+			resatmkeys = [resatoms[i].atom for i in 1:numresatoms]
+			nextresatms = (i+numresatoms)
+			if (i+numresatoms) > numatoms
+				nextresatms = numatoms
+			end
+			for j in (i+1):nextresatms
+				### backbone atoms ###
+				firstatomname = atms[i].atom
+				secondatomname = atms[j].atom
+				if firstatomname in ["N","CA","C","O"] && secondatomname in ["N","CA","C","O"]
+					if euclidean(atms[i].coordinates |> collect, atms[j].coordinates |> collect) < cutoff
+						bondmatrix[i,j] = 1
+						bondmatrix[j,i] = 1
+					end
+				end
+				### residue atoms ###
+				if bondmatrix[i,j] == 1
+					continue
+				end
+				if resindices[i] == resindices[j]
+					heavybondresz = heavyresbonds[resnames[i]] |> combinedims
+					heavylength = size(heavybondresz,2)
+					for k in 1:heavylength
+						if firstatomname == heavybondresz[1,k] && secondatomname == heavybondresz[2,k] ||
+								firstatomname == heavybondresz[2,k] && secondatomname == heavybondresz[1,k]
+							bondmatrix[i,j] = 1
+							bondmatrix[j,i] = 1
+							break
+						end
+					end
+				end
+				### hydrogen atoms ###
+				if H == true
+					hbondresz = hresbonds[resnames[i]] |> combinedims
+					hlength = size(hbondresz,2)
+					for k in 1:hlength
+						if firstatomname == hbondresz[1,k] && secondatomname == hbondresz[2,k]
+							bondmatrix[i,j] = 1
+							bondmatrix[j,i] = 1
+							break
+						end
+					end
+				end
+			end
+		end
+		return bondmatrix
+	elseif algo == :distance
+		return distancebonds(resz; cutoff = cutoff, H = H, disulfides = disulfides)
+	elseif algo == :covalent
+		return covalentbonds(resz; extradistance = extradistance, H = H, disulfides = disulfides)
+	else # just do the same as :covalent for now
+		return covalentbonds(resz; extradistance = extradistance, H = H, disulfides = disulfides)
+	end
+
+	return nothing
+end
+"""
+	getbonds( resz::Vector{BioStructures.AbstractResidue} )
+
+Returns a matrix of all intra-residue bonds in `resz`. 
+Utilizes `sidechainbonds` to get bonds within each residue.
+
+### Optional Arguments:
+- kwargs...			# passed to `sidechainbonds`
+"""
+function getbonds(resz::Vector{T}; kwargs...) where {T<:BioStructures.AbstractResidue}
+	return sidechainbonds.(resz; kwargs...)
 end
 # Default bond shape is a cylinder mesh. TODO: maybe add double and triple bond shapes.
 function bondshape(twoatoms::Tuple{T}; bondwidth = 0.2) where {T<:BioStructures.AbstractAtom}
@@ -281,7 +680,7 @@ function bondshape(twopnts::AbstractMatrix{T}; bondwidth = 0.2) where {T<:Abstra
 	end
     return GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth))
 end
-function bondshapes(chn::BioStructures.Chain, selectors...; algo = :covalent, distance = 1.9, bondwidth = 0.2)
+function bondshapes(chn::BioStructures.Chain, selectors...; algo = :knowledgebased, distance = 1.9, bondwidth = 0.2)
     bshapes = Cylinder3{Float32}[]
 	bnds = getbonds(chn, selectors...; algo = algo, cutoff = distance)
 	atms = collectatoms(chn, selectors...)
@@ -300,8 +699,8 @@ function bondshapes(chn::BioStructures.Chain, selectors...; algo = :covalent, di
 
     return bshapes
 end
-function bondshapes(struc::BioStructures.ProteinStructure, selectors...; algo = :covalent, distance = 1.9, bondwidth = 0.2)
-    bshapes = Cylinder3{Float32}[]
+function bondshapes(struc::BioStructures.ProteinStructure, selectors...; algo = :knowledgebased, distance = 1.9, bondwidth = 0.2)
+	bshapes = Cylinder3{Float32}[]
 	chns = collectchains(struc)
 	bnds = getbonds.(chns, selectors...; algo = algo, cutoff = distance)
 	atms = collectatoms.(chns, selectors...)
@@ -320,5 +719,24 @@ function bondshapes(struc::BioStructures.ProteinStructure, selectors...; algo = 
 		end
 	end
 	
+    return bshapes
+end
+function bondshapes(resz::Vector{MIToS.PDB.PDBResidue}; algo = :covalent, distance = 1.9, bondwidth = 0.2)
+    bshapes = Cylinder3{Float32}[]
+	bnds = getbonds(resz; algo = algo, cutoff = distance)
+	atms = [bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
+
+	for i in 1:size(bnds,1)
+		for j in (i+1):size(bnds,1)
+			if bnds[i,j] == 1
+				atm1 = atms[i]
+				atm2 = atms[j]
+				pnt1 = GeometryBasics.Point3f0(atm1.coordinates)
+				pnt2 = GeometryBasics.Point3f0(atm2.coordinates)
+				push!(bshapes, GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth)))
+			end
+		end
+	end
+
     return bshapes
 end

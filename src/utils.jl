@@ -5,11 +5,7 @@ export elecolors,
        leskcolors, 
        maecolors, 
        cinemacolors,
-       getbiocolors,
-       reversekv,
-       printkv,
-       typefields,
-       tyf
+       getbiocolors
 
 import Base.convert
 import BioStructures.defaultatom, BioStructures.defaultresidue
@@ -51,6 +47,45 @@ function printkv(dict::AbstractDict)
 end
 typefields(thing) = typeof(thing) |> fieldnames
 tyf(thing) = typefields(thing)
+function parseint(num)
+    return parse(Int64, num)
+end
+function parsefloat(num)
+    return parse(Float64, num)
+end
+function parsefloat32(num)
+    return parse(Float32, num)
+end
+function transposed(mat::AbstractMatrix)
+    mat2 = mat
+    @cast mat2[i,j] := mat[j,i]
+    mat2 = mat2[:,:] .|> identity
+    return mat2
+end
+_t(arr::AbstractArray) = transposed(arr)
+_v(arr::AbstractArray) = reverse(arr; dims = 1)
+_h(arr::AbstractArray) = reverse(arr; dims = 2)
+macro trycatch(ex)
+    quote
+        try
+            $(esc(ex))
+        catch
+            # do nothing
+        end
+    end
+end
+function varcall(name::String, body::Any)
+    name=Symbol(name)
+    @eval (($name) = ($body))
+	return Symbol(name)
+end
+function collectkeys(args)
+    return keys(args) |> collect
+end
+function collectvals(args)
+    return values(args) |> collect
+end
+
 # current basic color schemes for atoms and residues
 elecolors = Dict( "C" => :gray,
                   "N" => :blue,

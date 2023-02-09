@@ -1,6 +1,8 @@
+export heatmap,
+       heatmap!
+
 import Makie.heatmap
 using PairwiseListMatrices, NamedArrays
-
 using MIToS.PDB
 
 """
@@ -29,7 +31,8 @@ function heatmap(dmap::NamedMatrix{Float64, PairwiseListMatrix{Float64, false, V
     dmap_2 = dmap.dicts[2] |> reversekv
     dat = reverse(Matrix(dmap); dims = 1)
 
-    hm = heatmap!(ax, dat; inspector_label = (self, i, p) -> "$(dmap_1[i[2]]): $(i[2])\n$(dmap_1[i[1]]): $(i[1])\nvalue: $(round(dat[i...];digits=6))",
+    hm = heatmap!(ax, dat; inspector_label = (self, i, p) -> "$(dmap_1[i[2]]): $(i[2])\n$(dmap_1[i[1]]): " *
+        "$(i[1])\nvalue: $(round(dat[i...];digits=6))",
                     colormap = :viridis, kwargs...)
     Colorbar(fig[1,2],hm)
 
@@ -49,7 +52,8 @@ function heatmap!(fig::Figure, dmap::NamedMatrix{Float64, PairwiseListMatrix{Flo
     dmap_2 = dmap.dicts[2] |> reversekv
     dat = reverse(Matrix(dmap); dims = 1)
 
-    hm = heatmap!(ax, dat; inspector_label = (self, i, p) -> "$(dmap_1[i[2]]): $(i[2])\n$(dmap_1[i[1]]): $(i[1])\nvalue: $(round(dat[i...];digits=6))",
+    hm = heatmap!(ax, dat; inspector_label = (self, i, p) -> "$(dmap_1[i[2]]): $(i[2])\n$(dmap_1[i[1]]): " *
+        "$(i[1])\nvalue: $(round(dat[i...];digits=6))",
         colormap = :viridis, kwargs...)
     Colorbar(fig[1,2],hm)
 
@@ -89,7 +93,8 @@ function heatmap(cmap::NamedMatrix{Bool, PairwiseListMatrix{Bool, false, Vector{
     cmap_2 = cmap.dicts[2] |> reversekv
     dat = reverse(Matrix(cmap); dims = 1)
 
-    hm = heatmap!(ax, dat; inspector_label = (self, i, p) -> "$(cmap_1[i[2]]): $(i[2])\n$(cmap_1[i[1]]): $(i[1])\nvalue: $(round(dat[i...];digits=6))",
+    hm = heatmap!(ax, dat; inspector_label = (self, i, p) -> "$(cmap_1[i[2]]): $(i[2])\n$(cmap_1[i[1]]): " *
+        "$(i[1])\nvalue: $(round(dat[i...];digits=6))",
                     colormap = :ice, kwargs...)
     
     ax.xlabel = cmap.dimnames[2]
@@ -108,7 +113,8 @@ function heatmap!(fig::Figure, cmap::NamedMatrix{Bool, PairwiseListMatrix{Bool, 
     cmap_2 = cmap.dicts[2] |> reversekv
     dat = reverse(Matrix(cmap); dims = 1)
 
-    hm = heatmap!(ax, dat; inspector_label = (self, i, p) -> "$(cmap_1[i[2]]): $(i[2])\n$(cmap_1[i[1]]): $(i[1])\nvalue: $(round(dat[i...];digits=6))",
+    hm = heatmap!(ax, dat; inspector_label = (self, i, p) -> "$(cmap_1[i[2]]): $(i[2])\n$(cmap_1[i[1]]): " *
+        "$(i[1])\nvalue: $(round(dat[i...];digits=6))",
         colormap = :ice, kwargs...)
 
     ax.xlabel = cmap.dimnames[2]
