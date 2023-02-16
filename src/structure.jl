@@ -4,12 +4,12 @@ export atomradii,
        plotstruc             
 
 """
-    atomradii( atoms::Vector{T} )
+    atomradii( atoms::Vector{T} ) where T<:BioStructures.AbstractAtom
 
-Collect atom radii based on element for plotting.
+Collect atom radii based on element for plotting, from a Vector of BioStructures.AbstractAtoms.
 
 ### Keyword Arguments:
-- radiustype --- :covalent | Options - :cov, :covalent, :vdw, :vanderwaals
+- radiustype --- :covalent | Options - :cov, :covalent, :vdw, :vanderwaals, :bas, :ballandstick
 """
 function atomradii(atoms::Vector{T}; radiustype = :covalent) where T<:BioStructures.AbstractAtom
 	if radiustype == :covalent || radiustype == :cov
@@ -23,6 +23,15 @@ function atomradii(atoms::Vector{T}; radiustype = :covalent) where T<:BioStructu
 		return [covalentradii[BioStructures.element(x)] for x in atoms]
 	end
 end
+
+"""
+    atomradii( atoms::Vector{T} ) where T<:MIToS.PDB.PDBAtom
+
+Collect atom radii based on element for plotting, from a Vector of MIToS.PDB.PDBAtoms.
+
+### Keyword Arguments:
+- radiustype --- :covalent | Options - :cov, :covalent, :vdw, :vanderwaals, :bas, :ballandstick
+"""
 function atomradii(atoms::Vector{T}; radiustype = :covalent) where T<:MIToS.PDB.PDBAtom
 	if radiustype == :covalent || radiustype == :cov
 		return [covalentradii[x.element] for x in atoms]
@@ -37,12 +46,12 @@ function atomradii(atoms::Vector{T}; radiustype = :covalent) where T<:MIToS.PDB.
 end
 
 """
-    atomradius( atom )
+    atomradius( atom::BioStructures.Atom )
 
 Collect atom radius based on element for plotting.
 
 ### Keyword Arguments:
-- radiustype --- :covalent | Options - :cov, :covalent, :vdw, :vanderwaals
+- radiustype --- :covalent | Options - :cov, :covalent, :vdw, :vanderwaals, :bas, :ballandstick
 """
 function atomradius(atom::T; radiustype = :covalent) where T<:BioStructures.AbstractAtom
     if radiustype == :covalent || radiustype == :cov
@@ -56,6 +65,15 @@ function atomradius(atom::T; radiustype = :covalent) where T<:BioStructures.Abst
 		return covalentradii[BioStructures.element(atom)]
 	end
 end
+
+"""
+    atomradius( atom::MIToS.PDB.PDBAtom )
+
+Collect atom radius based on element for plotting.
+
+### Keyword Arguments:
+- radiustype --- :covalent | Options - :cov, :covalent, :vdw, :vanderwaals, :bas, :ballandstick
+"""
 function atomradius(atom::T; radiustype = :covalent) where T<:MIToS.PDB.PDBAtom
     if radiustype == :covalent || radiustype == :cov
         return covalentradii[atom.element]
@@ -72,7 +90,8 @@ end
 """
     inspectorlabel( struc::BioStructures.StructuralElementOrList )
 
-Get the inspector label function for plotting a structure.
+Get the inspector label function for plotting a BioStructures.StructuralElementOrList.
+(ProteinStructure, Model, Chain, Residue, Atom, and lists of these)
 """
 function inspectorlabel(struc::BioStructures.StructuralElementOrList)
     atms = defaultatom.(BioStructures.collectatoms(struc))
@@ -86,7 +105,7 @@ end
 """
     inspectorlabel( resz::Vector{MIToS.PDB.PDBResidue} )
 
-Get the inspector label function for plotting a structure.
+Get the inspector label function for plotting a Vector of MIToS.PDB.PDBResidues.
 """
 function inspectorlabel(resz::Vector{MIToS.PDB.PDBResidue})
     atms = [bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
@@ -99,7 +118,7 @@ end
 """
     inspectorlabel( atms::Vector{MIToS.PDB.PDBAtom} )
 
-Get the inspector label function for plotting a structure.
+Get the inspector label function for plotting a vector of MIToS.PDB.PDBAtoms.
 """
 function inspectorlabel(atms::Vector{MIToS.PDB.PDBAtom})
     func = (self, i, p) -> "atom: $(atms[i].atom)   element: $(atms[i].element)   index: $(i)\n" *
@@ -109,9 +128,10 @@ function inspectorlabel(atms::Vector{MIToS.PDB.PDBAtom})
 end
 
 """
-    inspectorlabel( struc::Observable{T} )
+    inspectorlabel( struc::Observable{T} ) where {T<:BioStructures.StructuralElementOrList}
 
-Get the inspector label function for plotting a structure.
+Get the inspector label function for plotting a BioStructures StructuralElementOrList.
+(ProteinStructure, Model, Chain, Residue, Atom, and lists of these)
 """
 function inspectorlabel(struc::Observable{T}) where {T<:BioStructures.StructuralElementOrList}
     atms = @lift defaultatom.(BioStructures.collectatoms($struc))
@@ -121,6 +141,12 @@ function inspectorlabel(struc::Observable{T}) where {T<:BioStructures.Structural
     "serial: $($atms[i].serial)\ncoordinates: $($atms[i].coords)    B: $($atms[i].temp_factor)"
     return func
 end
+
+"""
+    inspectorlabel( resz::Observable{T} ) where {T<:Vector{MIToS.PDB.PDBResidue}}
+
+Get the inspector label function for plotting a vector of MIToS.PDB.PDBResidues.
+"""
 function inspectorlabel(resz::Observable{T}) where {T<:Vector{MIToS.PDB.PDBResidue}}
     atms = @lift [bestoccupancy($resz[i].atoms) for i in 1:length($resz)] |> flatten
     func = @lift (self, i, p) -> "atom: $($atms[i].atom)   element: $($atms[i].element)   index: $(i)\n" *
@@ -128,6 +154,12 @@ function inspectorlabel(resz::Observable{T}) where {T<:Vector{MIToS.PDB.PDBResid
     "occupancy: $($atms[i].occupancy)    B: $($atms[i].B)"
     return func
 end
+
+"""
+    inspectorlabel( atms::Observable{T} ) where {T<:Vector{MIToS.PDB.PDBAtom}}
+
+Get the inspector label function for plotting a vector of MIToS.PDB.PDBAtoms.
+"""
 function inspectorlabel(atms::Observable{T}) where {T<:Vector{MIToS.PDB.PDBAtom}}
     func = @lift (self, i, p) -> "atom: $($atms[i].atom)   element: $($atms[i].element)   index: $(i)\n" *
     "coordinates: $($atms[i].coordinates)\n" *
@@ -138,7 +170,8 @@ end
 """
     firstlabel( inspectorfunc::Observable{T} )
 
-Show an example of the inspector label function looks like.
+Show an example of the inspector label function looks like. The position `p`
+will not be available to this function, so it will be set to `nothing`.
 """
 function firstlabel(inspectorfunc::Observable{T}) where {T<:Function}
     println("--- First label ---\n" * (inspectorfunc[](1,1,1)) * "\n-------------------")
@@ -148,7 +181,8 @@ end
 """
     firstlabel( inspectorfunc::Function )
 
-Show an example of the inspector label function looks like.
+Show an example of the inspector label function looks like. The position `p`
+will not be available to this function, so it will be set to `nothing`.
 """
 function firstlabel(inspectorfunc::Function)
     println("--- First label ---\n" * (inspectorfunc(1,1,1)) * "\n-------------------")
@@ -156,7 +190,11 @@ function firstlabel(inspectorfunc::Function)
 end
 
 """
-    atomcolors( inspectorfunc::Function )
+    atomcolors( struc::BioStructures.StructuralElementOrList )
+
+Get a Vector of colors for the atoms in a BioStructures StructuralElementOrList.
+To see all default element and amino acid colorschemes, use the `getbiocolors()` function.
+Keyword argument `colors` takes a Dict which maps element to color. ("C" => :red)
 
 ### Keyword Arguments:
 - colors --- elecolors | Options - elecolors, aquacolors
@@ -166,36 +204,112 @@ function atomcolors(struc::BioStructures.StructuralElementOrList; colors = eleco
     colrs = [colors[BioStructures.element(x)] for x in atms]
     return colrs
 end
+
+"""
+    atomcolors( resz::Vector{MIToS.PDB.PDBResidue} )
+
+Get a Vector of colors for the atoms from a Vector of MIToS.PDB.PDBResidue.
+To see all default element and amino acid colorschemes, use the `getbiocolors()` function.
+Keyword argument `colors` takes a Dict which maps element to color. ("C" => :red)
+
+### Keyword Arguments:
+- colors --- elecolors | Options - elecolors, aquacolors
+"""
 function atomcolors(resz::Vector{MIToS.PDB.PDBResidue}; colors = elecolors)
     atms = [bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
     colrs = [colors[x.element] for x in atms]
     return colrs
 end
+
+"""
+    atomcolors( atms::Vector{MIToS.PDB.PDBAtom} )
+
+Get a Vector of colors for the atoms from a Vector of MIToS.PDB.PDBAtom.
+To see all default element and amino acid colorschemes, use the `getbiocolors()` function.
+Keyword argument `colors` takes a Dict which maps element to color. ("C" => :red)
+
+### Keyword Arguments:
+- colors --- elecolors | Options - elecolors, aquacolors
+"""
 function atomcolors(atms::Vector{MIToS.PDB.PDBAtom}; colors = elecolors)
     colrs = [colors[x.element] for x in atms]
     return colrs
 end
+
+"""
+    atomcolors( struc::Observable{T} ) where {T<:BioStructures.StructuralElementOrList}
+
+Get a Vector of colors for the atoms in a BioStructures StructuralElementOrList.
+To see all default element and amino acid colorschemes, use the `getbiocolors()` function.
+Keyword argument `colors` takes a Dict which maps element to color. ("C" => :red)
+
+### Keyword Arguments:
+- colors --- elecolors | Options - elecolors, aquacolors
+"""
 function atomcolors(struc::Observable{T}; colors = elecolors) where {T<:BioStructures.StructuralElementOrList}
     atms = @lift defaultatom.(BioStructures.collectatoms($struc))
     colrs = @lift [colors[BioStructures.element(x)] for x in $atms]
     return colrs
 end
+
+"""
+    atomcolors( resz::Observable{T} ) where {T<:Vector{MIToS.PDB.PDBResidue}}
+
+Get a Vector of colors for the atoms from a Vector of MIToS.PDB.PDBResidues.
+To see all default element and amino acid colorschemes, use the `getbiocolors()` function.
+Keyword argument `colors` takes a Dict which maps element to color. ("C" => :red)
+
+### Keyword Arguments:
+- colors --- elecolors | Options - elecolors, aquacolors
+"""
 function atomcolors(resz::Observable{T}; colors = elecolors) where {T<:Vector{MIToS.PDB.PDBResidue}}
     atms = @lift [bestoccupancy($resz[i].atoms) for i in 1:length($resz)] |> flatten
     colrs = @lift [colors[x.element] for x in $atms]
     return colrs
 end
+
+"""
+    atomcolors( atms::Observable{T} ) where {T<:Vector{MIToS.PDB.PDBAtom}}
+
+Get a Vector of colors for the atoms from a Vector of MIToS.PDB.PDBAtoms.
+To see all default element and amino acid colorschemes, use the `getbiocolors()` function.
+Keyword argument `colors` takes a Dict which maps element to color. ("C" => :red)
+
+### Keyword Arguments:
+- colors --- elecolors | Options - elecolors, aquacolors
+"""
 function atomcolors(atms::Observable{T}; colors = elecolors) where {T<:Vector{MIToS.PDB.PDBAtom}}
     colrs = @lift [colors[x.element] for x in $atms]
     return colrs
 end
 
+"""
+    rescolors( struc::BioStructures.StructuralElementOrList )
+
+Get a Vector of colors for the atoms from a BioStructures.StructuralElementOrList.
+To see all default element and amino acid colorschemes, use the `getbiocolors()` function.
+Keyword argument `colors` takes a Dict which maps residue to color. ("C" => :red)
+
+### Keyword Arguments:
+- colors --- elecolors | Options - elecolors, aquacolors, shapelycolors, maecolors
+"""
 function rescolors(struc::BioStructures.StructuralElementOrList; colors = maecolors)
     atms = defaultatom.(BioStructures.collectatoms(struc))
     resnames = [resletterdict[atms[i].residue.name] for i in 1:length(atms)]
     colrs = [colors[resnames[j]] for j in 1:length(resnames)]
     return colrs
 end
+
+"""
+    rescolors( resz::Vector{MIToS.PDB.PDBResidue} )
+
+Get a Vector of colors for the atoms from a Vector of MIToS.PDB.PDBResidues.
+To see all default element and amino acid colorschemes, use the `getbiocolors()` function.
+Keyword argument `colors` takes a Dict which maps residue to color. ("C" => :red)
+
+### Keyword Arguments:
+- colors --- elecolors | Options - elecolors, aquacolors, shapelycolors, maecolors
+"""
 function rescolors(resz::Vector{MIToS.PDB.PDBResidue}; colors = maecolors)
     atms = [bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
 	resindices = [[i for j in 1:size(bestoccupancy(resz[i].atoms),1)] for i in 1:length(resz)] |> flatten
@@ -203,12 +317,34 @@ function rescolors(resz::Vector{MIToS.PDB.PDBResidue}; colors = maecolors)
     colrs = [colors[resnames[j]] for j in 1:length(resnames)]
     return colrs
 end
+
+"""
+    rescolors( struc::Observable{T} ) where {T<:BioStructures.StructuralElementOrList}
+
+Get a Vector of colors for the atoms from a BioStructures.StructuralElementOrList.
+To see all default element and amino acid colorschemes, use the `getbiocolors()` function.
+Keyword argument `colors` takes a Dict which maps residue to color. ("C" => :red)
+
+### Keyword Arguments:
+- colors --- elecolors | Options - elecolors, aquacolors, shapelycolors, maecolors
+"""
 function rescolors(struc::Observable{T}; colors = maecolors) where {T<:BioStructures.StructuralElementOrList}
     atms = @lift defaultatom.(BioStructures.collectatoms($struc))
     resnames = @lift [resletterdict[$atms[i].residue.name] for i in 1:length($atms)]
     colrs = @lift [colors[$resnames[j]] for j in 1:length($resnames)]
     return colrs
 end
+
+"""
+    rescolors( resz::Observable{T} ) where {T<:Vector{MIToS.PDB.PDBResidue}}
+
+Get a Vector of colors for the atoms from a Vector of MIToS.PDB.PDBResidues.
+To see all default element and amino acid colorschemes, use the `getbiocolors()` function.
+Keyword argument `colors` takes a Dict which maps residue to color. ("C" => :red)
+
+### Keyword Arguments:
+- colors --- elecolors | Options - elecolors, aquacolors, shapelycolors, maecolors
+"""
 function rescolors(resz::Observable{T}; colors = maecolors) where {T<:Vector{MIToS.PDB.PDBResidue}}
     atms = @lift [bestoccupancy($resz[i].atoms) for i in 1:length($resz)] |> flatten
 	resindices = @lift [[i for j in 1:size(bestoccupancy($resz[i].atoms),1)] for i in 1:length($resz)] |> flatten
@@ -217,43 +353,104 @@ function rescolors(resz::Observable{T}; colors = maecolors) where {T<:Vector{MIT
     return colrs
 end
 
+"""
+    atomsizes( struc::BioStructures.StructuralElementOrList )
+
+Get a Vector of sizes for the atoms from a BioStructures.StructuralElementOrList.
+
+### Keyword Arguments:
+- radiustype --- :covalent | Options - :cov, :covalent, :vdw, :vanderwaals, :bas, :ballandstick
+"""
 function atomsizes(struc::BioStructures.StructuralElementOrList; radiustype = :covalent)
     atms = defaultatom.(BioStructures.collectatoms(struc))
     sizes = atomradii(atms; radiustype = radiustype)
     return sizes
 end
+
+"""
+    atomsizes( resz::Vector{MIToS.PDB.PDBResidue} )
+
+Get a Vector of sizes for the atoms from a Vector of MIToS.PDB.PDBResidues.
+
+### Keyword Arguments:
+- radiustype --- :covalent | Options - :cov, :covalent, :vdw, :vanderwaals, :bas, :ballandstick
+"""
 function atomsizes(resz::Vector{MIToS.PDB.PDBResidue}; radiustype = :covalent)
     atms = [bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
     sizes = atomradii(atms; radiustype = radiustype)
     return sizes
 end
+
+"""
+    atomsizes( atms::Vector{MIToS.PDB.PDBAtom} )
+
+Get a Vector of sizes for the atoms from a Vector of MIToS.PDB.PDBAtoms.
+
+### Keyword Arguments:
+- radiustype --- :covalent | Options - :cov, :covalent, :vdw, :vanderwaals, :bas, :ballandstick
+"""
 function atomsizes(atms::Vector{MIToS.PDB.PDBAtom}; radiustype = :covalent)
     sizes = atomradii(atms; radiustype = radiustype)
     return sizes
 end
+
+"""
+    atomsizes( struc::Observable{T} ) where {T<:BioStructures.StructuralElementOrList}
+
+Get a Vector of sizes for the atoms from a BioStructures.StructuralElementOrList.
+
+### Keyword Arguments:
+- radiustype --- :covalent | Options - :cov, :covalent, :vdw, :vanderwaals, :bas, :ballandstick
+"""
 function atomsizes(struc::Observable{T}; radiustype = :covalent) where {T<:BioStructures.StructuralElementOrList}
     atms = @lift defaultatom.(BioStructures.collectatoms($struc))
     sizes = @lift atomradii($atms; radiustype = radiustype)
     return sizes
 end
+
+"""
+    atomsizes( resz::Observable{T} ) where {T<:Vector{MIToS.PDB.PDBResidue}}
+
+Get a Vector of sizes for the atoms from a Vector of MIToS.PDB.PDBResidues.
+
+### Keyword Arguments:
+- radiustype --- :covalent | Options - :cov, :covalent, :vdw, :vanderwaals, :bas, :ballandstick
+"""
 function atomsizes(resz::Observable{T}; radiustype = :covalent) where {T<:Vector{MIToS.PDB.PDBResidue}}
     atms = @lift [bestoccupancy($resz[i].atoms) for i in 1:length($resz)] |> flatten
     sizes = @lift atomradii($atms; radiustype = radiustype)
     return sizes
 end
+
+"""
+    atomsizes( atms::Observable{T} ) where {T<:Vector{MIToS.PDB.PDBAtom}}
+
+Get a Vector of sizes for the atoms from a Vector of MIToS.PDB.PDBAtoms.
+
+### Keyword Arguments:
+- radiustype --- :covalent | Options - :cov, :covalent, :vdw, :vanderwaals, :bas, :ballandstick
+"""
 function atomsizes(atms::Observable{T}; radiustype = :covalent) where {T<:Vector{MIToS.PDB.PDBAtom}}
     sizes = @lift atomradii($atms; radiustype = radiustype)
     return sizes
 end
 
 """
-	plottingdata( struc )
+	plottingdata( struc::BioStructures.StructuralElementOrList )
 
-Collects data for plotting.
+Collects data for plotting from a BioStructures.StructuralElementOrList.
+This function returns an OrderedDict of Observables that are the main data
+used for plotting, for ease of use and consistency. 
 
-This function converts an AbstractMultipleSequenceAlignment (from MIToS.MSA), or 
-a Vector{Tuple{String,String}} (from FastaIO), or a Vector{FASTX.FASTA.Record} 
-to a matrix of residue characters, x labels, and y labels.
+    OrderedDict("atoms" => ..., 
+                "coords" => ..., 
+                "colors" => ...,
+                "sizes" => ...,
+                "bonds" => ...)
+
+### Keyword Arguments:
+- colors ------- elecolors | Options - elecolors, aquacolors, shapelycolors, maecolors
+- radiustype --- :covalent | Options - :cov, :covalent, :vdw, :vanderwaals, :bas, :ballandstick
 """
 function plottingdata(struc::BioStructures.StructuralElementOrList;
                         colors = elecolors,
@@ -276,6 +473,24 @@ function plottingdata(struc::BioStructures.StructuralElementOrList;
                         "sizes" => sizes,
                         "bonds" => bonds)
 end
+
+"""
+	plottingdata( resz::Vector{MIToS.PDB.PDBResidue} )
+
+Collects data for plotting from a Vector of MIToS.PDB.PDBResidues.
+This function returns an OrderedDict of Observables that are the main data
+used for plotting, for ease of use and consistency. 
+
+    OrderedDict("atoms" => ..., 
+                "coords" => ..., 
+                "colors" => ...,
+                "sizes" => ...,
+                "bonds" => ...)
+
+### Keyword Arguments:
+- colors ------- elecolors | Options - elecolors, aquacolors, shapelycolors, maecolors
+- radiustype --- :covalent | Options - :cov, :covalent, :vdw, :vanderwaals, :bas, :ballandstick
+"""
 function plottingdata(resz::Vector{MIToS.PDB.PDBResidue};
                         colors = elecolors,
                         radiustype = :covalent)
@@ -298,6 +513,24 @@ function plottingdata(resz::Vector{MIToS.PDB.PDBResidue};
                         "sizes" => sizes,
                         "bonds" => bonds)
 end
+
+"""
+	plottingdata( atms::Vector{MIToS.PDB.PDBAtom} )
+
+Collects data for plotting from a Vector of MIToS.PDB.PDBAtoms.
+This function returns an OrderedDict of Observables that are the main data
+used for plotting, for ease of use and consistency. 
+
+    OrderedDict("atoms" => ..., 
+                "coords" => ..., 
+                "colors" => ...,
+                "sizes" => ...,
+                "bonds" => nothing)
+
+### Keyword Arguments:
+- colors ------- elecolors | Options - elecolors, aquacolors, shapelycolors, maecolors
+- radiustype --- :covalent | Options - :cov, :covalent, :vdw, :vanderwaals, :bas, :ballandstick
+"""
 function plottingdata(atms::Vector{MIToS.PDB.PDBAtom};
                         colors = elecolors,
                         radiustype = :covalent)
@@ -313,6 +546,24 @@ function plottingdata(atms::Vector{MIToS.PDB.PDBAtom};
                         "sizes" => sizes,
                         "bonds" => nothing)
 end
+
+"""
+	plottingdata( struc::Observable{T} ) where {T<:BioStructures.StructuralElementOrList}
+
+Collects data for plotting from a BioStructures.StructuralElementOrList.
+This function returns an OrderedDict of Observables that are the main data
+used for plotting, for ease of use and consistency. 
+
+    OrderedDict("atoms" => ..., 
+                "coords" => ..., 
+                "colors" => ...,
+                "sizes" => ...,
+                "bonds" => ...)
+
+### Keyword Arguments:
+- colors ------- elecolors | Options - elecolors, aquacolors, shapelycolors, maecolors
+- radiustype --- :covalent | Options - :cov, :covalent, :vdw, :vanderwaals, :bas, :ballandstick
+"""
 function plottingdata(struc::Observable{T};
                         colors = elecolors,
                         radiustype = :covalent) where {T<:BioStructures.StructuralElementOrList}
@@ -333,6 +584,24 @@ function plottingdata(struc::Observable{T};
                         "sizes" => sizes,
                         "bonds" => bonds)
 end
+
+"""
+	plottingdata( resz::Observable{T} ) where {T<:Vector{MIToS.PDB.PDBResidue}}
+
+Collects data for plotting from a Vector of MIToS.PDB.PDBResidues.
+This function returns an OrderedDict of Observables that are the main data
+used for plotting, for ease of use and consistency. 
+
+    OrderedDict("atoms" => ..., 
+                "coords" => ..., 
+                "colors" => ...,
+                "sizes" => ...,
+                "bonds" => ...)
+
+### Keyword Arguments:
+- colors ------- elecolors | Options - elecolors, aquacolors, shapelycolors, maecolors
+- radiustype --- :covalent | Options - :cov, :covalent, :vdw, :vanderwaals, :bas, :ballandstick
+"""
 function plottingdata(resz::Observable{T};
                         colors = elecolors,
                         radiustype = :covalent) where {T<:Vector{MIToS.PDB.PDBResidue}}
@@ -353,6 +622,24 @@ function plottingdata(resz::Observable{T};
                         "sizes" => sizes,
                         "bonds" => bonds)
 end
+
+"""
+	plottingdata( atms::Observable{T} ) where {T<:Vector{MIToS.PDB.PDBAtom}}
+
+Collects data for plotting from a Vector of MIToS.PDB.PDBAtoms.
+This function returns an OrderedDict of Observables that are the main data
+used for plotting, for ease of use and consistency. 
+
+    OrderedDict("atoms" => ..., 
+                "coords" => ..., 
+                "colors" => ...,
+                "sizes" => ...,
+                "bonds" => nothing)
+
+### Keyword Arguments:
+- colors ------- elecolors | Options - elecolors, aquacolors, shapelycolors, maecolors
+- radiustype --- :covalent | Options - :cov, :covalent, :vdw, :vanderwaals, :bas, :ballandstick
+"""
 function plottingdata(atms::Observable{T};
                         colors = elecolors,
                         radiustype = :covalent) where {T<:Vector{MIToS.PDB.PDBAtom}}
@@ -425,7 +712,7 @@ function plotstruc!(fig::Figure, struc::Observable;
                     kwargs...
                     )
 	#
-    plotdata = @lift plottingdata($struc; colors = $atomcolors, radiustype = $plottype)
+    plotdata = @lift plottingdata($struc; colors = atomcolors, radiustype = plottype)
     pxwidths = fig.scene.px_area[].widths
     needresize = false
     # the figure needs to be resized if there's a preexisting MSA plot (with default resolution)
@@ -436,12 +723,12 @@ function plotstruc!(fig::Figure, struc::Observable;
         inspectorlabel = @lift inspectorlabel($struc)        
     end
     if plottype == :spacefilling || plottype == :vanderwaals || plottype == :vdw
-        markersize = @lift plotdata["sizes"] .* markerscale
+        markersize = @lift $(plotdata["sizes"]) .* markerscale
         lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, plotdata["coords"]; color = plotdata["colors"], markersize = markersize, inspector_label = inspectorlabel, kwargs...)
     elseif plottype == :ballandstick || plottype == :bas
         if markersize == 0.0
-            markersize = @lift plotdata["sizes"] .* markerscale .* 0.7
+            markersize = @lift $(plotdata["sizes"]) .* markerscale .* 0.7
         end
         lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, plotdata["coords"]; color = plotdata["colors"], markersize = markersize, inspector_label = inspectorlabel, kwargs...)
@@ -450,7 +737,7 @@ function plotstruc!(fig::Figure, struc::Observable;
         bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
         bmesh.inspectable[] = false
     elseif plottype == :covalent || plottype == :cov
-        markersize = @lift plotdata["sizes"] .* markerscale
+        markersize = @lift $(plotdata["sizes"]) .* markerscale
         if markerscale < 1.0
             bndshapes = @lift bondshapes($struc; algo = bondtype, distance = distance)
             bndmeshes = @lift normal_mesh.($bndshapes)
