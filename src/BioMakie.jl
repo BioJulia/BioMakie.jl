@@ -30,7 +30,7 @@ using BioStructures, MolecularGraph
 using MIToS, MIToS.Information, MIToS.MSA, MIToS.Pfam, MIToS.SIFTS, MIToS.Utils
 using SplitApplyCombine, TensorCast
 using DataStructures, DelimitedFiles, HTTP
-using Distances, Distributions, GeometryBasics
+using Distances, GeometryBasics
 using Colors, ColorSchemes, ColorTypes, ImageCore
 using FileIO, FastaIO, FASTX, OrderedCollections
 using Makie

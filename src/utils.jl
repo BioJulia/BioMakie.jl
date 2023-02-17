@@ -260,31 +260,6 @@ function protsmiles(aas::T) where {T}
 
     return sm
 end
-function download_file(url::AbstractString, filename::AbstractString;
-                        headers::Dict{String,String}=Dict{String,String}(),
-                        kwargs...)
-    HTTP.open("GET", url, headers; kwargs...) do stream
-        open(filename, "w") do fh
-            write(fh, stream)
-        end
-    end
-    return filename
-end
-function download_file(url::AbstractString;
-                        headers::Dict{String,String}=Dict{String,String}(),
-                        kwargs...)
-    download_file(url, tempname(); headers=headers, kwargs...)
-end
-function downloadpfam(pfamcode::String; filename::String="$pfamcode.stockholm.gz", kwargs...)
-    @assert endswith(filename,".gz") "filename must end with the .gz extension"
-    if occursin(r"^PF\d{5}$"i, pfamcode)
-        number = pfamcode[3:end]
-        download_file("http://pfam.xfam.org/family/PF$(number)/alignment/full/gzipped",
-        filename; kwargs...)
-    else
-        throw(ErrorException("$pfamcode is not a correct Pfam code"))
-    end
-end
 function internaldistances(atms::AbstractVector{AbstractAtom})
     internaldists = zeros(Float64, (size(atms,1),size(atms,1)))
     for (i,x) in enumerate(atms)
