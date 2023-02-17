@@ -697,7 +697,6 @@ strucplot = plotstruc!(fig, chain_A)
 - distance ------- 1.9  # distance cutoff for covalent bonds
 - inspectorlabel - :default, or define your own function like: (self, i, p) -> "atom: ... coords: ..."
 - kwargs... ------ keyword arguments passed to the atom `meshscatter`
-
 """
 function plotstruc!(fig::Figure, struc::Observable;
                     resolution = (800,600),
@@ -757,14 +756,59 @@ function plotstruc!(fig::Figure, struc::Observable;
     DataInspector(lscene)
     fig
 end
+
+"""
+    plotstruc!( fig, structure )
+
+Plot a protein structure(/chain/residues/atoms) into a Figure. 
+
+# Examples
+```julia
+fig = Figure()
+
+using MIToS.PDB
+pdbfile = MIToS.PDB.downloadpdb("2HHB")
+struc = MIToS.PDB.read(pdbfile, PDBML) |> Observable
+strucplot = plotstruc!(fig, struc)
+
+chain_A = pdb = @residues struc model "1" chain "A" group "ATOM" residue All
+strucplot = plotstruc!(fig, chain_A)
+
+chnatms = @atoms res_2hhb model "1" chain "A" group "ATOM" residue All atom All
+strucplot = plotstruc!(fig, chnatms)
+
+using BioStructures
+struc = retrievepdb("2vb1", dir = "data/") |> Observable
+strucplot = plotstruc!(fig, struc)
+
+struc = read("data/2vb1_mutant1.pdb", BioStructures.PDB) |> Observable
+strucplot = plotstruc!(fig, struc)
+
+chain_A = retrievepdb("2hhb", dir = "data/")["A"] |> Observable
+strucplot = plotstruc!(fig, chain_A)
+```
+
+### Keyword Arguments:
+- resolution ----- (800,600)
+- gridposition --- (1,1)  # if an MSA is already plotted, (2,1:3) works well
+- plottype ------- :covalent, :ballandstick, or :spacefilling
+- atomcolors ----- elecolors, others in `getbiocolors`, or provide a dict for atoms/residues like: "N" => :blue
+- markersize ----- 0.0
+- markerscale ---- 1.0
+- bondtype ------- :knowledgebased, :covalent, or :distance
+- distance ------- 1.9  # distance cutoff for covalent bonds
+- inspectorlabel - :default, or define your own function like: (self, i, p) -> "atom: ... coords: ..."
+- kwargs... ------ keyword arguments passed to the atom `meshscatter`
+"""
 function plotstruc!(fig, struc; kwargs...)
     if !(typeof(struc)<:Observable)
         struc = Observable(struc)
     end
     plotstruc!(fig, struc; kwargs...)
 end
+
 """
-    plotstruc(structure)
+    plotstruc( struc::BioStructures.StructuralElementOrList )
 
 Create and return a Makie Figure for a protein structural element. 
 
@@ -790,21 +834,39 @@ sv = plotstruc(struc)
 - inspectorlabel - :default, or define your own function like: (self, i, p) -> "atom: ... coords: ..."
 - kwargs... ------ keyword arguments passed to the atom `meshscatter`
 """
-function plotstruc(struc::Observable;
-                    resolution = (800,600),
-                    gridposition = (1,1),
-                    plottype = :covalent,
-                    atomcolors = elecolors,
-                    markersize = 0.0,
-                    markerscale = 1.0,
-                    bondtype = :knowledgebased,
-                    distance = 1.9,
-                    inspectorlabel = :default,
-                    kwargs...
-                    )
+function plotstruc(struc::BioStructures.StructuralElementOrList; kwargs...)
 	fig = Figure()
-    if !(typeof(struc)<:Observable)
-        struc = Observable(struc)
-    end
+    plotstruc!(fig, Observable(struc); kwargs...)
+end
+
+"""
+    plotstruc( struc::Observable )
+
+Create and return a Makie Figure for a protein structural element. 
+
+# Examples
+```julia
+using BioStructures
+struc = retrievepdb("2vb1", dir = "data/") |> Observable
+sv = plotstruc(struc)
+
+struc = read("data/2vb1_mutant1.pdb", BioStructures.PDB) |> Observable
+sv = plotstruc(struc)
+```
+
+### Optional Arguments:
+- resolution ----- (800,600)
+- gridposition --- (1,1)  # if an MSA is already plotted, (2,1:3) works well
+- plottype ------- :covalent, :ballandstick, or :spacefilling
+- atomcolors ----- elecolors, others in `getbiocolors`, or provide a dict for atoms/residues like: "N" => :blue
+- markersize ----- 0.0
+- markerscale ---- 1.0
+- bondtype ------- :knowledgebased, :covalent, or :distance
+- distance ------- 1.9  # distance cutoff for covalent bonds
+- inspectorlabel - :default, or define your own function like: (self, i, p) -> "atom: ... coords: ..."
+- kwargs... ------ keyword arguments passed to the atom `meshscatter`
+"""
+function plotstruc(struc::Observable; kwargs...)
+	fig = Figure()
     plotstruc!(fig, struc; kwargs...)
 end

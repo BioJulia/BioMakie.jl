@@ -1,43 +1,54 @@
-export getplottingdata,
+export plottingdata,
        msavalues,
        plotmsa!,
        plotmsa
 
 """
-	getplottingdata( msa )::Tuple{Matrix{String}, Vector{String}, Vector{String}}
+	plottingdata( msa::AbstractMultipleSequenceAlignment )
 
 Collects data for plotting (residue string matrix, x labels, and y labels).
 
-This function converts an AbstractMultipleSequenceAlignment (from MIToS.MSA), or 
-a Vector{Tuple{String,String}} (from FastaIO), or a Vector{FASTX.FASTA.Record} 
+This function converts an AbstractMultipleSequenceAlignment (from MIToS.MSA) 
 to a matrix of residue characters, x labels, and y labels.
 """
-function getplottingdata(msa)
-	# For MIToS MSAs
-	if msa isa MSA.AbstractMultipleSequenceAlignment
-        ylabels = keys(msa.matrix.dicts[1]) |> collect
-	    xlabels = keys(msa.matrix.dicts[2]) |> collect
-        msamatrix = Matrix(msa) .|> string
+function plottingdata(msa::MSA.AbstractMultipleSequenceAlignment)
+	ylabels = keys(msa.matrix.dicts[1]) |> collect
+	xlabels = keys(msa.matrix.dicts[2]) |> collect
+	msamatrix = Matrix(msa) .|> string
+	return msamatrix, xlabels, ylabels
+end
 
-	# For fasta files loaded with FastaIO
-    elseif msa isa Vector{Tuple{String,String}}
-        ylabels = [msa[i][1] for i in 1:size(msa,1)]
-	    xlabels = [1:length(msa[1][2])...] |> collect .|> string
-        msamatrix = [[msa[i][2]...] for i in 1:size(msa,1)] |> combinedims .|> string
-		@cast msamatrix[i,j] := msamatrix[j,i]
-		msamatrix = msamatrix[:,:]
+"""
+	plottingdata( msa::Vector{Tuple{String,String}} )
 
-	# For fasta files loaded with FASTX
-	elseif msa isa Vector{FASTX.FASTA.Record}
-		ylabels = [identifier(msa[i]) for i in 1:size(msa,1)]
-		xlabels = [1:length(msa)...] |> collect .|> string
-		msamatrix = [[sequence(msa[i])...] for i in 1:size(msa,1)] |> combinedims .|> string
-		@cast msamatrix[i,j] := msamatrix[j,i]
-		msamatrix = msamatrix[:,:]
-    else
-        error("sorry methods for that input don't exist yet")
-    end
+Collects data for plotting (residue string matrix, x labels, and y labels).
 
+This function converts a Vector{Tuple{String,String}} (from FastaIO)
+to a matrix of residue characters, x labels, and y labels.
+"""
+function plottingdata(msa::Vector{Tuple{String,String}})
+	ylabels = [msa[i][1] for i in 1:size(msa,1)]
+	xlabels = [1:length(msa[1][2])...] |> collect .|> string
+	msamatrix = [[msa[i][2]...] for i in 1:size(msa,1)] |> combinedims .|> string
+	@cast msamatrix[i,j] := msamatrix[j,i]
+	msamatrix = msamatrix[:,:]
+	return msamatrix, xlabels, ylabels
+end
+
+"""
+	plottingdata( msa::Vector{FASTX.FASTA.Record} )
+
+Collects data for plotting (residue string matrix, x labels, and y labels).
+
+This function converts a Vector{FASTX.FASTA.Record} 
+to a matrix of residue characters, x labels, and y labels.
+"""
+function plottingdata(msa::Vector{FASTX.FASTA.Record})
+	ylabels = [identifier(msa[i]) for i in 1:size(msa,1)]
+	xlabels = [1:length(msa)...] |> collect .|> string
+	msamatrix = [[sequence(msa[i])...] for i in 1:size(msa,1)] |> combinedims .|> string
+	@cast msamatrix[i,j] := msamatrix[j,i]
+	msamatrix = msamatrix[:,:]
 	return msamatrix, xlabels, ylabels
 end
 
@@ -64,7 +75,7 @@ function msavalues(msamatrix::AbstractMatrix, resdict = kideradict; kf = 2)
 end
 
 """
-    plotmsa!( fig, msa, msavalues )
+    plotmsa!( fig, msa, msavalues, xlabels, ylabels )
 
 Plot a multiple sequence alignment (MSA) into a Figure. 
 
@@ -181,6 +192,32 @@ function plotmsa!( fig::Figure, msamatrix::Observable, matrixvals::Observable,
 	display(fig)
 	fig
 end
+
+"""
+    plotmsa!( fig, msamatrix, matrixvals, xlabels, ylabels )
+
+Plot a multiple sequence alignment (MSA) into a Figure. 
+
+# Example
+```julia
+fig = Figure(resolution = (1100, 400))
+
+plotmsa!( fig::Figure, msamatrix::Matrix{String}, matrixvals::Matrix{Float32},
+			xlabels::Vector{String}, 	
+			ylabels::Vector{String};
+			kwargs... )
+```
+
+### Optional Arguments:
+- xlabels ------- {1:height}
+- ylabels ------- {1:width}
+- sheetsize ----- [40,20]
+- gridposition -- (1,1)
+- markersize ---- 12
+- colorscheme --- :buda
+- markercolor --- :black
+- kwargs...   					# forwarded to scatter plot
+"""
 function plotmsa!(fig, msamatrix, matrixvals, xlabels, ylabels; resolution = (1100, 400), kwargs...)
 	if !(typeof(msamatrix) <:Observable)
 		msamatrix = Observable(msamatrix)
@@ -197,6 +234,30 @@ function plotmsa!(fig, msamatrix, matrixvals, xlabels, ylabels; resolution = (11
 
 	plotmsa!(fig, msamatrix, matrixvals, xlabels, ylabels; kwargs...)
 end
+
+"""
+    plotmsa!( msamatrix, matrixvals, xlabels, ylabels )
+
+Plot a multiple sequence alignment (MSA) into a Figure. 
+
+# Example
+```julia
+plotmsa!( msamatrix::Matrix{String}, matrixvals::Matrix{Float32},
+			xlabels::Vector{String}, 	
+			ylabels::Vector{String};
+			kwargs... )
+```
+
+### Optional Arguments:
+- xlabels ------- {1:height}
+- ylabels ------- {1:width}
+- sheetsize ----- [40,20]
+- gridposition -- (1,1)
+- markersize ---- 12
+- colorscheme --- :buda
+- markercolor --- :black
+- kwargs...   					# forwarded to scatter plot
+"""
 function plotmsa!(msamatrix, matrixvals, xlabels, ylabels; resolution = (1100, 400), kwargs...)
 	fig = Figure(resolution = resolution)
 
@@ -242,11 +303,11 @@ plotmsa( msa; kwargs... )
 """
 function plotmsa(msa; kwargs...)
 	if typeof(msa) <:Observable
-		msamatrix, xlabels, ylabels = getplottingdata(msa) .|> Observable
+		msamatrix, xlabels, ylabels = plottingdata(msa) .|> Observable
 		matrixvals = @lift msavalues($msamatrix, resdict; kf = kf)
 	else
 		msa = Observable(msa)
-		msamatrix, xlabels, ylabels = getplottingdata(msa) .|> Observable
+		msamatrix, xlabels, ylabels = plottingdata(msa) .|> Observable
 		matrixvals = @lift msavalues($msamatrix, resdict; kf = kf)
 	end
 	plotmsa(msamatrix, matrixvals, xlabels, ylabels; kwargs...)
@@ -264,7 +325,7 @@ using MIToS.MSA
 downloadpfam("PF00062")
 msa = MIToS.MSA.read("PF00062.stockholm.gz", Stockholm, 
 					generatemapping =true, useidcoordinates=true)
-msamatrix, xlabels, ylabels = getplottingdata(msa) .|> Observable			
+msamatrix, xlabels, ylabels = plottingdata(msa) .|> Observable			
 matrixvals = msavalues(msamatrix[]) |> Observable
 
 plotmsa( msa, matrixvals; kwargs... )
@@ -278,7 +339,7 @@ plotmsa( msa, matrixvals; kwargs... )
 - kwargs...    						# forwarded to scatter plot
 """
 function plotmsa(msa, matrixvals; kwargs...)
-	msamatrix, xlabels, ylabels = getplottingdata(msa) .|> Observable
+	msamatrix, xlabels, ylabels = plottingdata(msa) .|> Observable
 	plotmsa(msamatrix, matrixvals, xlabels, ylabels; kwargs...)
 end
 
