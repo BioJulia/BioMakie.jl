@@ -4,52 +4,46 @@ export plottingdata,
        plotmsa
 
 """
-	plottingdata( msa::AbstractMultipleSequenceAlignment )
+	plottingdata( msa )
 
-Collects data for plotting (residue string matrix, x labels, and y labels).
+Collects data for plotting (residue string matrix, x labels, and y labels) from
+a multiple sequence alignment (MSA) object. 
 
-This function converts an AbstractMultipleSequenceAlignment (from MIToS.MSA) 
-to a matrix of residue characters, x labels, and y labels.
+The MSA object can be a: 
+- `AbstractMultipleSequenceAlignment` from MIToS.MSA, 
+- vector of tuples 'Vector{Tuple{String,String}}' from FastaIO, 
+- vector of FASTA records 'Vector{FASTX.FASTA.Record}' from FASTX.
 """
 function plottingdata(msa::MSA.AbstractMultipleSequenceAlignment)
 	ylabels = keys(msa.matrix.dicts[1]) |> collect
 	xlabels = keys(msa.matrix.dicts[2]) |> collect
 	msamatrix = Matrix(msa) .|> string
-	return msamatrix, xlabels, ylabels
+
+    return OrderedDict("matrix" => msamatrix, 
+                        "xlabels" => xlabels, 
+                        "ylabels" => ylabels)
 end
-
-"""
-	plottingdata( msa::Vector{Tuple{String,String}} )
-
-Collects data for plotting (residue string matrix, x labels, and y labels).
-
-This function converts a Vector{Tuple{String,String}} (from FastaIO)
-to a matrix of residue characters, x labels, and y labels.
-"""
 function plottingdata(msa::Vector{Tuple{String,String}})
 	ylabels = [msa[i][1] for i in 1:size(msa,1)]
 	xlabels = [1:length(msa[1][2])...] |> collect .|> string
 	msamatrix = [[msa[i][2]...] for i in 1:size(msa,1)] |> combinedims .|> string
 	@cast msamatrix[i,j] := msamatrix[j,i]
 	msamatrix = msamatrix[:,:]
-	return msamatrix, xlabels, ylabels
+
+    return OrderedDict("matrix" => msamatrix, 
+                        "xlabels" => xlabels, 
+                        "ylabels" => ylabels)
 end
-
-"""
-	plottingdata( msa::Vector{FASTX.FASTA.Record} )
-
-Collects data for plotting (residue string matrix, x labels, and y labels).
-
-This function converts a Vector{FASTX.FASTA.Record} 
-to a matrix of residue characters, x labels, and y labels.
-"""
 function plottingdata(msa::Vector{FASTX.FASTA.Record})
 	ylabels = [identifier(msa[i]) for i in 1:size(msa,1)]
 	xlabels = [1:length(msa)...] |> collect .|> string
 	msamatrix = [[sequence(msa[i])...] for i in 1:size(msa,1)] |> combinedims .|> string
 	@cast msamatrix[i,j] := msamatrix[j,i]
 	msamatrix = msamatrix[:,:]
-	return msamatrix, xlabels, ylabels
+
+    return OrderedDict("matrix" => msamatrix, 
+                        "xlabels" => xlabels, 
+                        "ylabels" => ylabels)
 end
 
 """
@@ -89,7 +83,7 @@ plotmsa!( fig::Figure, msamatrix::Matrix{String}, matrixvals::Matrix{Float32},
 			kwargs... )
 ```
 
-### Optional Arguments:
+### Keyword Arguments:
 - xlabels ------- {1:height}
 - ylabels ------- {1:width}
 - sheetsize ----- [40,20]
@@ -208,7 +202,7 @@ plotmsa!( fig::Figure, msamatrix::Matrix{String}, matrixvals::Matrix{Float32},
 			kwargs... )
 ```
 
-### Optional Arguments:
+### Keyword Arguments:
 - xlabels ------- {1:height}
 - ylabels ------- {1:width}
 - sheetsize ----- [40,20]
@@ -248,7 +242,7 @@ plotmsa!( msamatrix::Matrix{String}, matrixvals::Matrix{Float32},
 			kwargs... )
 ```
 
-### Optional Arguments:
+### Keyword Arguments:
 - xlabels ------- {1:height}
 - ylabels ------- {1:width}
 - sheetsize ----- [40,20]
@@ -292,7 +286,7 @@ msa = MIToS.MSA.read("PF00062.stockholm.gz", Stockholm,
 plotmsa( msa; kwargs... )
 ```
 
-### Optional Arguments:
+### Keyword Arguments:
 - resolution -------- (1100, 400)
 - sheetsize --------- [40,20]
 - gridposition ------ (1,1)
@@ -331,7 +325,7 @@ matrixvals = msavalues(msamatrix[]) |> Observable
 plotmsa( msa, matrixvals; kwargs... )
 ```
 
-### Optional Arguments:
+### Keyword Arguments:
 - resolution -------- (1100, 400)
 - sheetsize --------- [40,20]
 - gridposition ------ (1,1)

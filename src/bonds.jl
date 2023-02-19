@@ -7,11 +7,13 @@ export distancebonds,
 	   bondshapes
 
 """
-	distancebonds( atms::Vector{T} )
+	distancebonds( atms ) -> BitMatrix
 
-Returns a matrix of all bonds in `atms`. 
+Returns a matrix of all bonds in `atms`, where Mat[i,j] = 1 if atoms i and j are bonded. 
 
-### Optional Arguments:
+This function uses 'bestoccupancy' or 'defaultatom' to ensure only one position per atom.
+
+### Keyword Arguments:
 - cutoff ----------- 1.9   # distance cutoff for bonds between heavy atoms
 - hydrogencutoff --- 1.14  # distance cutoff for bonds with hydrogen atoms
 - H ---------------- true  # include bonds with hydrogen atoms
@@ -150,11 +152,13 @@ function distancebonds(resz::Vector{T};
 end
 
 """
-	covalentbonds( atms::Vector{T} )
+	covalentbonds( atms ) -> BitMatrix
 
-Returns a matrix of all bonds in `atms`. 
+Returns a matrix of all bonds in `atms`, where Mat[i,j] = 1 if atoms i and j are bonded. 
 
-### Optional Arguments:
+This function uses 'bestoccupancy' or 'defaultatom' to ensure only one position per atom.
+
+### Keyword Arguments:
 - extradistance ---- 0.14  # fudge factor for better inclusion
 - H ---------------- true  # include bonds with hydrogen atoms
 - disulfides ------- false # include disulfide bonds
@@ -284,11 +288,13 @@ function covalentbonds(resz::Vector{T};
 end
 
 """
-	sidechainbonds( res::BioStructures.AbstractResidue, selectors... )
+	sidechainbonds( res::BioStructures.AbstractResidue, selectors... ) -> BitMatrix
 
-Returns a matrix of sidechain bonds in `res`. 
+Returns a matrix of sidechain bonds in `res`, where Mat[i,j] = 1 if atoms i and j are bonded.
 
-### Optional Arguments:
+This function uses 'bestoccupancy' or 'defaultatom' to ensure only one position per atom.
+
+### Keyword Arguments:
 - algo ------------- :knowledgebased 	# (:distance, :covalent) algorithm to find bonds
 - H ---------------- true				# include bonds with hydrogen atoms
 - cutoff ----------- 1.9				# distance cutoff for bonds between heavy atoms
@@ -364,11 +370,11 @@ function sidechainbonds(res::BioStructures.AbstractResidue, selectors...;
 end
 
 """
-	backbonebonds( chn::BioStructures.Chain )
+	backbonebonds( chn::BioStructures.Chain ) -> BitMatrix
 
-Returns a matrix of backbone bonds in `chn`. 
+Returns a matrix of backbone bonds in `chn`, where Mat[i,j] = 1 if atoms i and j are bonded. 
 
-### Optional Arguments:
+### Keyword Arguments:
 - cutoff ----------- 1.6		# distance cutoff for bonds
 """
 function backbonebonds(chn::BioStructures.Chain; cutoff = 1.6)
@@ -392,11 +398,13 @@ function backbonebonds(chn::BioStructures.Chain; cutoff = 1.6)
 end
 
 """
-	getbonds( chn::BioStructures.Chain )
+	getbonds( chn::BioStructures.Chain, selectors... ) -> BitMatrix
 
-Returns a matrix of all bonds in `atms`. 
+Returns a matrix of all bonds in `chn`, where Mat[i,j] = 1 if atoms i and j are bonded. 
 
-### Optional Arguments:
+This function uses 'bestoccupancy' or 'defaultatom' to ensure only one position per atom.
+
+### Keyword Arguments:
 - algo ------------- :knowledgebased 	# (:distance, :covalent) algorithm to find bonds
 - H ---------------- true				# include bonds with hydrogen atoms
 - cutoff ----------- 1.9				# distance cutoff for bonds between heavy atoms
@@ -462,6 +470,17 @@ function getbonds(chn::BioStructures.Chain, selectors...;
 					end
 				end
 			end
+			### disulfide bonds ###
+			if disulfides == true
+				for k in 1:numatoms
+					if i != k && strip(atms[i].element) == "S" && strip(atms[k].element) == "S"
+						if euclidean(coords(atms[i]), coords(atms[k])) < 2.1
+							bondmatrix[i,k] = 1
+							bondmatrix[k,i] = 1
+						end
+					end
+				end
+			end
 		end
 		return bondmatrix
 	elseif algo == :distance
@@ -476,11 +495,11 @@ function getbonds(chn::BioStructures.Chain, selectors...;
 end
 
 """
-	getbonds( resz::Vector{MIToS.PDB.PDBResidue} )
+	getbonds( residues ) -> BitMatrix
 
-Returns a matrix of all bonds in `resz`. 
+Returns a matrix of all bonds in `residues`, where Mat[i,j] = 1 if atoms i and j are bonded.
 
-### Optional Arguments:
+### Keyword Arguments:
 - algo ------------- :knowledgebased 	# (:distance, :covalent) algorithm to find bonds
 - H ---------------- true				# include bonds with hydrogen atoms
 - cutoff ----------- 1.9				# distance cutoff for bonds between heavy atoms
@@ -546,6 +565,17 @@ function getbonds(resz::Vector{MIToS.PDB.PDBResidue};
 					end
 				end
 			end
+			### disulfide bonds ###
+			if disulfides == true
+				for k in 1:numatoms
+					if i != k && strip(atms[i].element) == "S" && strip(atms[k].element) == "S"
+						if euclidean(coords(atms[i]), coords(atms[k])) < 2.1
+							bondmatrix[i,k] = 1
+							bondmatrix[k,i] = 1
+						end
+					end
+				end
+			end
 		end
 		return bondmatrix
 	elseif algo == :distance
@@ -558,25 +588,111 @@ function getbonds(resz::Vector{MIToS.PDB.PDBResidue};
 
 	return nothing
 end
-"""
-	getbonds( resz::Vector{BioStructures.AbstractResidue} )
+function getbonds(resz::Vector{T}; 
+				algo = :knowledgebased, 
+				H = true,
+				cutoff = 1.9,
+				extradistance = 0.14,
+				disulfides = false) where {T<:BioStructures.AbstractResidue}
+	
+	atms = collectatoms(resz) .|> defaultatom
+	numatoms = size(atms, 1)
+	bondmatrix = zeros(numatoms, numatoms) |> BitMatrix
 
-Returns a matrix of all intra-residue bonds in `resz`. 
-Utilizes `sidechainbonds` to get bonds within each residue.
+	if algo == :knowledgebased
+		for i in 1:numatoms
+			resatoms = collectatoms(atms[i].residue) .|> defaultatom
+			numresatoms = size(resatoms,1)
+			resatmkeys = [resatoms[i].name for i in 1:numresatoms]
+			nextresatms = (i+numresatoms)
+			if (i+numresatoms) > numatoms
+				nextresatms = numatoms
+			end
+			for j in (i+1):nextresatms
+				### backbone atoms ###
+				firstatomname = atms[i].name |> strip
+				secondatomname = atms[j].name |> strip
+				if firstatomname in ["N","CA","C","O"] && secondatomname in ["N","CA","C","O"]
+					if euclidean(coords(atms[i]), coords(atms[j])) < cutoff
+						bondmatrix[i,j] = 1
+						bondmatrix[j,i] = 1
+					end
+				end
+				if bondmatrix[i,j] == 1
+					continue
+				end
+				### residue atoms ###
+				if atms[i].residue == atms[j].residue
+					atmres = atms[i].residue
+					heavybondresz = heavyresbonds[atmres.name] |> combinedims
+					heavylength = size(heavybondresz,2)
+					for k in 1:heavylength
+						if firstatomname == heavybondresz[1,k] && secondatomname == heavybondresz[2,k] ||
+								firstatomname == heavybondresz[2,k] && secondatomname == heavybondresz[1,k]
+							bondmatrix[i,j] = 1
+							bondmatrix[j,i] = 1
+							break
+						end
+					end
+					### hydrogen atoms ###
+					if H == true
+						hbondresz = hresbonds[atmres.name] |> combinedims
+						hlength = size(hbondresz,2)
+						for k in 1:hlength
+							if firstatomname == hbondresz[1,k] && secondatomname == hbondresz[2,k]
+								bondmatrix[i,j] = 1
+								bondmatrix[j,i] = 1
+								break
+							end
+						end
+					end
+				end
+			end
+			### disulfide bonds ###
+			if disulfides == true
+				for k in 1:numatoms
+					if i != k && strip(atms[i].element) == "S" && strip(atms[k].element) == "S"
+						if euclidean(coords(atms[i]), coords(atms[k])) < 2.1
+							bondmatrix[i,k] = 1
+							bondmatrix[k,i] = 1
+						end
+					end
+				end
+			end
+		end
+		return bondmatrix
+	elseif algo == :distance
+		return distancebonds(atms; cutoff = cutoff, H = H, disulfides = disulfides)
+	elseif algo == :covalent
+		return covalentbonds(atms; extradistance = extradistance, H = H, disulfides = disulfides)
+	else # just do the same as :covalent for now
+		return covalentbonds(atms; extradistance = extradistance, H = H, disulfides = disulfides)
+	end
 
-### Optional Arguments:
-- kwargs...			# passed to `sidechainbonds`
-"""
-function getbonds(resz::Vector{T}; kwargs...) where {T<:BioStructures.AbstractResidue}
-	return sidechainbonds.(resz; kwargs...)
+	return nothing
 end
-# Default bond shape is a cylinder mesh. TODO: maybe add double and triple bond shapes.
+
+"""
+	bondshape( twoatoms )
+	bondshape( twopoints )
+
+Returns a (mesh) cylinder between two atoms or atomic coordinates.
+
+### Keyword Arguments:
+- bondwidth ------------- 0.2
+"""
 function bondshape(twoatoms::Tuple{T}; bondwidth = 0.2) where {T<:BioStructures.AbstractAtom}
     @assert length(twoatoms) == 2
 	atm1 = defaultatom(twoatoms[1])
 	atm2 = defaultatom(twoatoms[2])
 	pnt1 = GeometryBasics.Point3f0(atm1.coords)
     pnt2 = GeometryBasics.Point3f0(atm2.coords)
+    return GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth))
+end
+function bondshape(twopnts::Vector{T}; bondwidth = 0.2) where {T<:AbstractPoint}
+    @assert length(twopnts) == 2
+	pnt1 = GeometryBasics.Point3f0(twopnts[1])
+    pnt2 = GeometryBasics.Point3f0(twopnts[2])
     return GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth))
 end
 function bondshape(twopnts::AbstractMatrix{T}; bondwidth = 0.2) where {T<:AbstractFloat}
@@ -591,10 +707,24 @@ function bondshape(twopnts::AbstractMatrix{T}; bondwidth = 0.2) where {T<:Abstra
 	end
     return GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth))
 end
-function bondshapes(chn::BioStructures.Chain, selectors...; algo = :knowledgebased, distance = 1.9, bondwidth = 0.2)
+
+"""
+	bondshapes( structure )
+	bondshapes( residues )
+	bondshapes( structure, bondmatrix )
+	bondshapes( residues, bondmatrix )
+
+Returns a (mesh) cylinder between two atoms or points.
+
+### Keyword Arguments:
+- algo ------------------ :knowledgebased | :distance, :covalent	# unless bondmatrix is given
+- distance -------------- 1.9										# unless bondmatrix is given
+- bondwidth ------------- 0.2
+"""
+function bondshapes(chn::BioStructures.Chain; algo = :knowledgebased, distance = 1.9, bondwidth = 0.2)
     bshapes = Cylinder3{Float32}[]
-	bnds = getbonds(chn, selectors...; algo = algo, cutoff = distance)
-	atms = collectatoms(chn, selectors...)
+	bnds = getbonds(chn; algo = algo, cutoff = distance)
+	atms = collectatoms(chn)
 
 	for i in 1:size(bnds,1)
 		for j in (i+1):size(bnds,1)
@@ -610,11 +740,11 @@ function bondshapes(chn::BioStructures.Chain, selectors...; algo = :knowledgebas
 
     return bshapes
 end
-function bondshapes(struc::BioStructures.ProteinStructure, selectors...; algo = :knowledgebased, distance = 1.9, bondwidth = 0.2)
+function bondshapes(struc::BioStructures.ProteinStructure; algo = :knowledgebased, distance = 1.9, bondwidth = 0.2)
 	bshapes = Cylinder3{Float32}[]
 	chns = collectchains(struc)
-	bnds = getbonds.(chns, selectors...; algo = algo, cutoff = distance)
-	atms = collectatoms.(chns, selectors...)
+	bnds = getbonds.(chns; algo = algo, cutoff = distance)
+	atms = collectatoms.(chns)
 
 	for k in 1:size(bnds,1)
 		for i in 1:size(bnds[k],1)
@@ -632,9 +762,103 @@ function bondshapes(struc::BioStructures.ProteinStructure, selectors...; algo = 
 	
     return bshapes
 end
-function bondshapes(resz::Vector{MIToS.PDB.PDBResidue}; algo = :covalent, distance = 1.9, bondwidth = 0.2)
+function bondshapes(resz::Vector{T}; algo = :knowledgebased, distance = 1.9, bondwidth = 0.2) where {T<:BioStructures.AbstractResidue}
+	bshapes = Cylinder3{Float32}[]
+	bnds = getbonds(resz; algo = algo, cutoff = distance)
+	atms = collectatoms(resz)
+
+	for i in 1:size(bnds,1)
+		for j in (i+1):size(bnds,1)
+			if bnds[i,j] == 1
+				atm1 = defaultatom(atms[i])
+				atm2 = defaultatom(atms[j])
+				pnt1 = GeometryBasics.Point3f0(atm1.coords)
+				pnt2 = GeometryBasics.Point3f0(atm2.coords)
+				push!(bshapes, GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth)))
+			end
+		end
+	end
+
+    return bshapes
+end
+function bondshapes(resz::Vector{T}; algo = :covalent, distance = 1.9, bondwidth = 0.2) where {T<:MIToS.PDB.PDBResidue}
     bshapes = Cylinder3{Float32}[]
 	bnds = getbonds(resz; algo = algo, cutoff = distance)
+	atms = [bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
+
+	for i in 1:size(bnds,1)
+		for j in (i+1):size(bnds,1)
+			if bnds[i,j] == 1
+				atm1 = atms[i]
+				atm2 = atms[j]
+				pnt1 = GeometryBasics.Point3f0(atm1.coordinates)
+				pnt2 = GeometryBasics.Point3f0(atm2.coordinates)
+				push!(bshapes, GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth)))
+			end
+		end
+	end
+
+    return bshapes
+end
+function bondshapes(chn::BioStructures.Chain, bnds; bondwidth = 0.2)
+    bshapes = Cylinder3{Float32}[]
+	atms = collectatoms(chn)
+
+	for i in 1:size(bnds,1)
+		for j in (i+1):size(bnds,1)
+			if bnds[i,j] == 1
+				atm1 = defaultatom(atms[i])
+				atm2 = defaultatom(atms[j])
+				pnt1 = GeometryBasics.Point3f0(atm1.coords)
+				pnt2 = GeometryBasics.Point3f0(atm2.coords)
+				push!(bshapes, GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth)))
+			end
+		end
+	end
+
+    return bshapes
+end
+function bondshapes(struc::BioStructures.ProteinStructure, bnds; bondwidth = 0.2)
+	bshapes = Cylinder3{Float32}[]
+	chns = collectchains(struc)
+	atms = collectatoms.(chns)
+
+	for k in 1:size(bnds,1)
+		for i in 1:size(bnds[k],1)
+			for j in (i+1):size(bnds[k],1)
+				if bnds[k][i,j] == 1
+					atm1 = defaultatom(atms[k][i])
+					atm2 = defaultatom(atms[k][j])
+					pnt1 = GeometryBasics.Point3f0(atm1.coords)
+					pnt2 = GeometryBasics.Point3f0(atm2.coords)
+					push!(bshapes, GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth)))
+				end
+			end
+		end
+	end
+	
+    return bshapes
+end
+function bondshapes(resz::Vector{T}, bnds; bondwidth = 0.2) where {T<:BioStructures.AbstractResidue}
+	bshapes = Cylinder3{Float32}[]
+	atms = collectatoms(resz)
+
+	for i in 1:size(bnds,1)
+		for j in (i+1):size(bnds,1)
+			if bnds[i,j] == 1
+				atm1 = defaultatom(atms[i])
+				atm2 = defaultatom(atms[j])
+				pnt1 = GeometryBasics.Point3f0(atm1.coords)
+				pnt2 = GeometryBasics.Point3f0(atm2.coords)
+				push!(bshapes, GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth)))
+			end
+		end
+	end
+
+    return bshapes
+end
+function bondshapes(resz::Vector{T}, bnds; bondwidth = 0.2) where {T<:MIToS.PDB.PDBResidue}
+    bshapes = Cylinder3{Float32}[]
 	atms = [bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
 
 	for i in 1:size(bnds,1)
