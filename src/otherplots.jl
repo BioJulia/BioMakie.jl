@@ -22,9 +22,16 @@ dmap = MIToS.PDB.distance(pdb, criteria="All")
 
 heatmap(dmap)
 ```
+
+### Keyword Arguments:
+- xlabel ----------------- "Residue 2"
+- ylabel ----------------- "Residue 1"
+- colormap --------------- :viridis
+- kwargs... -------------- additional keyword arguments to pass to heatmap
 """
 function heatmap(dmap::NamedMatrix{Float64, PairwiseListMatrix{Float64, false, Vector{Float64}}, 
-                    Tuple{OrderedDict{String, Int64}, OrderedDict{String, Int64}}}; colormap = :viridis, kwargs...)
+                Tuple{OrderedDict{String, Int64}, OrderedDict{String, Int64}}}; xlabel = "Residue 2", 
+                ylabel = "Residue 1", colormap = :ice, kwargs...)
     fig = Figure()
     ax = Axis(fig[1,1])
     dmap_1 = dmap.dicts[1] |> reversekv
@@ -45,8 +52,36 @@ function heatmap(dmap::NamedMatrix{Float64, PairwiseListMatrix{Float64, false, V
     DataInspector(fig)
     fig
 end
+
+"""
+    heatmap!( fig, dmap; kwargs... )
+
+Plot a MIToS distance map.
+
+# Example
+    
+```julia
+fig = Figure()
+
+using MIToS.PDB
+
+pdbfile = MIToS.PDB.downloadpdb("1IVO", format=PDBFile)
+residues_1ivo = read(pdbfile, PDBFile)
+pdb = @residues residues_1ivo model "1" chain "A" group "ATOM" residue All
+dmap = MIToS.PDB.distance(pdb, criteria="All")
+
+heatmap!(fig, dmap)
+```
+
+### Keyword Arguments:
+- xlabel ----------------- "Residue 2"
+- ylabel ----------------- "Residue 1"
+- colormap --------------- :viridis
+- kwargs... -------------- additional keyword arguments to pass to heatmap
+"""
 function heatmap!(fig::Figure, dmap::NamedMatrix{Float64, PairwiseListMatrix{Float64, false, Vector{Float64}}, 
-    Tuple{OrderedDict{String, Int64}, OrderedDict{String, Int64}}}; colormap = :viridis, kwargs...)
+                Tuple{OrderedDict{String, Int64}, OrderedDict{String, Int64}}}; xlabel = "Residue 2", 
+                ylabel = "Residue 1", colormap = :ice, kwargs...)
     ax = Axis(fig[1,1])
     dmap_1 = dmap.dicts[1] |> reversekv
     dmap_2 = dmap.dicts[2] |> reversekv
@@ -84,9 +119,16 @@ cmap = contact(pdb, 8.0, criteria="CB")
 
 heatmap(cmap)
 ```
+
+### Keyword Arguments:
+- xlabel ----------------- "Residue 2"
+- ylabel ----------------- "Residue 1"
+- colormap --------------- Colormap to use
+- kwargs... -------------- additional keyword arguments to pass to heatmap
 """
 function heatmap(cmap::NamedMatrix{Bool, PairwiseListMatrix{Bool, false, Vector{Bool}}, 
-                    Tuple{OrderedDict{String, Int64}, OrderedDict{String, Int64}}}; colormap = :ice, kwargs...)
+                Tuple{OrderedDict{String, Int64}, OrderedDict{String, Int64}}}; xlabel = "Residue 2", 
+                ylabel = "Residue 1", colormap = :ice, kwargs...)
     fig = Figure()
     ax = Axis(fig[1,1])
     cmap_1 = cmap.dicts[1] |> reversekv
@@ -106,8 +148,36 @@ function heatmap(cmap::NamedMatrix{Bool, PairwiseListMatrix{Bool, false, Vector{
     DataInspector(fig)
     fig
 end
+
+"""
+    heatmap!( fig, cmap; kwargs... )
+
+Plot a MIToS contact map.
+
+Example:
+    
+```julia
+fig = Figure()
+
+using MIToS.PDB
+
+pdbfile = MIToS.PDB.downloadpdb("1IVO", format=PDBFile)
+residues_1ivo = read(pdbfile, PDBFile)
+pdb = @residues residues_1ivo model "1" chain "A" group "ATOM" residue All
+cmap = contact(pdb, 8.0, criteria="CB")
+
+heatmap!(fig, cmap)
+```
+
+### Keyword Arguments:
+- xlabel ----------------- "Residue 2"
+- ylabel ----------------- "Residue 1"
+- colormap --------------- :ice
+- kwargs... -------------- additional keyword arguments to pass to heatmap
+"""
 function heatmap!(fig::Figure, cmap::NamedMatrix{Bool, PairwiseListMatrix{Bool, false, Vector{Bool}}, 
-    Tuple{OrderedDict{String, Int64}, OrderedDict{String, Int64}}}; colormap = :ice, kwargs...)
+                Tuple{OrderedDict{String, Int64}, OrderedDict{String, Int64}}}; xlabel = "Residue 2", 
+                ylabel = "Residue 1", colormap = :ice, kwargs...)
     ax = Axis(fig[1,1])
     cmap_1 = cmap.dicts[1] |> reversekv
     cmap_2 = cmap.dicts[2] |> reversekv
@@ -143,6 +213,12 @@ cbetas_B = collectatoms(struc["B"], cbetaselector)
 dmap = DistanceMap(cbetas_A, cbetas_B)
 heatmap(dmap)
 ```
+
+### Keyword Arguments:
+- xlabel ----------------- "Residue 2"
+- ylabel ----------------- "Residue 1"
+- colormap --------------- :viridis
+- kwargs... -------------- additional keyword arguments to pass to heatmap
 """
 function heatmap(dmap::DistanceMap; xlabel = "Residue 2", ylabel = "Residue 1", colormap = :viridis, kwargs...)
     fig = Figure()
@@ -162,6 +238,30 @@ function heatmap(dmap::DistanceMap; xlabel = "Residue 2", ylabel = "Residue 1", 
     DataInspector(fig)
     fig
 end
+
+"""
+    heatmap( dmap; kwargs... )
+
+Plot a BioStructures distance map.
+
+# Example
+    
+```julia
+using BioStructures
+
+struc = retrievepdb("1IVO")[1]
+cbetas_A = collectatoms(struc["A"], cbetaselector)
+cbetas_B = collectatoms(struc["B"], cbetaselector)
+dmap = DistanceMap(cbetas_A, cbetas_B)
+heatmap(dmap)
+```
+
+### Keyword Arguments:
+- xlabel ----------------- "Residue 2"
+- ylabel ----------------- "Residue 1"
+- colormap --------------- :viridis
+- kwargs... -------------- additional keyword arguments to pass to heatmap
+"""
 function heatmap!(fig::Figure, dmap::DistanceMap; xlabel = "Residue 2", ylabel = "Residue 1", colormap = :viridis, kwargs...)
     ax = Axis(fig[1,1])
     dat = reverse(dmap.data; dims = 1)
@@ -196,6 +296,12 @@ cbetas_B = collectatoms(struc["B"], cbetaselector)
 cmap = ContactMap(cbetas_A, cbetas_B)
 heatmap(cmap)
 ```
+
+### Keyword Arguments:
+- xlabel ----------------- "Residue 2"
+- ylabel ----------------- "Residue 1"
+- colormap --------------- :ice
+- kwargs... -------------- additional keyword arguments to pass to heatmap
 """
 function heatmap(cmap::ContactMap; xlabel = "Residue 2", ylabel = "Residue 1", colormap = :ice, kwargs...)
     fig = Figure()
@@ -214,6 +320,32 @@ function heatmap(cmap::ContactMap; xlabel = "Residue 2", ylabel = "Residue 1", c
     DataInspector(fig)
     fig
 end
+
+"""
+    heatmap!( fig, cmap; kwargs... )
+
+Plot a BioStructures contact map.
+
+# Example
+    
+```julia
+fig = Figure()
+
+using BioStructures
+
+struc = retrievepdb("1IVO")[1]
+cbetas_A = collectatoms(struc["A"], cbetaselector)
+cbetas_B = collectatoms(struc["B"], cbetaselector)
+cmap = ContactMap(cbetas_A, cbetas_B)
+heatmap!(fig, cmap)
+```
+
+### Keyword Arguments:
+- xlabel ----------------- "Residue 2"
+- ylabel ----------------- "Residue 1"
+- colormap --------------- :ice
+- kwargs... -------------- Keyword arguments to pass to heatmap
+"""
 function heatmap!(fig::Figure, cmap::ContactMap; xlabel = "Residue 2", ylabel = "Residue 1", colormap = :ice, kwargs...)
     ax = Axis(fig[1,1])
     dat = reverse(cmap.data; dims = 1)

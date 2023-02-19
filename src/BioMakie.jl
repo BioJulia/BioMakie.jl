@@ -33,9 +33,11 @@ using DataStructures, DelimitedFiles, HTTP
 using Distances, GeometryBasics
 using Colors, ColorSchemes, ColorTypes, ImageCore
 using FileIO, FastaIO, FASTX, OrderedCollections
-using Makie
 using JSServe
+using Makie
+using WGLMakie
 using GLMakie
+using GLMakie: lift, @lift, Observable
 GLMakie.activate!()
 
 include("../src/utils.jl")
