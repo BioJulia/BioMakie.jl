@@ -4,6 +4,7 @@ authors = ["Daniel Kool"]
 version = "0.2.1"
 
 [deps]
+Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
 BioAlignments = "00701ae9-d1dc-5365-b64a-a3a3ebf5695e"
 BioSequences = "7e6ae17a-c86d-528c-b3b9-7f778a29fe59"
 BioStructures = "de9282ab-8554-53be-b2d6-f6c222edabfc"
@@ -80,6 +81,7 @@ WGLMakie = "0.8"
 julia = "1"
 
 [extras]
+Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]

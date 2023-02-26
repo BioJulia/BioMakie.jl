@@ -10,12 +10,12 @@ export protsmiles,
        plotstruc!,
        plotstruc,
        distancebonds,
-	   covalentbonds,
-	   sidechainbonds,
-	   backbonebonds,
-	   getbonds,
-	   bondshape,
-	   bondshapes,
+       covalentbonds,
+       sidechainbonds,
+       backbonebonds,
+       getbonds,
+       bondshape,
+       bondshapes,
        elecolors,
        cpkcolors, 
        aquacolors, 
@@ -25,6 +25,8 @@ export protsmiles,
        cinemacolors,
        getbiocolors
 #
+using Reexport
+@reexport using Makie
 
 using BioStructures, MolecularGraph
 using MIToS, MIToS.Information, MIToS.MSA, MIToS.Pfam, MIToS.SIFTS, MIToS.Utils
@@ -34,10 +36,8 @@ using Distances, GeometryBasics
 using Colors, ColorSchemes, ColorTypes, ImageCore
 using FileIO, FastaIO, FASTX, OrderedCollections
 using JSServe
-using Makie
 using WGLMakie
 using GLMakie
-using GLMakie: lift, @lift, Observable
 GLMakie.activate!()
 
 include("../src/utils.jl")
