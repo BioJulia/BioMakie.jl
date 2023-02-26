@@ -1,11 +1,12 @@
-export elecolors,
-       cpkcolors, 
-       aquacolors, 
-       shapelycolors, 
-       leskcolors, 
-       maecolors, 
-       cinemacolors,
-       getbiocolors
+export protsmiles,
+    elecolors,
+    cpkcolors, 
+    aquacolors, 
+    shapelycolors, 
+    leskcolors, 
+    maecolors, 
+    cinemacolors,
+    getbiocolors
 
 import Base.convert
 import BioStructures.defaultatom, BioStructures.defaultresidue
@@ -38,6 +39,12 @@ function reversekv(dict::AbstractDict{K,V}) where {K,V}
         return OrderedDict{V,K}(vkdict)
     end
 	return Dict{V,K}(vkdict)
+end
+function collectkeys(args)
+    return keys(args) |> collect
+end
+function collectvals(args)
+    return values(args) |> collect
 end
 function printkv(dict::AbstractDict)
 	keys1 = collectkeys(dict)
@@ -78,12 +85,6 @@ function varcall(name::String, body::Any)
     name=Symbol(name)
     @eval (($name) = ($body))
 	return Symbol(name)
-end
-function collectkeys(args)
-    return keys(args) |> collect
-end
-function collectvals(args)
-    return values(args) |> collect
 end
 
 # current basic color schemes for atoms and residues

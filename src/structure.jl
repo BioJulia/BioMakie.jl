@@ -82,7 +82,7 @@ end
 
 Get the inspector label function for plotting a 'StructuralElementOrList'.
 
-This function uses 'bestoccupancy' or 'defaultatom' to ensure only one position per atom.
+This function uses 'MIToS.PDB.bestoccupancy' or 'defaultatom' to ensure only one position per atom.
 """
 function getinspectorlabel(struc::BioStructures.StructuralElementOrList)
     atms = defaultatom.(BioStructures.collectatoms(struc))
@@ -101,14 +101,14 @@ function getinspectorlabel(struc::Observable{T}) where {T<:BioStructures.Structu
     return func
 end
 function getinspectorlabel(resz::Vector{MIToS.PDB.PDBResidue})
-    atms = [bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
+    atms = [MIToS.PDB.bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
     func = (self, i, p) -> "atom: $(atms[i].atom)   element: $(atms[i].element)   index: $(i)\n" *
     "coordinates: $(atms[i].coordinates)\n" *
     "occupancy: $(atms[i].occupancy)    B: $(atms[i].B)"
     return func
 end
 function getinspectorlabel(resz::Observable{T}) where {T<:Vector{MIToS.PDB.PDBResidue}}
-    atms = @lift [bestoccupancy($resz[i].atoms) for i in 1:length($resz)] |> flatten
+    atms = @lift [MIToS.PDB.bestoccupancy($resz[i].atoms) for i in 1:length($resz)] |> flatten
     func = @lift (self, i, p) -> "atom: $($atms[i].atom)   element: $($atms[i].element)   index: $(i)\n" *
     "coordinates: $($atms[i].coordinates)\n" *
     "occupancy: $($atms[i].occupancy)    B: $($atms[i].B)"
@@ -150,7 +150,7 @@ Get a Vector of colors for the atoms.
 To see all default element and amino acid colorschemes, use `getbiocolors()`.
 Keyword argument `colors` takes a Dict which maps element to color. ("C" => :red)
 
-This function uses 'bestoccupancy' or 'defaultatom' to ensure only one position per atom.
+This function uses 'MIToS.PDB.bestoccupancy' or 'defaultatom' to ensure only one position per atom.
 
 ### Keyword Arguments:
 - colors --- elecolors | Options - elecolors, aquacolors
@@ -166,12 +166,12 @@ function atomcolors(struc::Observable{T}; colors = elecolors) where {T<:BioStruc
     return colrs
 end
 function atomcolors(resz::Vector{MIToS.PDB.PDBResidue}; colors = elecolors)
-    atms = [bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
+    atms = [MIToS.PDB.bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
     colrs = [colors[x.element] for x in atms]
     return colrs
 end
 function atomcolors(resz::Observable{T}; colors = elecolors) where {T<:Vector{MIToS.PDB.PDBResidue}}
-    atms = @lift [bestoccupancy($resz[i].atoms) for i in 1:length($resz)] |> flatten
+    atms = @lift [MIToS.PDB.bestoccupancy($resz[i].atoms) for i in 1:length($resz)] |> flatten
     colrs = @lift [colors[x.element] for x in $atms]
     return colrs
 end
@@ -191,7 +191,7 @@ Get a Vector of colors for the atoms.
 To see all default element and amino acid colorschemes, use `getbiocolors()`.
 Keyword argument `colors` takes a Dict which maps residue to color. ("C" => :red)
 
-This function uses 'bestoccupancy' or 'defaultatom' to ensure only one position per atom.
+This function uses 'MIToS.PDB.bestoccupancy' or 'defaultatom' to ensure only one position per atom.
 
 ### Keyword Arguments:
 - colors --- elecolors | Options - elecolors, aquacolors, shapelycolors, maecolors
@@ -209,17 +209,17 @@ function rescolors(struc::Observable{T}; colors = maecolors) where {T<:BioStruct
     return colrs
 end
 function rescolors(resz::Vector{MIToS.PDB.PDBResidue}; colors = maecolors)
-    atms = [bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
-	resindices = [[i for j in 1:size(bestoccupancy(resz[i].atoms),1)] for i in 1:length(resz)] |> flatten
-	resnames = [[resz[i].id.name for j in 1:size(bestoccupancy(resz[i].atoms),1)] for i in 1:length(resz)] |> flatten
-    colrs = [colors[resnames[j]] for j in 1:length(resnames)]
+    atms = [MIToS.PDB.bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
+	resindices = [[i for j in 1:size(MIToS.PDB.bestoccupancy(resz[i].atoms),1)] for i in 1:length(resz)] |> flatten
+	resnames = [[resz[i].id.name for j in 1:size(MIToS.PDB.bestoccupancy(resz[i].atoms),1)] for i in 1:length(resz)] |> flatten
+    colrs = [colors[resletterdict[resnames[j]]] for j in 1:length(resnames)]
     return colrs
 end
 function rescolors(resz::Observable{T}; colors = maecolors) where {T<:Vector{MIToS.PDB.PDBResidue}}
-    atms = @lift [bestoccupancy($resz[i].atoms) for i in 1:length($resz)] |> flatten
-	resindices = @lift [[i for j in 1:size(bestoccupancy($resz[i].atoms),1)] for i in 1:length($resz)] |> flatten
-	resnames = @lift [[$resz[i].id.name for j in 1:size(bestoccupancy($resz[i].atoms),1)] for i in 1:length($resz)] |> flatten
-    colrs = @lift [colors[$resnames[j]] for j in 1:length($resnames)]
+    atms = @lift [MIToS.PDB.bestoccupancy($resz[i].atoms) for i in 1:length($resz)] |> flatten
+	resindices = @lift [[i for j in 1:size(MIToS.PDB.bestoccupancy($resz[i].atoms),1)] for i in 1:length($resz)] |> flatten
+	resnames = @lift [[$resz[i].id.name for j in 1:size(MIToS.PDB.bestoccupancy($resz[i].atoms),1)] for i in 1:length($resz)] |> flatten
+    colrs = @lift [colors[resletterdict[$resnames[j]]] for j in 1:length($resnames)]
     return colrs
 end
 
@@ -228,7 +228,7 @@ end
 
 Get a Vector of sizes for the atoms from a BioStructures.StructuralElementOrList.
 
-This function uses 'bestoccupancy' or 'defaultatom' to ensure only one position per atom.
+This function uses 'MIToS.PDB.bestoccupancy' or 'defaultatom' to ensure only one position per atom.
 
 ### Keyword Arguments:
 - radiustype --- :covalent | Options - :cov, :covalent, :vdw, :vanderwaals, :bas, :ballandstick
@@ -244,12 +244,12 @@ function atomsizes(struc::Observable{T}; radiustype = :covalent) where {T<:BioSt
     return sizes
 end
 function atomsizes(resz::Vector{MIToS.PDB.PDBResidue}; radiustype = :covalent)
-    atms = [bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
+    atms = [MIToS.PDB.bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
     sizes = atomradii(atms; radiustype = radiustype)
     return sizes
 end
 function atomsizes(resz::Observable{T}; radiustype = :covalent) where {T<:Vector{MIToS.PDB.PDBResidue}}
-    atms = @lift [bestoccupancy($resz[i].atoms) for i in 1:length($resz)] |> flatten
+    atms = @lift [MIToS.PDB.bestoccupancy($resz[i].atoms) for i in 1:length($resz)] |> flatten
     sizes = @lift atomradii($atms; radiustype = radiustype)
     return sizes
 end
@@ -269,7 +269,7 @@ end
 
 This function returns an OrderedDict of the main data used for plotting. 
 
-This function uses 'bestoccupancy' or 'defaultatom' to ensure only one position per atom.
+This function uses 'MIToS.PDB.bestoccupancy' or 'defaultatom' to ensure only one position per atom.
 
 ### Returns:
     OrderedDict("atoms" => ..., 
@@ -290,9 +290,9 @@ function plottingdata(struc::BioStructures.StructuralElementOrList;
     atmcords = coordarray(atms) |> transpose |> collect
     colrs = []
     try
-        colrs = [colors[BioStructures.element(x)] for x in atms]
+        colrs = to_color.([colors[BioStructures.element(x)] for x in atms])
     catch
-        colrs = rescolors(struc; colors = colors)
+        colrs = to_color.(rescolors(struc; colors = colors))
     end
     sizes = atomradii(atms; radiustype = radiustype)
     bonds = getbonds(struc)
@@ -311,9 +311,9 @@ function plottingdata(struc::Observable{T};
     atmcords = @lift coordarray($atms) |> transpose |> collect
     colrs = []
     try
-        colrs = @lift [colors[BioStructures.element(x)] for x in $atms]
+        colrs = @lift to_color.([colors[BioStructures.element(x)] for x in $atms])
     catch
-        colrs = @lift rescolors($struc; colors = colors)
+        colrs = @lift to_color.(rescolors($struc; colors = colors))
     end
     sizes = @lift atomradii($atms; radiustype = radiustype)
     bonds = @lift getbonds($struc)
@@ -328,13 +328,13 @@ function plottingdata(resz::Vector{MIToS.PDB.PDBResidue};
                         colors = elecolors,
                         radiustype = :covalent)
     #
-    atms = [bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
+    atms = [MIToS.PDB.bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
     atmcords = [[atms[i].coordinates[1],atms[i].coordinates[2],atms[i].coordinates[3]] for i in 1:length(atms)] |> combinedims |> transpose |> collect
     colrs = []
     try
-        colrs = [colors[x.element] for x in atms]
+        colrs = to_color.([colors[x.element] for x in atms])
     catch
-        colrs = rescolors(struc; colors = colors)
+        colrs = to_color.(rescolors(resz; colors = colors))
     end
     sizes = atomradii(atms; radiustype = radiustype)
     bonds = getbonds(resz)
@@ -349,13 +349,13 @@ function plottingdata(resz::Observable{T};
                         colors = elecolors,
                         radiustype = :covalent) where {T<:Vector{MIToS.PDB.PDBResidue}}
     #
-    atms = @lift [bestoccupancy($resz[i].atoms) for i in 1:length($resz)] |> flatten
+    atms = @lift [MIToS.PDB.bestoccupancy($resz[i].atoms) for i in 1:length($resz)] |> flatten
     atmcords = @lift [[$atms[i].coordinates[1],$atms[i].coordinates[2],$atms[i].coordinates[3]] for i in 1:length($atms)] |> combinedims |> transpose |> collect
     colrs = []
     try
-        colrs = @lift [colors[x.element] for x in $atms]
+        colrs = @lift to_color.([colors[x.element] for x in $atms])
     catch
-        colrs = @lift rescolors($struc; colors = colors)
+        colrs = @lift to_color.(rescolors($resz; colors = colors))
     end
     sizes = @lift atomradii($atms; radiustype = radiustype)
     bonds = @lift getbonds($resz)
@@ -371,7 +371,7 @@ function plottingdata(atms::Vector{MIToS.PDB.PDBAtom};
                         radiustype = :covalent)
     #
     atmcords = [[atms[i].coordinates[1],atms[i].coordinates[2],atms[i].coordinates[3]] for i in 1:length(atms)] |> combinedims |> transpose |> collect
-    colrs = [colors[x.element] for x in atms]
+    colrs = to_color.([colors[x.element] for x in atms])
     sizes = atomradii(atms; radiustype = radiustype)
 
     return OrderedDict("atoms" => atms, 
@@ -385,7 +385,7 @@ function plottingdata(atms::Observable{T};
                         radiustype = :covalent) where {T<:Vector{MIToS.PDB.PDBAtom}}
     #
     atmcords = @lift atmcords = [[$atms[i].coordinates[1],$atms[i].coordinates[2],$atms[i].coordinates[3]] for i in 1:length($atms)] |> combinedims |> transpose |> collect
-    colrs = @lift [colors[x.element] for x in $atms]
+    colrs = @lift to_color.([colors[x.element] for x in $atms])
     sizes = @lift atomradii($atms; radiustype = radiustype)
 
     return OrderedDict("atoms" => atms, 
@@ -460,11 +460,11 @@ function plotstruc!(fig::Figure, struc::Observable;
                     )
 	#
     plotdata = @lift plottingdata($struc; colors = atomcolors, radiustype = plottype)
-    atms = getindex(plotdata[], "atoms")
-    cords = getindex(plotdata[], "coords")
-    colrs = getindex(plotdata[], "colors")
-    sizs = getindex(plotdata[], "sizes")
-    bnds = getindex(plotdata[], "bonds")
+    atms = plotdata[]["atoms"]
+    cords = plotdata[]["coords"]
+    colrs = plotdata[]["colors"]
+    sizs = plotdata[]["sizes"]
+    bnds = plotdata[]["bonds"]
 
     pxwidths = fig.scene.px_area[].widths
     needresize = false
@@ -485,14 +485,20 @@ function plotstruc!(fig::Figure, struc::Observable;
         end
         lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
-        bndshapes = @lift bondshapes($struc; algo = bondtype, distance = distance)
+        if bnds == nothing
+            bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
+        end
+        bndshapes = @lift bondshapes($cords, $bnds)
         bndmeshes = @lift normal_mesh.($bndshapes)
         bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
         bmesh.inspectable[] = false
     elseif plottype == :covalent || plottype == :cov
         markersize = @lift $sizs .* markerscale
         if markerscale < 1.0
-            bndshapes = @lift bondshapes($struc; algo = bondtype, distance = distance)
+            if bnds == nothing
+                bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
+            end
+            bndshapes = @lift bondshapes($cords, $bnds)
             bndmeshes = @lift normal_mesh.($bndshapes)
             bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
             bmesh.inspectable[] = false
@@ -523,11 +529,11 @@ function plotstruc!(fig::Figure, plotdata::Observable{T};
                     kwargs...
                     ) where {T<:AbstractDict}
 	#
-    atms = getindex(plotdata[], "atoms")
-    cords = getindex(plotdata[], "coords")
-    colrs = getindex(plotdata[], "colors")
-    sizs = getindex(plotdata[], "sizes")
-    bnds = getindex(plotdata[], "bonds")
+    atms = plotdata[]["atoms"]
+    cords = plotdata[]["coords"]
+    colrs = plotdata[]["colors"]
+    sizs = plotdata[]["sizes"]
+    bnds = plotdata[]["bonds"]
 
     pxwidths = fig.scene.px_area[].widths
     needresize = false
@@ -536,7 +542,7 @@ function plotstruc!(fig::Figure, plotdata::Observable{T};
         needresize = true
     end
     if inspectorlabel == :default
-        inspectorlabel = @lift getinspectorlabel($struc)        
+        inspectorlabel = @lift getinspectorlabel($atms)        
     end
     if plottype == :spacefilling || plottype == :vanderwaals || plottype == :vdw
         markersize = @lift $sizs .* markerscale
@@ -548,14 +554,20 @@ function plotstruc!(fig::Figure, plotdata::Observable{T};
         end
         lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
-        bndshapes = @lift bondshapes($struc; algo = bondtype, distance = distance)
+        if bnds == nothing
+            bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
+        end
+        bndshapes = @lift bondshapes($cords, $bnds)
         bndmeshes = @lift normal_mesh.($bndshapes)
         bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
         bmesh.inspectable[] = false
     elseif plottype == :covalent || plottype == :cov
         markersize = @lift $sizs .* markerscale
         if markerscale < 1.0
-            bndshapes = @lift bondshapes($struc; algo = bondtype, distance = distance)
+            if bnds == nothing
+                bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
+            end
+            bndshapes = @lift bondshapes($cords, $bnds)
             bndmeshes = @lift normal_mesh.($bndshapes)
             bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
             bmesh.inspectable[] = false
@@ -599,7 +611,7 @@ function plotstruc!(fig::Figure, plotdata::T;
         needresize = true
     end
     if inspectorlabel == :default
-        inspectorlabel = @lift getinspectorlabel($struc)        
+        inspectorlabel = @lift getinspectorlabel($atms)        
     end
     if plottype == :spacefilling || plottype == :vanderwaals || plottype == :vdw
         markersize = @lift $sizs .* markerscale
@@ -611,14 +623,20 @@ function plotstruc!(fig::Figure, plotdata::T;
         end
         lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
-        bndshapes = @lift bondshapes($struc; algo = bondtype, distance = distance)
+        if bnds == nothing
+            bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
+        end
+        bndshapes = @lift bondshapes($cords, $bnds)
         bndmeshes = @lift normal_mesh.($bndshapes)
         bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
         bmesh.inspectable[] = false
     elseif plottype == :covalent || plottype == :cov
         markersize = @lift $sizs .* markerscale
         if markerscale < 1.0
-            bndshapes = @lift bondshapes($struc; algo = bondtype, distance = distance)
+            if bnds == nothing
+                bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
+            end
+            bndshapes = @lift bondshapes($cords, $bnds)
             bndmeshes = @lift normal_mesh.($bndshapes)
             bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
             bmesh.inspectable[] = false
@@ -639,6 +657,7 @@ end
 
 """
     plotstruc( structure )
+    plotstruc( residues )
     plotstruc( plotdata )
 
 Create and return a Makie Figure for a protein structural element. 
