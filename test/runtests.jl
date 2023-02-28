@@ -96,3 +96,5 @@ Aqua.test_all(BioMakie; ambiguities=(recursive=false))
     # Delete temporary directory
     rm(dir, recursive=true, force=true)
 end
+
+end
