@@ -121,33 +121,16 @@ radiival = radii1.value
 
 # Get the alpha shape of the structure
 spnts = @lift getspherepoints($cords,$radiival)
-@time getspherepoints(cords[],radiival[])
-function getspherepoints(cords,radius)
-	pnts = [GeometryBasics.Point{3,Float64}(cords[i,:]) for i in 1:size(cords,1)] |> Observable
-	spheres = GeometryBasics.Point{3,Float64}[]
-	
-	@sync(@async lift(pnts) do p
-		for i in 1:size(p,1)
-			sp = GeometryBasics.decompose(GeometryBasics.Point{3,Float64},GeometryBasics.Sphere(p[i],radius),4) |> unique
-			for ii in 1:size(sp,1)
-				push!(spheres,sp[ii])
-			end
-		end
-	end)
-	
-	return [[spheres[i].data...] for i in 1:size(spheres,1)] |> combinedims |> transpose |> collect
-end
-
-
 proteinshape = @lift let pnts = $spnts; getalphashape(pnts,$alphaval); end
 alphaverts = @lift $spnts[$(proteinshape)[1],:]
 alphaedges = @lift $spnts[$(proteinshape)[2],:] |> linesegs
 # alphaconnect = Makie.lift(proteinshape) do a1; a1[3]; end
 
+# Get the surface area of the shape
 surfarea = @lift surfacearea($spnts, $(proteinshape)[3])
 surfatext = layout[2,7:9] = Label(fig, text = lift(X->string("surface area = ", round(Int64, X), "  Å²"), surfarea), fontsize = 22)
 
-# Plot the alpha shape!
+# Plot the alpha shape mesh (edges)
 linesegments!(sc_scene, alphaedges, color = :gray, transparency = true)
 
 # To show the atoms uncomment the following line
