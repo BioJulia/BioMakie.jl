@@ -22,3 +22,5 @@ research/
 *.fasta
 *.xml
 *.json
+*.CondaPkg
+CondaPkg.toml
