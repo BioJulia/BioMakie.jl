@@ -126,6 +126,58 @@ function getinspectorlabel(atms::Observable{T}) where {T<:Vector{MIToS.PDB.PDBAt
     "occupancy: $($atms[i].occupancy)    B: $($atms[i].B)"
     return func
 end
+function getinspectorlabel(pdata::AbstractDict)
+    func = nothing
+
+    if typeof(pdata["atoms"]) <: Vector{MIToS.PDB.PDBAtom}
+        atms = pdata["atoms"]
+        func = (self, i, p) -> "atom: $(atms[i].atom)   element: $(atms[i].element)   index: $(i)\n" *
+        "coordinates: $(atms[i].coordinates)\n" *
+        "occupancy: $(atms[i].occupancy)    B: $(atms[i].B)"
+    elseif typeof(pdata["atoms"]) <: Vector{MIToS.PDB.PDBResidue}
+        resz = pdata["atoms"]
+        atms = [MIToS.PDB.bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
+        func = (self, i, p) -> "atom: $(atms[i].atom)   element: $(atms[i].element)   index: $(i)\n" *
+        "coordinates: $(atms[i].coordinates)\n" *
+        "occupancy: $(atms[i].occupancy)    B: $(atms[i].B)"
+    elseif typeof(pdata["atoms"]) <: BioStructures.StructuralElementOrList
+        atms = pdata["atoms"]
+        atms = defaultatom.(BioStructures.collectatoms(atms))
+        func = (self, i, p) -> "chain: $(atms[i].residue.chain.id)   " *
+        "res: $(atms[i].residue.name)   number: $(atms[i].residue.number)   index: $(i)\n" *
+        "atom: $(atms[i].name)   element: $(atms[i].element)   " *
+        "serial: $(atms[i].serial)\ncoordinates: $(atms[i].coords)    B: $(atms[i].temp_factor)"
+    else
+        error("there is a problem with the data type of the atoms for the inspector label")
+    end
+
+    return func
+end
+function getinspectorlabel(pdata::Observable{T}) where {T<:AbstractDict}
+    func = nothing
+
+    if typeof(pdata[]["atoms"]) <: Vector{MIToS.PDB.PDBAtom}
+        atms = pdata[]["atoms"]
+        func = @lift (self, i, p) -> "atom: $($atms[i].atom)   element: $($atms[i].element)   index: $(i)\n" *
+        "coordinates: $($atms[i].coordinates)\n" *
+        "occupancy: $($atms[i].occupancy)    B: $($atms[i].B)"
+    elseif typeof(pdata[]["atoms"]) <: Vector{MIToS.PDB.PDBResidue}
+        atms = [MIToS.PDB.bestoccupancy(pdata[]["atoms"][i].atoms) for i in 1:length(pdata[]["atoms"])] |> flatten
+        func = @lift (self, i, p) -> "atom: $($atms[i].atom)   element: $($atms[i].element)   index: $(i)\n" *
+        "coordinates: $($atms[i].coordinates)\n" *
+        "occupancy: $($atms[i].occupancy)    B: $($atms[i].B)"
+    elseif typeof(pdata[]["atoms"]) <: BioStructures.StructuralElementOrList
+        atms = @lift defaultatom.(BioStructures.collectatoms($pdata[]["atoms"]))
+        func = @lift (self, i, p) -> "chain: $(($atms[i].residue.chain).id)   " *
+        "res: $($atms[i].residue.name)   number: $($atms[i].residue.number)   index: $(i)\n" *
+        "atom: $($atms[i].name)   element: $($atms[i].element)   " *
+        "serial: $($atms[i].serial)\ncoordinates: $($atms[i].coords)    B: $($atms[i].temp_factor)"
+    else
+        error("there is a problem with the data type of the atoms for the inspector label")
+    end
+
+    return func
+end
 
 """
     firstlabel( inspectorfunc::Function )
@@ -394,6 +446,18 @@ function plottingdata(atms::Observable{T};
                         "sizes" => sizes,
                         "bonds" => nothing)
 end
+function plottingdata(pdata::AbstractDict;
+                        colors = elecolors,
+                        radiustype = :covalent)
+    #
+    return pdata
+end
+function plottingdata(pdata::Observable{T};
+                        colors = elecolors,
+                        radiustype = :covalent) where {T<:AbstractDict}
+    #
+    return pdata
+end
 
 """
     plotstruc!( fig, structure )
@@ -440,11 +504,19 @@ strucplot = plotstruc!(fig, chain_A)
 - inspectorlabel - :default, or define your own function like: (self, i, p) -> "atom: ... coords: ..."
 - kwargs... ------ keyword arguments passed to the atom `meshscatter`
 """
-function plotstruc!(fig, struc; kwargs...)
-    if !(typeof(struc)<:Observable)
-        struc = Observable(struc)
-    end
-    plotstruc!(fig, struc; kwargs...)
+function plotstruc!(fig::Figure, struc::T; kwargs...) where {T<:Union{Vector{MIToS.PDB.PDBAtom}, 
+                                                    Vector{MIToS.PDB.PDBResidue}, 
+                                                    BioStructures.StructuralElementOrList,
+                                                    OrderedDict}}
+    strucobs = Observable(struc)
+    plotstruc!(fig, strucobs; kwargs...)
+end
+function plotstruc!(figposition::GridPosition, struc::T; kwargs...) where {T<:Union{Vector{MIToS.PDB.PDBAtom}, 
+                                                    Vector{MIToS.PDB.PDBResidue}, 
+                                                    BioStructures.StructuralElementOrList,
+                                                    OrderedDict}}
+    strucobs = Observable(struc)
+    plotstruc!(figposition, strucobs; kwargs...)
 end
 function plotstruc!(fig::Figure, struc::Observable;
                     resolution = (800,600),
@@ -460,11 +532,11 @@ function plotstruc!(fig::Figure, struc::Observable;
                     )
 	#
     plotdata = @lift plottingdata($struc; colors = atomcolors, radiustype = plottype)
-    atms = plotdata[]["atoms"]
-    cords = plotdata[]["coords"]
-    colrs = plotdata[]["colors"]
-    sizs = plotdata[]["sizes"]
-    bnds = plotdata[]["bonds"]
+    atms = @lift $plotdata["atoms"]
+    cords = @lift $plotdata["coords"]
+    colrs = @lift $plotdata["colors"]
+    sizs = @lift $plotdata["sizes"]
+    bnds = @lift $plotdata["bonds"]
 
     pxwidths = fig.scene.px_area[].widths
     needresize = false
@@ -529,11 +601,11 @@ function plotstruc!(fig::Figure, plotdata::Observable{T};
                     kwargs...
                     ) where {T<:AbstractDict}
 	#
-    atms = plotdata[]["atoms"]
-    cords = plotdata[]["coords"]
-    colrs = plotdata[]["colors"]
-    sizs = plotdata[]["sizes"]
-    bnds = plotdata[]["bonds"]
+    atms = @lift $plotdata["atoms"]
+    cords = @lift $plotdata["coords"]
+    colrs = @lift $plotdata["colors"]
+    sizs = @lift $plotdata["sizes"]
+    bnds = @lift $plotdata["bonds"]
 
     pxwidths = fig.scene.px_area[].widths
     needresize = false
@@ -651,6 +723,184 @@ function plotstruc!(fig::Figure, plotdata::T;
         fig.scene.px_area[] = HyperRectangle{2, Int64}([0, 0], [pxwidths[1], pxwidths[2]+resolution[2]])
         Makie.update_state_before_display!(fig)
     end
+    DataInspector(lscene)
+    fig
+end
+function plotstruc!(figposition::GridPosition, struc::Observable;
+                    resolution = (800,600),
+                    gridposition = (1,1),
+                    plottype = :covalent,
+                    atomcolors = elecolors,
+                    markersize = 0.0,
+                    markerscale = 1.0,
+                    bondtype = :knowledgebased,
+                    distance = 1.9,
+                    inspectorlabel = :default,
+                    kwargs...
+                    )
+	#
+    plotdata = @lift plottingdata($struc; colors = atomcolors, radiustype = plottype)
+    atms = @lift $plotdata["atoms"]
+    cords = @lift $plotdata["coords"]
+    colrs = @lift $plotdata["colors"]
+    sizs = @lift $plotdata["sizes"]
+    bnds = @lift $plotdata["bonds"]
+
+    if inspectorlabel == :default
+        inspectorlabel = @lift getinspectorlabel($struc)        
+    end
+    if plottype == :spacefilling || plottype == :vanderwaals || plottype == :vdw
+        markersize = @lift $sizs .* markerscale
+        lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
+        ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
+    elseif plottype == :ballandstick || plottype == :bas
+        if markersize == 0.0
+            markersize = @lift $sizs .* markerscale .* 0.7
+        end
+        lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
+        ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
+        if bnds == nothing
+            bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
+        end
+        bndshapes = @lift bondshapes($cords, $bnds)
+        bndmeshes = @lift normal_mesh.($bndshapes)
+        bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
+        bmesh.inspectable[] = false
+    elseif plottype == :covalent || plottype == :cov
+        markersize = @lift $sizs .* markerscale
+        if markerscale < 1.0
+            if bnds == nothing
+                bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
+            end
+            bndshapes = @lift bondshapes($cords, $bnds)
+            bndmeshes = @lift normal_mesh.($bndshapes)
+            bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
+            bmesh.inspectable[] = false
+        end
+        lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
+        ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
+    else
+        ArgumentError("bad plottype kwarg")
+    end
+
+    DataInspector(lscene)
+    fig
+end
+function plotstruc!(figposition::GridPosition, plotdata::Observable{T};
+                    resolution = (800,600),
+                    gridposition = (1,1),
+                    plottype = :covalent,
+                    atomcolors = elecolors,
+                    markersize = 0.0,
+                    markerscale = 1.0,
+                    bondtype = :knowledgebased,
+                    distance = 1.9,
+                    inspectorlabel = :default,
+                    kwargs...
+                    ) where {T<:AbstractDict}
+	#
+    atms = @lift $plotdata["atoms"]
+    cords = @lift $plotdata["coords"]
+    colrs = @lift $plotdata["colors"]
+    sizs = @lift $plotdata["sizes"]
+    bnds = @lift $plotdata["bonds"]
+
+    if inspectorlabel == :default
+        inspectorlabel = @lift getinspectorlabel($atms)        
+    end
+    if plottype == :spacefilling || plottype == :vanderwaals || plottype == :vdw
+        markersize = @lift $sizs .* markerscale
+        lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
+        ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
+    elseif plottype == :ballandstick || plottype == :bas
+        if markersize == 0.0
+            markersize = @lift $sizs .* markerscale .* 0.7
+        end
+        lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
+        ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
+        if bnds == nothing
+            bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
+        end
+        bndshapes = @lift bondshapes($cords, $bnds)
+        bndmeshes = @lift normal_mesh.($bndshapes)
+        bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
+        bmesh.inspectable[] = false
+    elseif plottype == :covalent || plottype == :cov
+        markersize = @lift $sizs .* markerscale
+        if markerscale < 1.0
+            if bnds == nothing
+                bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
+            end
+            bndshapes = @lift bondshapes($cords, $bnds)
+            bndmeshes = @lift normal_mesh.($bndshapes)
+            bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
+            bmesh.inspectable[] = false
+        end
+        lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
+        ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
+    else
+        ArgumentError("bad plottype kwarg")
+    end
+
+    DataInspector(lscene)
+    fig
+end
+function plotstruc!(figposition::GridPosition, plotdata::T;
+                    resolution = (800,600),
+                    gridposition = (1,1),
+                    plottype = :covalent,
+                    atomcolors = elecolors,
+                    markersize = 0.0,
+                    markerscale = 1.0,
+                    bondtype = :knowledgebased,
+                    distance = 1.9,
+                    inspectorlabel = :default,
+                    kwargs...
+                    ) where {T<:AbstractDict}
+	#
+    atms = plotdata["atoms"]
+    cords = plotdata["coords"]
+    colrs = plotdata["colors"]
+    sizs = plotdata["sizes"]
+    bnds = plotdata["bonds"]
+
+    if inspectorlabel == :default
+        inspectorlabel = @lift getinspectorlabel($atms)        
+    end
+    if plottype == :spacefilling || plottype == :vanderwaals || plottype == :vdw
+        markersize = @lift $sizs .* markerscale
+        lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
+        ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
+    elseif plottype == :ballandstick || plottype == :bas
+        if markersize == 0.0
+            markersize = @lift $sizs .* markerscale .* 0.7
+        end
+        lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
+        ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
+        if bnds == nothing
+            bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
+        end
+        bndshapes = @lift bondshapes($cords, $bnds)
+        bndmeshes = @lift normal_mesh.($bndshapes)
+        bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
+        bmesh.inspectable[] = false
+    elseif plottype == :covalent || plottype == :cov
+        markersize = @lift $sizs .* markerscale
+        if markerscale < 1.0
+            if bnds == nothing
+                bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
+            end
+            bndshapes = @lift bondshapes($cords, $bnds)
+            bndmeshes = @lift normal_mesh.($bndshapes)
+            bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
+            bmesh.inspectable[] = false
+        end
+        lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
+        ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
+    else
+        ArgumentError("bad plottype kwarg")
+    end
+
     DataInspector(lscene)
     fig
 end

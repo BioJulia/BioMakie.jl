@@ -1,15 +1,20 @@
 # BioMakie.jl
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://kool7d.github.io/BioMakie.jl/stable)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://kool7d.github.io/BioMakie.jl/dev)
+
+[![Build Status](https://github.com/kool7d/BioMakie.jl/workflows/CI/badge.svg)](https://github.com/kool7d/BioMakie.jl/actions?query=workflow%3ACI+branch%3Amaster)
+<!-- [![codecov.io](http://codecov.io/github/kool7d/BioMakie.jl/coverage.svg?branch=master)](http://codecov.io/github/kool7d/BioMakie.jl?branch=master) -->
+
 ## Installation
 
-Julia is required. This package is being developed with Julia 1.7, so some features may not work 
-if an earlier version is used. Install the BioMakie master branch from the Julia REPL. Enter the 
-package mode by pressing ] and run:
+Julia is required. Install the BioMakie master branch from the Julia REPL. 
+Enter the package mode by pressing ] and run:
 `add BioMakie`.
 
 ## Usage
 
-To view a protein, use the `plotstruc` function with a BioStructures PDB structure.
+To view a protein, use the `plotstruc` function with a BioStructures 
+or MIToS structure.
 
 ```julia
 using BioStructures

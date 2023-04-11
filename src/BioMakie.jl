@@ -25,7 +25,7 @@ export protsmiles,
        cinemacolors,
        getbiocolors
 #
-using Reexport
+using Reexport  # should I be doing this?
 @reexport using Makie
 
 using BioStructures, MolecularGraph

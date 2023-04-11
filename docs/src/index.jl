@@ -14,8 +14,9 @@
 
 # There are different representations for protein structures, including "ball and stick"
 # (**:ballandstick**), "covalent" (**:covalent**), and "space filling" (**:spacefilling**). The 
-# default Makie backend is GLMakie.jl. So far, plotting methods exist specifically for dealing with 
-# BioStructures objects like ProteinStructure and Chain. 
+# default Makie backend is GLMakie.jl. So far, plotting methods exist for packages: 
+# - BioStructures.jl
+# - MIToS.jl
 
 # The main plotting functions are **plotstruc** and **plotmsa**, along with their mutating 
 # versions, **plotstruc!** and **plotmsa!**. The mutating functions allow the user to add multiple 

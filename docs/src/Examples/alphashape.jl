@@ -133,8 +133,8 @@ surfatext = layout[2,7:9] = Label(fig, text = lift(X->string("surface area = ", 
 # Plot the alpha shape mesh (edges)
 linesegments!(sc_scene, alphaedges, color = :gray, transparency = true)
 
-# To show the atoms uncomment the following line
+# To show the atoms uncomment and run the following line
 # meshscatter!(sc_scene, cords, markersize = 0.4, color = :blue)
 
-# To show the alpha shape vertices uncomment the following line
-# meshscatter!(sc_scene, alphaverts, markersize = 0.4, color = :green)
+# To show the alpha shape vertices uncomment and run the following line
+# meshscatter!(sc_scene, alphaverts, markersize = 0.4, color = :green
