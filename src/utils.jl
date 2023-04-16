@@ -539,5 +539,3 @@ function readdata(filename; titles = true)
     
     return filedata
 end
-typefields(thing) = typeof(thing) |> fieldnames
-tyf(thing) = typefields(thing)

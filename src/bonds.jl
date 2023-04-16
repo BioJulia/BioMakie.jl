@@ -1063,7 +1063,6 @@ function bondshapes(struc::BioStructures.ProteinStructure; algo = :knowledgebase
 	bshapes = Cylinder3{Float32}[]
 	bnds = getbonds(struc; algo = algo, cutoff = distance)
 	atms = collectatoms(struc)
-	@infiltrate
 
 	for k in 1:size(bnds,1)
 		for i in 1:size(bnds[k],1)
@@ -1164,7 +1163,6 @@ function bondshapes(struc::BioStructures.ProteinStructure, bnds::AbstractMatrix;
 	end
 	bshapes = Cylinder3{Float32}[]
 	atms = collectatoms(struc)
-	@infiltrate
 
 	for k in 1:size(bnds,1)
 		for i in 1:size(bnds[k],1)
@@ -1273,7 +1271,6 @@ end
 function bondshapes(cords::AbstractArray{T}, bnds::AbstractMatrix; bondwidth = 0.2) where {T<:AbstractFloat}
 	@assert size(cords,2) == 3 "coords must be an N x 3 matrix"
     bshapes = Cylinder3{Float32}[]
-	@infiltrate
 
 	for i in 1:size(bnds,1)
 		for j in (i+1):size(bnds,1)

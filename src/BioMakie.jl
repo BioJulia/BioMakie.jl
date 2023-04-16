@@ -25,8 +25,6 @@ export protsmiles,
        cinemacolors,
        getbiocolors
 #
-using Reexport  # should I be doing this?
-@reexport using Makie
 
 using BioStructures, MolecularGraph
 using MIToS, MIToS.Information, MIToS.MSA, MIToS.Pfam, MIToS.SIFTS, MIToS.Utils

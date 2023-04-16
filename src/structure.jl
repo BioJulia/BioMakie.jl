@@ -15,12 +15,12 @@ export atomradii,
 Collect atom radii based on element for plotting.
 
 ### Keyword Arguments:
-- radiustype --- :covalent | Options - :cov, :covalent, :vdw, :vanderwaals, :bas, :ballandstick
+- radiustype --- :ballandstick | Options - :cov, :covalent, :vdw, :vanderwaals, :bas, :ballandstick, :spacefilling
 """
-function atomradii(atoms::Vector{T}; radiustype = :covalent) where T<:BioStructures.AbstractAtom
+function atomradii(atoms::Vector{T}; radiustype = :ballandstick) where T<:BioStructures.AbstractAtom
 	if radiustype == :covalent || radiustype == :cov
 		return [covalentradii[BioStructures.element(x)] for x in atoms]
-	elseif radiustype == :vanderwaals || radiustype == :vdw
+	elseif radiustype == :vanderwaals || radiustype == :vdw || radiustype == :spacefilling
 		return [vanderwaalsradii[BioStructures.element(x)] for x in atoms]
     elseif radiustype == :ballandstick || radiustype == :bas
 		return [covalentradii[BioStructures.element(x)] for x in atoms]
@@ -29,10 +29,10 @@ function atomradii(atoms::Vector{T}; radiustype = :covalent) where T<:BioStructu
 		return [covalentradii[BioStructures.element(x)] for x in atoms]
 	end
 end
-function atomradii(atoms::Vector{T}; radiustype = :covalent) where T<:MIToS.PDB.PDBAtom
+function atomradii(atoms::Vector{T}; radiustype = :ballandstick) where T<:MIToS.PDB.PDBAtom
 	if radiustype == :covalent || radiustype == :cov
 		return [covalentradii[x.element] for x in atoms]
-	elseif radiustype == :vanderwaals || radiustype == :vdw
+	elseif radiustype == :vanderwaals || radiustype == :vdw || radiustype == :spacefilling
 		return [vanderwaalsradii[x.element] for x in atoms]
     elseif radiustype == :ballandstick || radiustype == :bas
 		return [covalentradii[BioStructures.element(x)] for x in atoms]
@@ -48,12 +48,12 @@ end
 Collect atom radius based on element for plotting.
 
 ### Keyword Arguments:
-- radiustype --- :covalent | Options - :cov, :covalent, :vdw, :vanderwaals, :bas, :ballandstick
+- radiustype --- :ballandstick | Options - :cov, :covalent, :vdw, :vanderwaals, :bas, :ballandstick, :spacefilling
 """
-function atomradius(atom::T; radiustype = :covalent) where T<:BioStructures.AbstractAtom
+function atomradius(atom::T; radiustype = :ballandstick) where T<:BioStructures.AbstractAtom
     if radiustype == :covalent || radiustype == :cov
 		return covalentradii[BioStructures.element(atom)]
-	elseif radiustype == :vanderwaals || radiustype == :vdw
+	elseif radiustype == :vanderwaals || radiustype == :vdw || radiustype == :spacefilling
 		return vanderwaalsradii[BioStructures.element(atom)]
     elseif radiustype == :ballandstick || radiustype == :bas
 		return covalentradii[BioStructures.element(atom)]
@@ -62,10 +62,10 @@ function atomradius(atom::T; radiustype = :covalent) where T<:BioStructures.Abst
 		return covalentradii[BioStructures.element(atom)]
 	end
 end
-function atomradius(atom::T; radiustype = :covalent) where T<:MIToS.PDB.PDBAtom
+function atomradius(atom::T; radiustype = :ballandstick) where T<:MIToS.PDB.PDBAtom
     if radiustype == :covalent || radiustype == :cov
         return covalentradii[atom.element]
-    elseif radiustype == :vanderwaals || radiustype == :vdw
+    elseif radiustype == :vanderwaals || radiustype == :vdw || radiustype == :spacefilling
         return vanderwaalsradii[atom.element]
     elseif radiustype == :ballandstick || radiustype == :bas
 		return covalentradii[atom.element]
@@ -283,33 +283,33 @@ Get a Vector of sizes for the atoms from a BioStructures.StructuralElementOrList
 This function uses 'MIToS.PDB.bestoccupancy' or 'defaultatom' to ensure only one position per atom.
 
 ### Keyword Arguments:
-- radiustype --- :covalent | Options - :cov, :covalent, :vdw, :vanderwaals, :bas, :ballandstick
+- radiustype --- :ballandstick | Options - :cov, :covalent, :vdw, :vanderwaals, :bas, :ballandstick, :spacefilling
 """
-function atomsizes(struc::BioStructures.StructuralElementOrList; radiustype = :covalent)
+function atomsizes(struc::BioStructures.StructuralElementOrList; radiustype = :ballandstick)
     atms = defaultatom.(BioStructures.collectatoms(struc))
     sizes = atomradii(atms; radiustype = radiustype)
     return sizes
 end
-function atomsizes(struc::Observable{T}; radiustype = :covalent) where {T<:BioStructures.StructuralElementOrList}
+function atomsizes(struc::Observable{T}; radiustype = :ballandstick) where {T<:BioStructures.StructuralElementOrList}
     atms = @lift defaultatom.(BioStructures.collectatoms($struc))
     sizes = @lift atomradii($atms; radiustype = radiustype)
     return sizes
 end
-function atomsizes(resz::Vector{MIToS.PDB.PDBResidue}; radiustype = :covalent)
+function atomsizes(resz::Vector{MIToS.PDB.PDBResidue}; radiustype = :ballandstick)
     atms = [MIToS.PDB.bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
     sizes = atomradii(atms; radiustype = radiustype)
     return sizes
 end
-function atomsizes(resz::Observable{T}; radiustype = :covalent) where {T<:Vector{MIToS.PDB.PDBResidue}}
+function atomsizes(resz::Observable{T}; radiustype = :ballandstick) where {T<:Vector{MIToS.PDB.PDBResidue}}
     atms = @lift [MIToS.PDB.bestoccupancy($resz[i].atoms) for i in 1:length($resz)] |> flatten
     sizes = @lift atomradii($atms; radiustype = radiustype)
     return sizes
 end
-function atomsizes(atms::Vector{MIToS.PDB.PDBAtom}; radiustype = :covalent)
+function atomsizes(atms::Vector{MIToS.PDB.PDBAtom}; radiustype = :ballandstick)
     sizes = atomradii(atms; radiustype = radiustype)
     return sizes
 end
-function atomsizes(atms::Observable{T}; radiustype = :covalent) where {T<:Vector{MIToS.PDB.PDBAtom}}
+function atomsizes(atms::Observable{T}; radiustype = :ballandstick) where {T<:Vector{MIToS.PDB.PDBAtom}}
     sizes = @lift atomradii($atms; radiustype = radiustype)
     return sizes
 end
@@ -320,8 +320,8 @@ end
     plottingdata( atoms )
 
 This function returns an OrderedDict of the main data used for plotting. 
-
 This function uses 'MIToS.PDB.bestoccupancy' or 'defaultatom' to ensure only one position per atom.
+By default the kwarg 'water' is set to false, so water molecules are not included.
 
 ### Returns:
     OrderedDict("atoms" => ..., 
@@ -331,14 +331,19 @@ This function uses 'MIToS.PDB.bestoccupancy' or 'defaultatom' to ensure only one
                 "bonds" => ...)
 
 ### Keyword Arguments:
-- colors ------- elecolors | Options - elecolors, aquacolors, shapelycolors, maecolors
-- radiustype --- :covalent | Options - :cov, :covalent, :vdw, :vanderwaals, :bas, :ballandstick
+- colors ------- elecolors      | Options - elecolors, aquacolors, shapelycolors, maecolors
+- radiustype --- :ballandstick  | Options - :cov, :covalent, :vdw, :vanderwaals, :bas, :ballandstick, :spacefilling
+- water -------- false          | Options - true, false
 """
 function plottingdata(struc::BioStructures.StructuralElementOrList;
                         colors = elecolors,
-                        radiustype = :covalent)
+                        radiustype = :ballandstick,
+                        water = false)
     #
     atms = defaultatom.(BioStructures.collectatoms(struc))
+    if water == false
+        atms = collectatoms(struc,!waterselector)
+    end
     atmcords = coordarray(atms) |> transpose |> collect
     colrs = []
     try
@@ -357,9 +362,13 @@ function plottingdata(struc::BioStructures.StructuralElementOrList;
 end
 function plottingdata(struc::Observable{T};
                         colors = elecolors,
-                        radiustype = :covalent) where {T<:BioStructures.StructuralElementOrList}
+                        radiustype = :ballandstick,
+                        water = false) where {T<:BioStructures.StructuralElementOrList}
     #
     atms = @lift defaultatom.(BioStructures.collectatoms($struc))
+    if water == false
+        atms = @lift collectatoms($struc,!waterselector)
+    end
     atmcords = @lift coordarray($atms) |> transpose |> collect
     colrs = []
     try
@@ -378,7 +387,8 @@ function plottingdata(struc::Observable{T};
 end
 function plottingdata(resz::Vector{MIToS.PDB.PDBResidue};
                         colors = elecolors,
-                        radiustype = :covalent)
+                        radiustype = :ballandstick,
+                        water = false)
     #
     atms = [MIToS.PDB.bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
     atmcords = [[atms[i].coordinates[1],atms[i].coordinates[2],atms[i].coordinates[3]] for i in 1:length(atms)] |> combinedims |> transpose |> collect
@@ -399,7 +409,8 @@ function plottingdata(resz::Vector{MIToS.PDB.PDBResidue};
 end
 function plottingdata(resz::Observable{T};
                         colors = elecolors,
-                        radiustype = :covalent) where {T<:Vector{MIToS.PDB.PDBResidue}}
+                        radiustype = :ballandstick,
+                        water = false) where {T<:Vector{MIToS.PDB.PDBResidue}}
     #
     atms = @lift [MIToS.PDB.bestoccupancy($resz[i].atoms) for i in 1:length($resz)] |> flatten
     atmcords = @lift [[$atms[i].coordinates[1],$atms[i].coordinates[2],$atms[i].coordinates[3]] for i in 1:length($atms)] |> combinedims |> transpose |> collect
@@ -420,7 +431,8 @@ function plottingdata(resz::Observable{T};
 end
 function plottingdata(atms::Vector{MIToS.PDB.PDBAtom};
                         colors = elecolors,
-                        radiustype = :covalent)
+                        radiustype = :ballandstick,
+                        water = false)
     #
     atmcords = [[atms[i].coordinates[1],atms[i].coordinates[2],atms[i].coordinates[3]] for i in 1:length(atms)] |> combinedims |> transpose |> collect
     colrs = to_color.([colors[x.element] for x in atms])
@@ -434,7 +446,8 @@ function plottingdata(atms::Vector{MIToS.PDB.PDBAtom};
 end
 function plottingdata(atms::Observable{T};
                         colors = elecolors,
-                        radiustype = :covalent) where {T<:Vector{MIToS.PDB.PDBAtom}}
+                        radiustype = :ballandstick,
+                        water = false) where {T<:Vector{MIToS.PDB.PDBAtom}}
     #
     atmcords = @lift atmcords = [[$atms[i].coordinates[1],$atms[i].coordinates[2],$atms[i].coordinates[3]] for i in 1:length($atms)] |> combinedims |> transpose |> collect
     colrs = @lift to_color.([colors[x.element] for x in $atms])
@@ -448,13 +461,15 @@ function plottingdata(atms::Observable{T};
 end
 function plottingdata(pdata::AbstractDict;
                         colors = elecolors,
-                        radiustype = :covalent)
+                        radiustype = :ballandstick,
+                        water = false)
     #
     return pdata
 end
 function plottingdata(pdata::Observable{T};
                         colors = elecolors,
-                        radiustype = :covalent) where {T<:AbstractDict}
+                        radiustype = :ballandstick,
+                        water = false) where {T<:AbstractDict}
     #
     return pdata
 end
@@ -495,13 +510,14 @@ strucplot = plotstruc!(fig, chain_A)
 ### Keyword Arguments:
 - resolution ----- (800,600)
 - gridposition --- (1,1)  # if an MSA is already plotted, (2,1:3) works well
-- plottype ------- :covalent, :ballandstick, or :spacefilling
+- plottype ------- :ballandstick, :covalent, or :spacefilling
 - atomcolors ----- elecolors, others in `getbiocolors()`, or provide a Dict like: "N" => :blue
 - markersize ----- 0.0
 - markerscale ---- 1.0
 - bondtype ------- :knowledgebased, :covalent, or :distance
 - distance ------- 1.9  # distance cutoff for covalent bonds
 - inspectorlabel - :default, or define your own function like: (self, i, p) -> "atom: ... coords: ..."
+- water ---------- false  # show water molecules
 - kwargs... ------ keyword arguments passed to the atom `meshscatter`
 """
 function plotstruc!(fig::Figure, struc::T; kwargs...) where {T<:Union{Vector{MIToS.PDB.PDBAtom}, 
@@ -521,17 +537,18 @@ end
 function plotstruc!(fig::Figure, struc::Observable;
                     resolution = (800,600),
                     gridposition = (1,1),
-                    plottype = :covalent,
+                    plottype = :ballandstick,
                     atomcolors = elecolors,
                     markersize = 0.0,
                     markerscale = 1.0,
                     bondtype = :knowledgebased,
                     distance = 1.9,
                     inspectorlabel = :default,
+                    water = false,
                     kwargs...
                     )
 	#
-    plotdata = @lift plottingdata($struc; colors = atomcolors, radiustype = plottype)
+    plotdata = @lift plottingdata($struc; colors = atomcolors, radiustype = plottype, water = water)
     atms = @lift $plotdata["atoms"]
     cords = @lift $plotdata["coords"]
     colrs = @lift $plotdata["colors"]
@@ -591,13 +608,14 @@ end
 function plotstruc!(fig::Figure, plotdata::Observable{T};
                     resolution = (800,600),
                     gridposition = (1,1),
-                    plottype = :covalent,
+                    plottype = :ballandstick,
                     atomcolors = elecolors,
                     markersize = 0.0,
                     markerscale = 1.0,
                     bondtype = :knowledgebased,
                     distance = 1.9,
                     inspectorlabel = :default,
+                    water = false,
                     kwargs...
                     ) where {T<:AbstractDict}
 	#
@@ -660,13 +678,14 @@ end
 function plotstruc!(fig::Figure, plotdata::T;
                     resolution = (800,600),
                     gridposition = (1,1),
-                    plottype = :covalent,
+                    plottype = :ballandstick,
                     atomcolors = elecolors,
                     markersize = 0.0,
                     markerscale = 1.0,
                     bondtype = :knowledgebased,
                     distance = 1.9,
                     inspectorlabel = :default,
+                    water = false,
                     kwargs...
                     ) where {T<:AbstractDict}
 	#
@@ -729,17 +748,18 @@ end
 function plotstruc!(figposition::GridPosition, struc::Observable;
                     resolution = (800,600),
                     gridposition = (1,1),
-                    plottype = :covalent,
+                    plottype = :ballandstick,
                     atomcolors = elecolors,
                     markersize = 0.0,
                     markerscale = 1.0,
                     bondtype = :knowledgebased,
                     distance = 1.9,
                     inspectorlabel = :default,
+                    water = false,
                     kwargs...
                     )
 	#
-    plotdata = @lift plottingdata($struc; colors = atomcolors, radiustype = plottype)
+    plotdata = @lift plottingdata($struc; colors = atomcolors, radiustype = plottype, water = water)
     atms = @lift $plotdata["atoms"]
     cords = @lift $plotdata["coords"]
     colrs = @lift $plotdata["colors"]
@@ -789,13 +809,14 @@ end
 function plotstruc!(figposition::GridPosition, plotdata::Observable{T};
                     resolution = (800,600),
                     gridposition = (1,1),
-                    plottype = :covalent,
+                    plottype = :ballandstick,
                     atomcolors = elecolors,
                     markersize = 0.0,
                     markerscale = 1.0,
                     bondtype = :knowledgebased,
                     distance = 1.9,
                     inspectorlabel = :default,
+                    water = false,
                     kwargs...
                     ) where {T<:AbstractDict}
 	#
@@ -848,13 +869,14 @@ end
 function plotstruc!(figposition::GridPosition, plotdata::T;
                     resolution = (800,600),
                     gridposition = (1,1),
-                    plottype = :covalent,
+                    plottype = :ballandstick,
                     atomcolors = elecolors,
                     markersize = 0.0,
                     markerscale = 1.0,
                     bondtype = :knowledgebased,
                     distance = 1.9,
                     inspectorlabel = :default,
+                    water = false,
                     kwargs...
                     ) where {T<:AbstractDict}
 	#
@@ -941,13 +963,14 @@ strucplot = plotstruc(chain_A)
 ### Keyword Arguments:
 - resolution ----- (800,600)
 - gridposition --- (1,1)  # if an MSA is already plotted, (2,1:3) works well
-- plottype ------- :covalent, :ballandstick, or :spacefilling
+- plottype ------- :ballandstick, :covalent, or :spacefilling
 - atomcolors ----- elecolors, others in `getbiocolors()`, or provide a Dict like: "N" => :blue
 - markersize ----- 0.0
 - markerscale ---- 1.0
 - bondtype ------- :knowledgebased, :covalent, or :distance
 - distance ------- 1.9  # distance cutoff for covalent bonds
 - inspectorlabel - :default, or define your own function like: (self, i, p) -> "atom: ... coords: ..."
+- water ---------- false  # show water molecules
 - kwargs... ------ keyword arguments passed to the atom `meshscatter`
 """
 function plotstruc(struc; kwargs...)
