@@ -1,22 +1,22 @@
 using BioMakie
+using GLMakie
 using GLMakie: Slider
 using SplitApplyCombine
 using GeometryBasics
-using Meshes
-
-using PyCall
-using Conda
 using BioStructures
 
-# SciPy and NumPy are required for this alpha shape algorithm
+# SciPy and NumPy are required for this alpha shape algorithm. They need to be installed in your Conda/Python environment.
+using PyCall
+using Conda
+
 scipy = pyimport_conda("scipy", "scipy")
 np = pyimport_conda("numpy", "numpy")
 collections = pyimport_conda("collections", "collections")
 
-# Function to shift array indices by 1, since Python is base 0 and Julia is base 1
+# Function to shift array indices by 1, since Python is base 0 and Julia is base 1.
 indexshift(idxs) = (idxs).+=1
 
-# Define the alpha shape algorithm
+# Define the alpha shape algorithm.
 py"""
     from scipy.spatial import Delaunay
     import numpy as np
@@ -50,14 +50,14 @@ py"""
     """
 
 
-# Define a function to get the alpha shape of a set of coordinates
-function getalphashape(coords::AbstractArray, alpha::T) where {T<:Real}
+# Define a function to get the alpha shape of a set of coordinates.
+function getalphashape(coords::Matrix, alpha::T) where {T<:Real}
     verts,edges,tris = py"alpha_shape_3D($(coords),$(alpha))"
     return [indexshift(verts),indexshift(edges),indexshift(tris)]
 end
 
-# Define a function to get points from spheres at a given radius around coordinates
-function getspherepoints(cords,radius)
+# Define a function to get points from spheres at a given radius around coordinates.
+function getspherepoints(cords::Matrix, radius::Real)
 	pnts = [GeometryBasics.Point{3,Float64}(cords[i,:]) for i in 1:size(cords,1)] |> Observable
 	spheres = GeometryBasics.Point{3,Float64}[]
 	
@@ -73,7 +73,7 @@ function getspherepoints(cords,radius)
 	return [[spheres[i].data...] for i in 1:size(spheres,1)] |> combinedims |> transpose |> collect
 end
 
-# Define a function to get line segments from a set of coordinates
+# Define a function to get line segments from a set of coordinates.
 function linesegs(arr::AbstractArray{T,3}) where T<:AbstractFloat
     new_arr::AbstractArray{Point3f0} = []
     @sync(@async begin
@@ -85,28 +85,16 @@ function linesegs(arr::AbstractArray{T,3}) where T<:AbstractFloat
     return new_arr |> combinedims |> transpose |> collect
 end
 
-# Define a function to get the surface area of a set of coordinates and connectivity
-function surfacearea(coordinates, connectivity)
-    totalarea = 0.0
-    @sync(@async begin
-        for i = 1:size(connectivity,1)
-            totalarea += measure(Ngon(Meshes.Point3.(coordinates[connectivity[i,1],:],
-                            coordinates[connectivity[i,2],:], coordinates[connectivity[i,3],:])))
-        end
-    end)
-    return totalarea
-end
-
-# Load the structure and get a coordinates Observable
+# Load the structure with BioStructures.jl and get a coordinates Observable.
 struc = retrievepdb("2vb1")
-atms = collectatoms(struc, standardselector)
-cords = coordarray(atms)' |> collect |> Observable
+atms = collectatoms(struc, standardselector) |> Observable
+cords = @lift coordarray($atms)' |> collect
 
 # Make the Figure and Layout
 fig = Figure(resolution = (800,600))
 layout = fig[1,1] = GridLayout(10, 9)
 
-# Add text and interactive elements
+# Add text and interactive elements. It can be helpful to run this line by line to see what is happening.
 strucname = struc.name[1:4]
 sc_scene = layout[1:10,1:6] = LScene(fig; show_axis = false)
 structxt = layout[1,7:8] = Label(fig, text = "Structure ID:  $(strucname)", fontsize = 35)
@@ -119,22 +107,41 @@ radiixt1 = lift(radii1.value) do s1; string("atom radius = ", round(s1, sigdigit
 radiitext = layout[6,7:9] = Label(fig, text = radiixt1, fontsize = 22)
 radiival = radii1.value
 
-# Get the alpha shape of the structure
+# Get the alpha shape of the structure.
 spnts = @lift getspherepoints($cords,$radiival)
 proteinshape = @lift let pnts = $spnts; getalphashape(pnts,$alphaval); end
 alphaverts = @lift $spnts[$(proteinshape)[1],:]
 alphaedges = @lift $spnts[$(proteinshape)[2],:] |> linesegs
-# alphaconnect = Makie.lift(proteinshape) do a1; a1[3]; end
 
-# Get the surface area of the shape
+# Finally, plot the shape. Moving the sliders will update the plot, but it is slow. 
+# You may want to click on the slider rather than dragging it. Speed may be improved in the future.
+linesegments!(sc_scene, alphaedges, color = :gray, transparency = true)
+
+
+# Optional/additional stuff
+# 
+# To show where the atoms are run the following line.
+meshscatter!(sc_scene, cords, markersize = 0.4, color = :blue)
+
+# To show the alpha shape vertices run the following line.
+meshscatter!(sc_scene, alphaverts, markersize = 0.4, color = :green)
+
+# Get the surface area of the alpha shape. 
+using Meshes
+# Define a function to get the surface area of a set of coordinates and connectivity.
+# The surface area changes when the alpha value or atom radius is changed.
+function surfacearea(coordinates, connectivity)
+    totalarea = 0.0
+    @sync(@async begin
+        for i = 1:size(connectivity,1)
+            totalarea += measure(Ngon(Meshes.Point3.(coordinates[connectivity[i,1],:],
+                            coordinates[connectivity[i,2],:], coordinates[connectivity[i,3],:])))
+        end
+    end)
+    return totalarea
+end
 surfarea = @lift surfacearea($spnts, $(proteinshape)[3])
 surfatext = layout[2,7:9] = Label(fig, text = lift(X->string("surface area = ", round(Int64, X), "  Å²"), surfarea), fontsize = 22)
 
-# Plot the alpha shape mesh (edges)
-linesegments!(sc_scene, alphaedges, color = :gray, transparency = true)
-
-# To show the atoms uncomment the following line
-# meshscatter!(sc_scene, cords, markersize = 0.4, color = :blue)
-
-# To show the alpha shape vertices uncomment the following line
-# meshscatter!(sc_scene, alphaverts, markersize = 0.4, color = :green)
+# Save the figure as a png file.
+save("alphashape.png", fig)

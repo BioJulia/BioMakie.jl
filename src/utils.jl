@@ -502,3 +502,40 @@ function kdict(str::AbstractString)
     end
 end
 kdict(c::Char) = kdict(string(c))
+function readdata(filename; titles = true)
+    filedata = []
+
+    if endswith(filename,".csv")
+        filedata = readdlm(filename,',')
+        if titles == true
+            filedata = identity.(DataFrame(filedata[2:end,:],filedata[1,:]))
+        else
+            filedata = identity.(DataFrame(filedata[1:end,:]))
+        end
+    elseif endswith(filename,".tab")
+        filedata = readdlm(filename,'\t')
+        if titles == true
+            filedata = identity.(DataFrame(filedata[2:end,:],filedata[1,:]))
+        else
+            filedata = identity.(DataFrame(filedata[1:end,:]))
+        end
+    elseif endswith(filename,".tsv")
+        filedata = readdlm(filename,'\t')
+        if titles == true
+            filedata = identity.(DataFrame(filedata[2:end,:],filedata[1,:]))
+        else
+            filedata = identity.(DataFrame(filedata[1:end,:]))
+        end
+    elseif endswith(filename,".txt")
+        filedata = read(filename,String)
+        if titles == true
+            filedata = identity.(DataFrame(filedata[2:end,:],filedata[1,:]))
+        else
+            filedata = identity.(DataFrame(filedata[1:end,:]))
+        end
+    else
+        println("filetype not supported")
+    end
+    
+    return filedata
+end
