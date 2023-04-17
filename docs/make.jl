@@ -21,7 +21,7 @@ makedocs(; modules=[BioMakie], authors="Daniel Kool",
          sitename="BioMakie.jl",
          format=Documenter.HTML(; canonical="https://kool7d.github.io/BioMakie.jl"),
          pages=["Home" => "index.md",
-                "Examples" => "Examples/alphashape.md",
+                "Examples" => "Examples/alphashape/alphashape.md",
                 "API" => "API.md",
                 ]
 )
