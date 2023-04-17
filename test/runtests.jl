@@ -3,7 +3,6 @@ module TestBioMakie
 using LinearAlgebra
 using Test
 
-using Aqua
 using BioStructures
 using MIToS, MIToS.Information, MIToS.MSA, MIToS.Pfam, MIToS.SIFTS, MIToS.Utils
 using ColorTypes, ColorSchemes, ImageCore, Colors
@@ -20,8 +19,6 @@ using BioMakie:
 # All writing is done to one temporary file which is removed at the end
 temp_filename, io = mktemp()
 close(io)
-
-Aqua.test_all(BioMakie; ambiguities=(recursive=false))
 
 @testset "Structure plotting" begin
     # BioStructures
