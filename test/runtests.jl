@@ -6,8 +6,7 @@ using Test
 using BioStructures
 using MIToS, MIToS.Information, MIToS.MSA, MIToS.Pfam, MIToS.SIFTS, MIToS.Utils
 using ColorTypes, ColorSchemes, ImageCore, Colors
-# using GLMakie
-# GLMakie.activate!()
+using GLMakie
 
 using BioMakie
 using BioMakie:
