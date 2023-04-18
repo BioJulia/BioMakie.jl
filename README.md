@@ -5,49 +5,59 @@
 [![Build Status](https://github.com/kool7d/BioMakie.jl/workflows/CI/badge.svg)](https://github.com/kool7d/BioMakie.jl/actions?query=workflow%3ACI+branch%3Amaster)
 <!-- [![codecov.io](http://codecov.io/github/kool7d/BioMakie.jl/coverage.svg?branch=master)](http://codecov.io/github/kool7d/BioMakie.jl?branch=master) -->
 
-## Installation
+This package provides plotting functions for protein structures, multiple sequence alignments, and some other related plots like protein structure contact maps.
 
-Julia is required. Install the BioMakie master branch from the Julia REPL. 
-Enter the package mode by pressing ] and run:
-`add BioMakie`.
+So far, plotting methods exist for packages: 
+ - BioStructures.jl
+ - MIToS.jl
+ - FastaIO.jl
+ - FASTX.jl
+
+Plotting methods in development:
+ - MolecularGraph.jl
+ - ProtoSyn.jl
+
+## Installation
+ 
+Enter the package mode by pressing ] and run `add BioMakie`.
 
 ## Usage
 
-To view a protein, use the `plotstruc` function with a BioStructures 
-or MIToS structure.
+The main plotting functions are **plotstruc** and **plotmsa**, along with their mutating 
+versions, **plotstruc!** and **plotmsa!**. The mutating functions allow the user to add multiple plots to the same Figure, using grid positions.
 
 ```julia
+using BioMakie
+using GLMakie
 using BioStructures
-struc = retrievepdb("2vb1", dir = "data\\") |> Observable
-# or #
-struc = read("data\\2vb1.pdb", BioStructures.PDB) |> Observable
+struc = retrievepdb("2vb1") |> Observable
+## or
+struc = read("2vb1.pdb", BioStructures.PDB) |> Observable
 
 fig = Figure()
-plotstruc!(fig, struc; plottype = :spacefilling, gridposition = (1,1), atomcolors = aquacolors)
+plotstruc!(fig, struc; plottype = :ballandstick, gridposition = (1,1), atomcolors = aquacolors)
 plotstruc!(fig, struc; plottype = :covalent, gridposition = (1,2))
 ```
-<p align="center"><img src="docs/src/assets/vdwcov.png"></p>
+<p align="center"><img src="docs/src/assets/2vb1.png"></p>
 
 To view a multiple sequence alignment, use the `plotmsa` function with a Pfam MSA or fasta file.
 
 ```julia
+using FASTX
+reader = open(FASTX.FASTA.Reader, "PF00062_full.fasta")
+msa = [reader...] |> Observable
+close(reader)
+## or 
+using MIToS
 using MIToS.MSA
-downloadpfam("pf00062")
-msa = MIToS.MSA.read("pf00062.stockholm.gz",Stockholm) |> Observable
+msa = MIToS.MSA.read("pf00062.stockholm.gz", Stockholm)
 
-msamatrix, xlabel, ylabel = getplottingdata(msa) .|> Observable
-
-msafig, plotdata... = plotmsa(msamatrix;
-				xlabels = xlabel, 	
-				ylabels = ylabel, colorscheme = :tableau_blue_green)
+fig = plotmsa(msa; colorscheme = :tableau_blue_green)
 ```
 <p align="center"><img src="docs/src/assets/msa.png"></p>
 
 ## Additional examples
 
-Documentation for advanced plotting will be available soon. 
-Selection and multiple plots linked:
-<p align="center"><img src="docs/src/assets/selectres1.png"></p>
+# Alpha shapes can be used to visualize the surface of a protein structure
 
-Animation of a mesh through different trajectories:
-<p align="center"><img src="docs/src/assets/shapeanimation.gif"></p>
+<p align="center"><img src="docs/src/assets/alphashape.png"></p>

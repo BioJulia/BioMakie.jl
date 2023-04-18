@@ -459,23 +459,18 @@ function plottingdata(atms::Observable{T};
                         "sizes" => sizes,
                         "bonds" => nothing)
 end
-function plottingdata(pdata::AbstractDict;
-                        colors = elecolors,
-                        radiustype = :ballandstick,
-                        water = false)
-    #
+function plottingdata(pdata::AbstractDict; kwargs...)
     return pdata
 end
-function plottingdata(pdata::Observable{T};
-                        colors = elecolors,
-                        radiustype = :ballandstick,
-                        water = false) where {T<:AbstractDict}
-    #
+function plottingdata(pdata::Observable{T}; kwargs...) where {T<:AbstractDict}
     return pdata
 end
 
 """
     plotstruc!( fig, structure )
+    plotstruc!( gridposition, structure )
+    plotstruc!( fig, plotdata )
+    plotstruc!( gridposition, plotdata )
 
 Plot a protein structure(/chain/residues/atoms) into a Figure. 
 
@@ -605,146 +600,6 @@ function plotstruc!(fig::Figure, struc::Observable;
     DataInspector(lscene)
     fig
 end
-function plotstruc!(fig::Figure, plotdata::Observable{T};
-                    resolution = (800,600),
-                    gridposition = (1,1),
-                    plottype = :ballandstick,
-                    atomcolors = elecolors,
-                    markersize = 0.0,
-                    markerscale = 1.0,
-                    bondtype = :knowledgebased,
-                    distance = 1.9,
-                    inspectorlabel = :default,
-                    water = false,
-                    kwargs...
-                    ) where {T<:AbstractDict}
-	#
-    atms = @lift $plotdata["atoms"]
-    cords = @lift $plotdata["coords"]
-    colrs = @lift $plotdata["colors"]
-    sizs = @lift $plotdata["sizes"]
-    bnds = @lift $plotdata["bonds"]
-
-    pxwidths = fig.scene.px_area[].widths
-    needresize = false
-    # the figure needs to be resized if there's a preexisting MSA plot (with default resolution)
-    if pxwidths == [1100,400]
-        needresize = true
-    end
-    if inspectorlabel == :default
-        inspectorlabel = @lift getinspectorlabel($atms)        
-    end
-    if plottype == :spacefilling || plottype == :vanderwaals || plottype == :vdw
-        markersize = @lift $sizs .* markerscale
-        lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
-        ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
-    elseif plottype == :ballandstick || plottype == :bas
-        if markersize == 0.0
-            markersize = @lift $sizs .* markerscale .* 0.7
-        end
-        lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
-        ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
-        if bnds == nothing
-            bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
-        end
-        bndshapes = @lift bondshapes($cords, $bnds)
-        bndmeshes = @lift normal_mesh.($bndshapes)
-        bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
-        bmesh.inspectable[] = false
-    elseif plottype == :covalent || plottype == :cov
-        markersize = @lift $sizs .* markerscale
-        if markerscale < 1.0
-            if bnds == nothing
-                bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
-            end
-            bndshapes = @lift bondshapes($cords, $bnds)
-            bndmeshes = @lift normal_mesh.($bndshapes)
-            bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
-            bmesh.inspectable[] = false
-        end
-        lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
-        ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
-    else
-        ArgumentError("bad plottype kwarg")
-    end
-    # the window has to be reopened to resize at the moment
-    if needresize == true
-        fig.scene.px_area[] = HyperRectangle{2, Int64}([0, 0], [pxwidths[1], pxwidths[2]+resolution[2]])
-        Makie.update_state_before_display!(fig)
-    end
-    DataInspector(lscene)
-    fig
-end
-function plotstruc!(fig::Figure, plotdata::T;
-                    resolution = (800,600),
-                    gridposition = (1,1),
-                    plottype = :ballandstick,
-                    atomcolors = elecolors,
-                    markersize = 0.0,
-                    markerscale = 1.0,
-                    bondtype = :knowledgebased,
-                    distance = 1.9,
-                    inspectorlabel = :default,
-                    water = false,
-                    kwargs...
-                    ) where {T<:AbstractDict}
-	#
-    atms = plotdata["atoms"]
-    cords = plotdata["coords"]
-    colrs = plotdata["colors"]
-    sizs = plotdata["sizes"]
-    bnds = plotdata["bonds"]
-
-    pxwidths = fig.scene.px_area[].widths
-    needresize = false
-    # the figure needs to be resized if there's a preexisting MSA plot (with default resolution)
-    if pxwidths == [1100,400]
-        needresize = true
-    end
-    if inspectorlabel == :default
-        inspectorlabel = @lift getinspectorlabel($atms)        
-    end
-    if plottype == :spacefilling || plottype == :vanderwaals || plottype == :vdw
-        markersize = @lift $sizs .* markerscale
-        lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
-        ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
-    elseif plottype == :ballandstick || plottype == :bas
-        if markersize == 0.0
-            markersize = @lift $sizs .* markerscale .* 0.7
-        end
-        lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
-        ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
-        if bnds == nothing
-            bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
-        end
-        bndshapes = @lift bondshapes($cords, $bnds)
-        bndmeshes = @lift normal_mesh.($bndshapes)
-        bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
-        bmesh.inspectable[] = false
-    elseif plottype == :covalent || plottype == :cov
-        markersize = @lift $sizs .* markerscale
-        if markerscale < 1.0
-            if bnds == nothing
-                bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
-            end
-            bndshapes = @lift bondshapes($cords, $bnds)
-            bndmeshes = @lift normal_mesh.($bndshapes)
-            bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
-            bmesh.inspectable[] = false
-        end
-        lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
-        ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
-    else
-        ArgumentError("bad plottype kwarg")
-    end
-    # the window has to be reopened to resize at the moment
-    if needresize == true
-        fig.scene.px_area[] = HyperRectangle{2, Int64}([0, 0], [pxwidths[1], pxwidths[2]+resolution[2]])
-        Makie.update_state_before_display!(fig)
-    end
-    DataInspector(lscene)
-    fig
-end
 function plotstruc!(figposition::GridPosition, struc::Observable;
                     resolution = (800,600),
                     gridposition = (1,1),
@@ -806,7 +661,7 @@ function plotstruc!(figposition::GridPosition, struc::Observable;
     DataInspector(lscene)
     fig
 end
-function plotstruc!(figposition::GridPosition, plotdata::Observable{T};
+function plotstruc!(fig::Figure, plotdata::AbstractDict{String,T};
                     resolution = (800,600),
                     gridposition = (1,1),
                     plottype = :ballandstick,
@@ -818,26 +673,47 @@ function plotstruc!(figposition::GridPosition, plotdata::Observable{T};
                     inspectorlabel = :default,
                     water = false,
                     kwargs...
-                    ) where {T<:AbstractDict}
+                    ) where {T}
 	#
-    atms = @lift $plotdata["atoms"]
-    cords = @lift $plotdata["coords"]
-    colrs = @lift $plotdata["colors"]
-    sizs = @lift $plotdata["sizes"]
-    bnds = @lift $plotdata["bonds"]
+    atms = []
+    cords = []
+    colrs = []
+    sizs = []
+    bnds = []
 
+    if T<:Observable
+        atms = plotdata["atoms"]
+        cords = plotdata["coords"]
+        colrs = plotdata["colors"]
+        sizs = plotdata["sizes"]
+        bnds = plotdata["bonds"]
+    else
+        atms = plotdata["atoms"] |> Observable
+        cords = plotdata["coords"] |> Observable
+        colrs = plotdata["colors"] |> Observable
+        sizs = plotdata["sizes"] |> Observable
+        bnds = plotdata["bonds"] |> Observable
+    end
+
+
+    pxwidths = fig.scene.px_area[].widths
+    needresize = false
+    # the figure needs to be resized if there's a preexisting MSA plot (with default resolution)
+    if pxwidths == [1100,400]
+        needresize = true
+    end
     if inspectorlabel == :default
-        inspectorlabel = @lift getinspectorlabel($atms)        
+        inspectorlabel = @lift getinspectorlabel($struc)        
     end
     if plottype == :spacefilling || plottype == :vanderwaals || plottype == :vdw
         markersize = @lift $sizs .* markerscale
-        lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
+        lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
     elseif plottype == :ballandstick || plottype == :bas
         if markersize == 0.0
             markersize = @lift $sizs .* markerscale .* 0.7
         end
-        lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
+        lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
         if bnds == nothing
             bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
@@ -857,16 +733,20 @@ function plotstruc!(figposition::GridPosition, plotdata::Observable{T};
             bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
             bmesh.inspectable[] = false
         end
-        lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
+        lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
     else
         ArgumentError("bad plottype kwarg")
     end
-
+    # the window has to be reopened to resize at the moment
+    if needresize == true
+        fig.scene.px_area[] = HyperRectangle{2, Int64}([0, 0], [pxwidths[1], pxwidths[2]+resolution[2]])
+        Makie.update_state_before_display!(fig)
+    end
     DataInspector(lscene)
     fig
 end
-function plotstruc!(figposition::GridPosition, plotdata::T;
+function plotstruc!(figposition::GridPosition, plotdata::AbstractDict{String,T};
                     resolution = (800,600),
                     gridposition = (1,1),
                     plottype = :ballandstick,
@@ -878,13 +758,27 @@ function plotstruc!(figposition::GridPosition, plotdata::T;
                     inspectorlabel = :default,
                     water = false,
                     kwargs...
-                    ) where {T<:AbstractDict}
+                    ) where {T}
 	#
-    atms = plotdata["atoms"]
-    cords = plotdata["coords"]
-    colrs = plotdata["colors"]
-    sizs = plotdata["sizes"]
-    bnds = plotdata["bonds"]
+    atms = []
+    cords = []
+    colrs = []
+    sizs = []
+    bnds = []
+
+    if T<:Observable
+        atms = plotdata["atoms"]
+        cords = plotdata["coords"]
+        colrs = plotdata["colors"]
+        sizs = plotdata["sizes"]
+        bnds = plotdata["bonds"]
+    else
+        atms = plotdata["atoms"] |> Observable
+        cords = plotdata["coords"] |> Observable
+        colrs = plotdata["colors"] |> Observable
+        sizs = plotdata["sizes"] |> Observable
+        bnds = plotdata["bonds"] |> Observable
+    end
 
     if inspectorlabel == :default
         inspectorlabel = @lift getinspectorlabel($atms)        
