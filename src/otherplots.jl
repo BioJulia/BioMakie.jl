@@ -2,6 +2,7 @@ export heatmap,
        heatmap!
 
 import Makie.heatmap
+import Makie.heatmap!
 using PairwiseListMatrices, NamedArrays
 using MIToS.PDB
 
@@ -40,7 +41,7 @@ function heatmap(dmap::NamedMatrix{Float64, PairwiseListMatrix{Float64, false, V
 
     hm = heatmap!(ax, dat; inspector_label = (self, i, p) -> "$(dmap_1[i[2]]): $(i[2])\n$(dmap_1[i[1]]): " *
         "$(i[1])\nvalue: $(round(dat[i...];digits=6))",
-                    colormap = :viridis, kwargs...)
+                    colormap = colormap, kwargs...)
     Colorbar(fig[1,2],hm)
 
     ax.xlabel = dmap.dimnames[2]
@@ -89,7 +90,7 @@ function heatmap!(fig::Figure, dmap::NamedMatrix{Float64, PairwiseListMatrix{Flo
 
     hm = heatmap!(ax, dat; inspector_label = (self, i, p) -> "$(dmap_1[i[2]]): $(i[2])\n$(dmap_1[i[1]]): " *
         "$(i[1])\nvalue: $(round(dat[i...];digits=6))",
-        colormap = :viridis, kwargs...)
+        colormap = colormap, kwargs...)
     Colorbar(fig[1,2],hm)
 
     ax.xlabel = dmap.dimnames[2]
@@ -137,7 +138,7 @@ function heatmap(cmap::NamedMatrix{Bool, PairwiseListMatrix{Bool, false, Vector{
 
     hm = heatmap!(ax, dat; inspector_label = (self, i, p) -> "$(cmap_1[i[2]]): $(i[2])\n$(cmap_1[i[1]]): " *
         "$(i[1])\nvalue: $(round(dat[i...];digits=6))",
-                    colormap = :ice, kwargs...)
+                    colormap = colormap, kwargs...)
     
     ax.xlabel = cmap.dimnames[2]
     ax.ylabel = cmap.dimnames[1]
@@ -185,7 +186,7 @@ function heatmap!(fig::Figure, cmap::NamedMatrix{Bool, PairwiseListMatrix{Bool, 
 
     hm = heatmap!(ax, dat; inspector_label = (self, i, p) -> "$(cmap_1[i[2]]): $(i[2])\n$(cmap_1[i[1]]): " *
         "$(i[1])\nvalue: $(round(dat[i...];digits=6))",
-        colormap = :ice, kwargs...)
+        colormap = colormap, kwargs...)
 
     ax.xlabel = cmap.dimnames[2]
     ax.ylabel = cmap.dimnames[1]
@@ -226,7 +227,7 @@ function heatmap(dmap::DistanceMap; xlabel = "Residue 2", ylabel = "Residue 1", 
     dat = reverse(dmap.data; dims = 1)
 
     hm = heatmap!(ax, dat; inspector_label = (self, i, p) -> "$(i[2])  $(i[1])\nvalue: $(round(dat[i...];digits=5))",
-                    colormap = :viridis, kwargs...)
+                    colormap = colormap, kwargs...)
     Colorbar(fig[1,2],hm)
 
     ax.xlabel = xlabel
@@ -267,7 +268,7 @@ function heatmap!(fig::Figure, dmap::DistanceMap; xlabel = "Residue 2", ylabel =
     dat = reverse(dmap.data; dims = 1)
 
     hm = heatmap!(ax, dat; inspector_label = (self, i, p) -> "$(i[2])  $(i[1])\nvalue: $(round(dat[i...];digits=5))",
-                    colormap = :viridis, kwargs...)
+                    colormap = colormap, kwargs...)
     Colorbar(fig[1,2],hm)
 
     ax.xlabel = xlabel
@@ -309,7 +310,7 @@ function heatmap(cmap::ContactMap; xlabel = "Residue 2", ylabel = "Residue 1", c
     dat = reverse(cmap.data; dims = 1)
 
     hm = heatmap!(ax, dat; inspector_label = (self, i, p) -> "$(i[2])  $(i[1])\nvalue: $(round(dat[i...];digits=5))",
-                    colormap = :ice, kwargs...)
+                    colormap = colormap, kwargs...)
 
     ax.xlabel = xlabel
     ax.ylabel = ylabel
@@ -351,7 +352,7 @@ function heatmap!(fig::Figure, cmap::ContactMap; xlabel = "Residue 2", ylabel = 
     dat = reverse(cmap.data; dims = 1)
 
     hm = heatmap!(ax, dat; inspector_label = (self, i, p) -> "$(i[2])  $(i[1])\nvalue: $(round(dat[i...];digits=5))",
-                    colormap = :ice, kwargs...)
+                    colormap = colormap, kwargs...)
 
     ax.xlabel = xlabel
     ax.ylabel = ylabel

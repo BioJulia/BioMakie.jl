@@ -35,7 +35,7 @@ function atomradii(atoms::Vector{T}; radiustype = :ballandstick) where T<:MIToS.
 	elseif radiustype == :vanderwaals || radiustype == :vdw || radiustype == :spacefilling
 		return [vanderwaalsradii[x.element] for x in atoms]
     elseif radiustype == :ballandstick || radiustype == :bas
-		return [covalentradii[BioStructures.element(x)] for x in atoms]
+		return [covalentradii[x.element] for x in atoms]
 	else
         println("radiustype not recognized, using covalent radii")
 		return [covalentradii[x.element] for x in atoms]
