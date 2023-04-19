@@ -42,6 +42,7 @@ include("../src/utils.jl")
 include("../src/chemdata.jl")
 include("../src/bonds.jl")
 include("../src/structure.jl")
+include("../src/otherplots.jl")
 include("../src/msa.jl")
 
 end # BioMakie

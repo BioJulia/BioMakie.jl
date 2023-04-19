@@ -1,5 +1,4 @@
 # BioMakie.jl
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://kool7d.github.io/BioMakie.jl/stable)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://kool7d.github.io/BioMakie.jl/dev)
 
 [![Build Status](https://github.com/kool7d/BioMakie.jl/workflows/CI/badge.svg)](https://github.com/kool7d/BioMakie.jl/actions?query=workflow%3ACI+branch%3Amaster)
@@ -58,6 +57,6 @@ fig = plotmsa(msa; colorscheme = :tableau_blue_green)
 
 ## Additional examples
 
-# Alpha shapes can be used to visualize the surface of a protein structure
+## Alpha shapes can be used to visualize the surface of a protein structure
 
 <p align="center"><img src="docs/src/assets/alphashape.png"></p>
