@@ -183,7 +183,7 @@ Save the figure as a png file.
 save("alphashape.png", fig)
 ````
 
-![alphashape](src/assets/alphashape.png)
+<p align="center"><img src="../../assets/alphashape.png"></p>
 
 ---
 
