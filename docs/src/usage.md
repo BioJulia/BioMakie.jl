@@ -53,13 +53,13 @@ msa = MIToS.MSA.read("pf00062.stockholm.gz", Stockholm)
 fig = plotmsa(msa; colorscheme = :tableau_blue_green)
 ````
 
-<p align="center"><img src="docs/src/assets/msa.png"></p>
+<p align="center"><img src="assets/msa.png"></p>
 
 ## Additional examples
 
 Alpha shapes can be used to visualize the surface of a protein structure
 
-<p align="center"><img src="../src/assets/alphashape.png"></p>
+<p align="center"><img src="assets/alphashape.png"></p>
 
 ---
 
