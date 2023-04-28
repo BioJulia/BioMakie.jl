@@ -25,14 +25,14 @@ heatmap(dmap)
 ```
 
 ### Keyword Arguments:
-- xlabel ----------------- "Residue 2"
-- ylabel ----------------- "Residue 1"
+- xlabel ----------------- "Item 2"
+- ylabel ----------------- "Item 1"
 - colormap --------------- :viridis
 - kwargs... -------------- additional keyword arguments to pass to heatmap
 """
 function heatmap(dmap::NamedMatrix{Float64, PairwiseListMatrix{Float64, false, Vector{Float64}}, 
-                Tuple{OrderedDict{String, Int64}, OrderedDict{String, Int64}}}; xlabel = "Residue 2", 
-                ylabel = "Residue 1", colormap = :ice, kwargs...)
+                Tuple{OrderedDict{String, Int64}, OrderedDict{String, Int64}}}; xlabel = "Item 2", 
+                ylabel = "Item 1", colormap = :ice, kwargs...)
     fig = Figure()
     ax = Axis(fig[1,1])
     dmap_1 = dmap.dicts[1] |> reversekv
@@ -75,14 +75,14 @@ heatmap!(fig, dmap)
 ```
 
 ### Keyword Arguments:
-- xlabel ----------------- "Residue 2"
-- ylabel ----------------- "Residue 1"
+- xlabel ----------------- "Item 2"
+- ylabel ----------------- "Item 1"
 - colormap --------------- :viridis
 - kwargs... -------------- additional keyword arguments to pass to heatmap
 """
 function heatmap!(fig::Figure, dmap::NamedMatrix{Float64, PairwiseListMatrix{Float64, false, Vector{Float64}}, 
-                Tuple{OrderedDict{String, Int64}, OrderedDict{String, Int64}}}; xlabel = "Residue 2", 
-                ylabel = "Residue 1", colormap = :ice, kwargs...)
+                Tuple{OrderedDict{String, Int64}, OrderedDict{String, Int64}}}; xlabel = "Item 2", 
+                ylabel = "Item 1", colormap = :ice, kwargs...)
     ax = Axis(fig[1,1])
     dmap_1 = dmap.dicts[1] |> reversekv
     dmap_2 = dmap.dicts[2] |> reversekv
@@ -122,14 +122,14 @@ heatmap(cmap)
 ```
 
 ### Keyword Arguments:
-- xlabel ----------------- "Residue 2"
-- ylabel ----------------- "Residue 1"
+- xlabel ----------------- "Item 2"
+- ylabel ----------------- "Item 1"
 - colormap --------------- Colormap to use
 - kwargs... -------------- additional keyword arguments to pass to heatmap
 """
 function heatmap(cmap::NamedMatrix{Bool, PairwiseListMatrix{Bool, false, Vector{Bool}}, 
-                Tuple{OrderedDict{String, Int64}, OrderedDict{String, Int64}}}; xlabel = "Residue 2", 
-                ylabel = "Residue 1", colormap = :ice, kwargs...)
+                Tuple{OrderedDict{String, Int64}, OrderedDict{String, Int64}}}; xlabel = "Item 2", 
+                ylabel = "Item 1", colormap = :ice, kwargs...)
     fig = Figure()
     ax = Axis(fig[1,1])
     cmap_1 = cmap.dicts[1] |> reversekv
@@ -171,14 +171,14 @@ heatmap!(fig, cmap)
 ```
 
 ### Keyword Arguments:
-- xlabel ----------------- "Residue 2"
-- ylabel ----------------- "Residue 1"
+- xlabel ----------------- "Item 2"
+- ylabel ----------------- "Item 1"
 - colormap --------------- :ice
 - kwargs... -------------- additional keyword arguments to pass to heatmap
 """
 function heatmap!(fig::Figure, cmap::NamedMatrix{Bool, PairwiseListMatrix{Bool, false, Vector{Bool}}, 
-                Tuple{OrderedDict{String, Int64}, OrderedDict{String, Int64}}}; xlabel = "Residue 2", 
-                ylabel = "Residue 1", colormap = :ice, kwargs...)
+                Tuple{OrderedDict{String, Int64}, OrderedDict{String, Int64}}}; xlabel = "Item 2", 
+                ylabel = "Item 1", colormap = :ice, kwargs...)
     ax = Axis(fig[1,1])
     cmap_1 = cmap.dicts[1] |> reversekv
     cmap_2 = cmap.dicts[2] |> reversekv
@@ -216,12 +216,12 @@ heatmap(dmap)
 ```
 
 ### Keyword Arguments:
-- xlabel ----------------- "Residue 2"
-- ylabel ----------------- "Residue 1"
+- xlabel ----------------- "Item 2"
+- ylabel ----------------- "Item 1"
 - colormap --------------- :viridis
 - kwargs... -------------- additional keyword arguments to pass to heatmap
 """
-function heatmap(dmap::DistanceMap; xlabel = "Residue 2", ylabel = "Residue 1", colormap = :viridis, kwargs...)
+function heatmap(dmap::DistanceMap; xlabel = "Item 2", ylabel = "Item 1", colormap = :viridis, kwargs...)
     fig = Figure()
     ax = Axis(fig[1,1])
     dat = reverse(dmap.data; dims = 1)
@@ -258,12 +258,12 @@ heatmap(dmap)
 ```
 
 ### Keyword Arguments:
-- xlabel ----------------- "Residue 2"
-- ylabel ----------------- "Residue 1"
+- xlabel ----------------- "Item 2"
+- ylabel ----------------- "Item 1"
 - colormap --------------- :viridis
 - kwargs... -------------- additional keyword arguments to pass to heatmap
 """
-function heatmap!(fig::Figure, dmap::DistanceMap; xlabel = "Residue 2", ylabel = "Residue 1", colormap = :viridis, kwargs...)
+function heatmap!(fig::Figure, dmap::DistanceMap; xlabel = "Item 2", ylabel = "Item 1", colormap = :viridis, kwargs...)
     ax = Axis(fig[1,1])
     dat = reverse(dmap.data; dims = 1)
 
@@ -299,12 +299,12 @@ heatmap(cmap)
 ```
 
 ### Keyword Arguments:
-- xlabel ----------------- "Residue 2"
-- ylabel ----------------- "Residue 1"
+- xlabel ----------------- "Item 2"
+- ylabel ----------------- "Item 1"
 - colormap --------------- :ice
 - kwargs... -------------- additional keyword arguments to pass to heatmap
 """
-function heatmap(cmap::ContactMap; xlabel = "Residue 2", ylabel = "Residue 1", colormap = :ice, kwargs...)
+function heatmap(cmap::ContactMap; xlabel = "Item 2", ylabel = "Item 1", colormap = :ice, kwargs...)
     fig = Figure()
     ax = Axis(fig[1,1])
     dat = reverse(cmap.data; dims = 1)
@@ -342,12 +342,12 @@ heatmap!(fig, cmap)
 ```
 
 ### Keyword Arguments:
-- xlabel ----------------- "Residue 2"
-- ylabel ----------------- "Residue 1"
+- xlabel ----------------- "Item 2"
+- ylabel ----------------- "Item 1"
 - colormap --------------- :ice
 - kwargs... -------------- Keyword arguments to pass to heatmap
 """
-function heatmap!(fig::Figure, cmap::ContactMap; xlabel = "Residue 2", ylabel = "Residue 1", colormap = :ice, kwargs...)
+function heatmap!(fig::Figure, cmap::ContactMap; xlabel = "Item 2", ylabel = "Item 1", colormap = :ice, kwargs...)
     ax = Axis(fig[1,1])
     dat = reverse(cmap.data; dims = 1)
 

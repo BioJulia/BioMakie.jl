@@ -29,7 +29,7 @@ plotstruc!(fig, struc; plottype = :ballandstick, gridposition = (1,1), atomcolor
 plotstruc!(fig, struc; plottype = :covalent, gridposition = (1,2))
 ````
 
-<p align="center"><img src="assets/2vb1.png"></p>
+<p align="center"><img src="src/assets/2vb1.png"></p>
 
 ### Multiple Sequence Alignments
 
