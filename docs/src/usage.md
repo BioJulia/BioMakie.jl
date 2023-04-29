@@ -59,10 +59,6 @@ fig = plotmsa(msa; colorscheme = :tableau_blue_green)
 Alpha shapes can be used to visualize the surface of a protein structure
 
 ![alphashape](assets/alphashape.png)
-![alphashape](src/assets/alphashape.png)
-![alphashape](../assets/alphashape.png)
-![alphashape](../../assets/alphashape.png)
-![alphashape](docs/src/assets/alphashape.png)
 
 ---
 
