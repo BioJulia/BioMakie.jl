@@ -1,7 +1,7 @@
 # BioMakie.jl
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://kool7d.github.io/BioMakie.jl/dev)
 
-[![Build Status](https://github.com/kool7d/BioMakie.jl/workflows/CI/badge.svg)](https://github.com/kool7d/BioMakie.jl/actions/workflows/ci.yml)
+[![Build Status](https://github.com/kool7d/BioMakie.jl/workflows/CI/badge.svg)](https://github.com/kool7d/BioMakie.jl/actions?query=workflow%3ACI+branch%3Adev)
 <!-- [![codecov.io](http://codecov.io/github/kool7d/BioMakie.jl/coverage.svg?branch=master)](http://codecov.io/github/kool7d/BioMakie.jl?branch=master) -->
 
 This package provides plotting functions for protein structures, multiple sequence alignments, and some other related plots like protein structure contact maps.
