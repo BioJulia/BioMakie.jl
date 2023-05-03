@@ -140,4 +140,4 @@ surfatext = layout[2,7:9] = Label(fig, text = lift(X->string("surface area = ", 
 # Save the figure as a png file.
 save("alphashape.png", fig)
 
-# ![alphashape](src/assets/alphashape.png)
+# ![alphashape](assets/alphashape.png)
