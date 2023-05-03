@@ -4,6 +4,8 @@ on:
     branches: [main]
     tags: ["*"]
   pull_request:
+    branches: [main]
+    tags: ["*"]
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
   cancel-in-progress: true
