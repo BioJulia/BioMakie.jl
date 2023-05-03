@@ -21,7 +21,7 @@ fig = Figure()
 plotstruc!(fig, struc; plottype = :ballandstick, gridposition = (1,1), atomcolors = aquacolors)
 plotstruc!(fig, struc; plottype = :covalent, gridposition = (1,2))
 
-# ![strucs](src/assets/2vb1.png)
+# ![strucs](assets/2vb1.png)
 
 # ### Multiple Sequence Alignments
 
@@ -43,10 +43,10 @@ msa = MIToS.MSA.read("pf00062.stockholm.gz", Stockholm)
 
 fig = plotmsa(msa; colorscheme = :tableau_blue_green)
 
-# ![MSA](src/assets/msa.png)
+# ![MSA](assets/msa.png)
 
 # ## Additional examples
 
 # Alpha shapes can be used to visualize the surface of a protein structure
 
-# ![alphashape](src/assets/alphashape.png)
+# ![alphashape](assets/alphashape.png)
