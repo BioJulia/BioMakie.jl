@@ -1,7 +1,7 @@
 name = "BioMakie"
 uuid = "7de43156-b762-4475-b39f-ba1e1e59ee2f"
 authors = ["Daniel Kool"]
-version = "0.2.2"
+version = "0.2.3"
 
 [deps]
 BioAlignments = "00701ae9-d1dc-5365-b64a-a3a3ebf5695e"
@@ -67,7 +67,7 @@ JSServe = "2"
 Lazy = "0.15"
 MIToS = "2"
 Makie = "0.19"
-Meshes = "0.27, 0.28, 0.29"
+Meshes = "^0.27"
 MolecularGraph = "0.13, 0.14"
 NamedArrays = "0.9"
 OrderedCollections = "1.4"
