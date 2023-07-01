@@ -1,6 +1,6 @@
 export atomradii,
        atomradius,
-       inspectorlabel,
+       getinspectorlabel,
        firstlabel,
        atomcolors,
        rescolors,
@@ -94,10 +94,10 @@ function getinspectorlabel(struc::BioStructures.StructuralElementOrList)
 end
 function getinspectorlabel(struc::Observable{T}) where {T<:BioStructures.StructuralElementOrList}
     atms = @lift defaultatom.(BioStructures.collectatoms($struc))
-    func = @lift (self, i, p) -> "chain: $(($atms[i].residue.chain).id)   " *
-    "res: $($atms[i].residue.name)   number: $($atms[i].residue.number)   index: $(i)\n" *
-    "atom: $($atms[i].name)   element: $($atms[i].element)   " *
-    "serial: $($atms[i].serial)\ncoordinates: $($atms[i].coords)    B: $($atms[i].temp_factor)"
+    func = (self, i, p) -> "chain: $((atms[][i].residue.chain).id)   " *
+    "res: $(atms[][i].residue.name)   number: $(atms[][i].residue.number)   index: $(i)\n" *
+    "atom: $(atms[][i].name)   element: $(atms[][i].element)   " *
+    "serial: $(atms[][i].serial)\ncoordinates: $(atms[][i].coords)    B: $(atms[][i].temp_factor)"
     return func
 end
 function getinspectorlabel(resz::Vector{MIToS.PDB.PDBResidue})
@@ -109,9 +109,9 @@ function getinspectorlabel(resz::Vector{MIToS.PDB.PDBResidue})
 end
 function getinspectorlabel(resz::Observable{T}) where {T<:Vector{MIToS.PDB.PDBResidue}}
     atms = @lift [MIToS.PDB.bestoccupancy($resz[i].atoms) for i in 1:length($resz)] |> flatten
-    func = @lift (self, i, p) -> "atom: $($atms[i].atom)   element: $($atms[i].element)   index: $(i)\n" *
-    "coordinates: $($atms[i].coordinates)\n" *
-    "occupancy: $($atms[i].occupancy)    B: $($atms[i].B)"
+    func = (self, i, p) -> "atom: $(atms[][i].atom)   element: $(atms[][i].element)   index: $(i)\n" *
+    "coordinates: $(atms[][i].coordinates)\n" *
+    "occupancy: $(atms[][i].occupancy)    B: $(atms[][i].B)"
     return func
 end
 function getinspectorlabel(atms::Vector{MIToS.PDB.PDBAtom})
@@ -121,9 +121,9 @@ function getinspectorlabel(atms::Vector{MIToS.PDB.PDBAtom})
     return func
 end
 function getinspectorlabel(atms::Observable{T}) where {T<:Vector{MIToS.PDB.PDBAtom}}
-    func = @lift (self, i, p) -> "atom: $($atms[i].atom)   element: $($atms[i].element)   index: $(i)\n" *
-    "coordinates: $($atms[i].coordinates)\n" *
-    "occupancy: $($atms[i].occupancy)    B: $($atms[i].B)"
+    func = (self, i, p) -> "atom: $(atms[][i].atom)   element: $(atms[][i].element)   index: $(i)\n" *
+    "coordinates: $(atms[][i].coordinates)\n" *
+    "occupancy: $(atms[][i].occupancy)    B: $(atms[][i].B)"
     return func
 end
 function getinspectorlabel(pdata::AbstractDict)
@@ -158,20 +158,20 @@ function getinspectorlabel(pdata::Observable{T}) where {T<:AbstractDict}
 
     if typeof(pdata[]["atoms"]) <: Vector{MIToS.PDB.PDBAtom}
         atms = pdata[]["atoms"]
-        func = @lift (self, i, p) -> "atom: $($atms[i].atom)   element: $($atms[i].element)   index: $(i)\n" *
-        "coordinates: $($atms[i].coordinates)\n" *
-        "occupancy: $($atms[i].occupancy)    B: $($atms[i].B)"
+        func = (self, i, p) -> "atom: $(atms[i].atom)   element: $(atms[i].element)   index: $(i)\n" *
+        "coordinates: $(atms[i].coordinates)\n" *
+        "occupancy: $(atms[i].occupancy)    B: $(atms[i].B)"
     elseif typeof(pdata[]["atoms"]) <: Vector{MIToS.PDB.PDBResidue}
         atms = [MIToS.PDB.bestoccupancy(pdata[]["atoms"][i].atoms) for i in 1:length(pdata[]["atoms"])] |> flatten
-        func = @lift (self, i, p) -> "atom: $($atms[i].atom)   element: $($atms[i].element)   index: $(i)\n" *
-        "coordinates: $($atms[i].coordinates)\n" *
-        "occupancy: $($atms[i].occupancy)    B: $($atms[i].B)"
+        func = (self, i, p) -> "atom: $(atms[i].atom)   element: $(atms[i].element)   index: $(i)\n" *
+        "coordinates: $(atms[i].coordinates)\n" *
+        "occupancy: $(atms[i].occupancy)    B: $(atms[i].B)"
     elseif typeof(pdata[]["atoms"]) <: BioStructures.StructuralElementOrList
-        atms = @lift defaultatom.(BioStructures.collectatoms($pdata[]["atoms"]))
-        func = @lift (self, i, p) -> "chain: $(($atms[i].residue.chain).id)   " *
-        "res: $($atms[i].residue.name)   number: $($atms[i].residue.number)   index: $(i)\n" *
-        "atom: $($atms[i].name)   element: $($atms[i].element)   " *
-        "serial: $($atms[i].serial)\ncoordinates: $($atms[i].coords)    B: $($atms[i].temp_factor)"
+        atms = defaultatom.(BioStructures.collectatoms(pdata[]["atoms"]))
+        func = (self, i, p) -> "chain: $((atms[i].residue.chain).id)   " *
+        "res: $(atms[i].residue.name)   number: $(atms[i].residue.number)   index: $(i)\n" *
+        "atom: $(atms[i].name)   element: $(atms[i].element)   " *
+        "serial: $(atms[i].serial)\ncoordinates: $(atms[i].coords)    B: $(atms[i].temp_factor)"
     else
         error("there is a problem with the data type of the atoms for the inspector label")
     end
@@ -181,7 +181,6 @@ end
 
 """
     firstlabel( inspectorfunc::Function )
-    firstlabel( inspectorfunc::Observable{T} ) where {T<:Function}
 
 Show an example of the inspector label function looks like. The position `p`
 will not be available to this function, so it will be set to `nothing`.
@@ -189,10 +188,6 @@ will not be available to this function, so it will be set to `nothing`.
 function firstlabel(inspectorfunc::Function)
     println("--- First label ---\n" * (inspectorfunc(1,1,1)) * "\n-------------------")
     return inspectorfunc(1,1,nothing)
-end
-function firstlabel(inspectorfunc::Observable{T}) where {T<:Function}
-    println("--- First label ---\n" * (inspectorfunc[](1,1,1)) * "\n-------------------")
-    return inspectorfunc[](1,1,nothing)
 end
 
 """
@@ -262,14 +257,12 @@ function rescolors(struc::Observable{T}; colors = maecolors) where {T<:BioStruct
 end
 function rescolors(resz::Vector{MIToS.PDB.PDBResidue}; colors = maecolors)
     atms = [MIToS.PDB.bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
-	resindices = [[i for j in 1:size(MIToS.PDB.bestoccupancy(resz[i].atoms),1)] for i in 1:length(resz)] |> flatten
 	resnames = [[resz[i].id.name for j in 1:size(MIToS.PDB.bestoccupancy(resz[i].atoms),1)] for i in 1:length(resz)] |> flatten
     colrs = [colors[resletterdict[resnames[j]]] for j in 1:length(resnames)]
     return colrs
 end
 function rescolors(resz::Observable{T}; colors = maecolors) where {T<:Vector{MIToS.PDB.PDBResidue}}
     atms = @lift [MIToS.PDB.bestoccupancy($resz[i].atoms) for i in 1:length($resz)] |> flatten
-	resindices = @lift [[i for j in 1:size(MIToS.PDB.bestoccupancy($resz[i].atoms),1)] for i in 1:length($resz)] |> flatten
 	resnames = @lift [[$resz[i].id.name for j in 1:size(MIToS.PDB.bestoccupancy($resz[i].atoms),1)] for i in 1:length($resz)] |> flatten
     colrs = @lift [colors[resletterdict[$resnames[j]]] for j in 1:length($resnames)]
     return colrs
