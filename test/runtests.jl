@@ -177,7 +177,7 @@ using BioMakie:
     @test atmcolors[][end] == RGB{Float64}(0.65,0.96,0.7)
 
     # MIToS
-    struc = MIToS.PDB.read("$(dir)/2vb1.pdb", MIToS.PDB.PDBFile);
+    struc = MIToS.PDB.read("$(dir)/2VB1.pdb", MIToS.PDB.PDBFile);
     chn = MIToS.PDB.@residues struc model "1" chain "A" group "ATOM" residue All
     atms = MIToS.PDB.@atoms chn model "1" chain "A" group "ATOM" residue All atom All
     struc_obs = Observable(struc);
