@@ -33,59 +33,6 @@ convert(::Type{String}, i::Int) = "$i"
 function convert(::Type{String}, f::T) where T<:Union{Float16,Float32,Float64}
 	"$f"
 end
-function reversekv(dict::AbstractDict{K,V}) where {K,V}
-	vkdict = [x[2].=>x[1] for x in dict]
-    if typeof(dict) <: OrderedDict
-        return OrderedDict{V,K}(vkdict)
-    end
-	return Dict{V,K}(vkdict)
-end
-function collectkeys(args)
-    return keys(args) |> collect
-end
-function collectvals(args)
-    return values(args) |> collect
-end
-function printkv(dict::AbstractDict)
-	keys1 = collectkeys(dict)
-	vals1 = collectvals(dict)
-	println.(["$(keys1[i]) -> $(vals1[i])" for i in 1:size(keys1,1)])
-	return nothing
-end
-typefields(thing) = typeof(thing) |> fieldnames
-tyf(thing) = typefields(thing)
-function parseint(num)
-    return parse(Int64, num)
-end
-function parsefloat(num)
-    return parse(Float64, num)
-end
-function parsefloat32(num)
-    return parse(Float32, num)
-end
-function transposed(mat::AbstractMatrix)
-    mat2 = mat
-    @cast mat2[i,j] := mat[j,i]
-    mat2 = mat2[:,:] .|> identity
-    return mat2
-end
-_t(arr::AbstractArray) = transposed(arr)
-_v(arr::AbstractArray) = reverse(arr; dims = 1)
-_h(arr::AbstractArray) = reverse(arr; dims = 2)
-macro trycatch(ex)
-    quote
-        try
-            $(esc(ex))
-        catch
-            # do nothing
-        end
-    end
-end
-function varcall(name::String, body::Any)
-    name=Symbol(name)
-    @eval (($name) = ($body))
-	return Symbol(name)
-end
 
 # current basic color schemes for atoms and residues
 elecolors = Dict( "C" => :gray,
@@ -436,7 +383,7 @@ resletterdict = OrderedDict(
 # Dictionary for Kidera physical property factors, from:
 # Kenta Nakai, Akinori Kidera, Minoru Kanehisa, Cluster analysis of amino acid indices for prediction of protein structure and function, 
 # Protein Engineering, Design and Selection, Volume 2, Issue 2, July 1988, Pages 93–100, https://doi.org/10.1093/protein/2.2.93 
-kideradict = Dict(
+kideradict = OrderedDict(
     "A" => [-1.56,-1.67,-0.97,-0.27,-0.93,-0.78,-0.2,-0.08,0.21,-0.48],
     "R" => [0.22,1.27,1.37,1.87,-1.7,0.46,0.92,-0.39,0.23,0.93],
     "N" => [1.14,-0.07,-0.12,0.81,0.18,0.37,-0.09,1.23,1.1,-1.73],
@@ -502,40 +449,3 @@ function kdict(str::AbstractString)
     end
 end
 kdict(c::Char) = kdict(string(c))
-function readdata(filename; titles = true)
-    filedata = []
-
-    if endswith(filename,".csv")
-        filedata = readdlm(filename,',')
-        if titles == true
-            filedata = identity.(DataFrame(filedata[2:end,:],filedata[1,:]))
-        else
-            filedata = identity.(DataFrame(filedata[1:end,:]))
-        end
-    elseif endswith(filename,".tab")
-        filedata = readdlm(filename,'\t')
-        if titles == true
-            filedata = identity.(DataFrame(filedata[2:end,:],filedata[1,:]))
-        else
-            filedata = identity.(DataFrame(filedata[1:end,:]))
-        end
-    elseif endswith(filename,".tsv")
-        filedata = readdlm(filename,'\t')
-        if titles == true
-            filedata = identity.(DataFrame(filedata[2:end,:],filedata[1,:]))
-        else
-            filedata = identity.(DataFrame(filedata[1:end,:]))
-        end
-    elseif endswith(filename,".txt")
-        filedata = read(filename,String)
-        if titles == true
-            filedata = identity.(DataFrame(filedata[2:end,:],filedata[1,:]))
-        else
-            filedata = identity.(DataFrame(filedata[1:end,:]))
-        end
-    else
-        println("filetype not supported")
-    end
-    
-    return filedata
-end

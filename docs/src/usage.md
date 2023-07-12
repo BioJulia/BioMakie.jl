@@ -25,10 +25,9 @@ struc = read("2vb1.pdb", BioStructures.PDB) |> Observable
 
 ````@example usage
 fig = Figure()
-plotstruc!(fig, struc; plottype = :ballandstick, gridposition = (1,1), atomcolors = aquacolors)
-plotstruc!(fig, struc; plottype = :covalent, gridposition = (1,2))
+plotstruc!(fig, struc; plottype = :ballandstick, gridposition = (1,1), atomcolors = aquacolors, resolution = (350,600))
+plotstruc!(fig, struc; plottype = :covalent, gridposition = (1,2), resolution = (350,600))
 ````
-![strucs](assets/2vb1.png)
 
 ### Multiple Sequence Alignments
 
@@ -41,15 +40,15 @@ To view a multiple sequence alignment, use the `plotmsa` or `plotmsa!` function 
 
 ````@example usage
 using FASTX
-reader = open(FASTX.FASTA.Reader, "PF00062_full.fasta")
+reader = open(FASTX.FASTA.Reader, "./docs/src/assets/PF00062.fasta")
 msa = [reader...] |> Observable
 close(reader)
 # or
 using MIToS
 using MIToS.MSA
-msa = MIToS.MSA.read("pf00062.stockholm.gz", Stockholm)
+msa = MIToS.MSA.read("./docs/src/assets/pf00062.stockholm.gz", Stockholm)
 
-fig = plotmsa(msa; colorscheme = :tableau_blue_green)
+fig = plotmsa(msa; colorscheme = :tableau_blue_green, resolution = (700,400))
 ````
 ![msa](assets/msa.png)
 
