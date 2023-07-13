@@ -33,6 +33,15 @@ convert(::Type{String}, i::Int) = "$i"
 function convert(::Type{String}, f::T) where T<:Union{Float16,Float32,Float64}
 	"$f"
 end
+macro trycatch(ex)
+    quote
+        try
+            $(esc(ex))
+        catch
+
+        end
+    end
+end
 
 # current basic color schemes for atoms and residues
 elecolors = Dict( "C" => :gray,
