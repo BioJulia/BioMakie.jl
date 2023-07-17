@@ -1,5 +1,5 @@
 ```@meta
-EditURL = "<unknown>/src/Examples/alphashape/alphashape.jl"
+EditURL = "<unknown>/docs/src/Examples/alphashape.jl"
 ```
 
 # Alpha shape of a protein
@@ -18,9 +18,9 @@ SciPy and NumPy are required for this alpha shape algorithm. They need to be ins
 ````@example alphashape
 using PyCall
 using Conda
-scipy = pyimport_conda("scipy", "scipy")
-np = pyimport_conda("numpy", "numpy")
-collections = pyimport_conda("collections", "collections")
+scipy = pyimport("scipy")
+np = pyimport("numpy")
+collections = pyimport("collections")
 ````
 
 Define the alpha shape algorithm.
@@ -33,7 +33,7 @@ py"""
 
     def alpha_shape_3D(pos, alpha):
         tetra = Delaunay(pos)
-        tetrapos = np.take(pos,tetra.vertices,axis=0)
+        tetrapos = np.take(pos,tetra.simplices,axis=0)
         normsq = np.sum(tetrapos**2,axis=2)[:,:,None]
         ones = np.ones((tetrapos.shape[0],tetrapos.shape[1],1))
         a = np.linalg.det(np.concatenate((tetrapos,ones),axis=2))
@@ -42,7 +42,7 @@ py"""
         Dz = np.linalg.det(np.concatenate((normsq,tetrapos[:,:,[0,1]],ones),axis=2))
         c = np.linalg.det(np.concatenate((normsq,tetrapos),axis=2))
         r = np.sqrt(Dx**2+Dy**2+Dz**2-4*a*c)/(2*np.abs(a))
-        tetras = tetra.vertices[r<alpha,:]
+        tetras = tetra.simplices[r<alpha,:]
         TriComb = np.array([(0, 1, 2), (0, 1, 3), (0, 2, 3), (1, 2, 3)])
         Triangles = tetras[:,TriComb].reshape(-1,3)
         Triangles = np.sort(Triangles,axis=1)
@@ -77,25 +77,23 @@ function getspherepoints(cords::Matrix, radius::Real)
 	pnts = [GeometryBasics.Point{3,Float64}(cords[i,:]) for i in 1:size(cords,1)] |> Observable
 	spheres = GeometryBasics.Point{3,Float64}[]
 
-	@sync(@async lift(pnts) do p
+	lift(pnts) do p
 		for i in 1:size(p,1)
 			sp = GeometryBasics.decompose(GeometryBasics.Point{3,Float64},GeometryBasics.Sphere(p[i],radius),4) |> unique
 			for ii in 1:size(sp,1)
 				push!(spheres,sp[ii])
 			end
 		end
-	end)
+	end
 
 	return [[spheres[i].data...] for i in 1:size(spheres,1)] |> combinedims |> transpose |> collect
 end
 function linesegs(arr::AbstractArray{T,3}) where T<:AbstractFloat
     new_arr::AbstractArray{Point3f0} = []
-    @sync(@async begin
-        for i in 1:size(arr,1)
-            push!(new_arr, Makie.Point3f0(arr[i,1,:]))
-            push!(new_arr, Makie.Point3f0(arr[i,2,:]))
-        end
-    end)
+    for i in 1:size(arr,1)
+        push!(new_arr, Makie.Point3f0(arr[i,1,:]))
+        push!(new_arr, Makie.Point3f0(arr[i,2,:]))
+    end
     return new_arr |> combinedims |> transpose |> collect
 end
 ````
@@ -117,11 +115,11 @@ Add text and interactive elements. It can be helpful to run this line by line to
 strucname = struc.name[1:4]
 sc_scene = layout[1:10,1:6] = LScene(fig; show_axis = false)
 structxt = layout[1,7:8] = Label(fig, text = "Structure ID:  $(strucname)", fontsize = 35)
-alpha1 = layout[5,7:9] = Slider(fig, range = 1.5:0.01:9.0, startvalue = 2.5)
+alpha1 = layout[5,7:9] = Slider(fig, range = 1.5:0.5:9.0, startvalue = 2.5)
 alphatxt1 = lift(alpha1.value) do s1; string("alpha = ", round(s1, sigdigits = 2)); end
 alphatext = layout[4,7:9] = Label(fig, text = alphatxt1, fontsize = 22)
 alphaval = alpha1.value
-radii1 = layout[7,7:9] = Slider(fig, range = 1.5:0.01:9.0, startvalue = 2.5)
+radii1 = layout[7,7:9] = Slider(fig, range = 1.5:0.5:9.0, startvalue = 2.5)
 radiixt1 = lift(radii1.value) do s1; string("atom radius = ", round(s1, sigdigits = 2)); end
 radiitext = layout[6,7:9] = Label(fig, text = radiixt1, fontsize = 22)
 radiival = radii1.value
@@ -165,12 +163,10 @@ The surface area changes when the alpha value or atom radius is changed.
 using Meshes
 function surfacearea(coordinates, connectivity)
     totalarea = 0.0
-    @sync(@async begin
-        for i = 1:size(connectivity,1)
-            totalarea += measure(Ngon(Meshes.Point3.(coordinates[connectivity[i,1],:],
-                            coordinates[connectivity[i,2],:], coordinates[connectivity[i,3],:])))
-        end
-    end)
+    for i = 1:size(connectivity,1)
+        totalarea += measure(Ngon(Meshes.Point3.(coordinates[connectivity[i,1],:],
+                        coordinates[connectivity[i,2],:], coordinates[connectivity[i,3],:])))
+    end
     return totalarea
 end
 surfarea = @lift surfacearea($spnts, $(proteinshape)[3])

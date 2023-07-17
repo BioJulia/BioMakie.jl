@@ -20,10 +20,10 @@ function plottingdata(msa::MSA.AbstractMultipleSequenceAlignment)
 	msamatrix = Matrix(msa) .|> string
 	matrixvals = msavalues(msamatrix)
 
-    return OrderedDict("matrix" => msamatrix, 
-                        "xlabels" => xlabels, 
-                        "ylabels" => ylabels,
-						"matrixvals" => matrixvals)
+    return OrderedDict(:matrix => msamatrix, 
+                        :xlabels => xlabels, 
+                        :ylabels => ylabels,
+						:matrixvals => matrixvals)
 end
 function plottingdata(msa::Observable{T}) where {T<:MSA.AbstractMultipleSequenceAlignment}
 	ylabels = @lift keys($msa.matrix.dicts[1]) |> collect
@@ -31,10 +31,10 @@ function plottingdata(msa::Observable{T}) where {T<:MSA.AbstractMultipleSequence
 	msamatrix = @lift Matrix($msa) .|> string
 	matrixvals = @lift msavalues($msamatrix)
 
-    return OrderedDict("matrix" => msamatrix, 
-                        "xlabels" => xlabels, 
-                        "ylabels" => ylabels,
-						"matrixvals" => matrixvals)
+    return OrderedDict(:matrix => msamatrix, 
+                        :xlabels => xlabels, 
+                        :ylabels => ylabels,
+						:matrixvals => matrixvals)
 end
 function plottingdata(msa::Vector{Tuple{String,String}})
 	ylabels = [msa[i][1] for i in 1:size(msa,1)]
@@ -44,10 +44,10 @@ function plottingdata(msa::Vector{Tuple{String,String}})
 	msamatrix = msamatrix[:,:]
 	matrixvals = msavalues(msamatrix)
 
-    return OrderedDict("matrix" => msamatrix, 
-                        "xlabels" => xlabels, 
-                        "ylabels" => ylabels,
-						"matrixvals" => matrixvals)
+    return OrderedDict(:matrix => msamatrix, 
+                        :xlabels => xlabels, 
+                        :ylabels => ylabels,
+						:matrixvals => matrixvals)
 end
 function plottingdata(msa::Observable{T}) where {T<:Vector{Tuple{String,String}}}
 	ylabels = @lift [$msa[i][1] for i in 1:size($msa,1)]
@@ -59,10 +59,10 @@ function plottingdata(msa::Observable{T}) where {T<:Vector{Tuple{String,String}}
 	msamatrix[] = msamatrixtemp
 	matrixvals = @lift msavalues($msamatrix)
 
-    return OrderedDict("matrix" => msamatrix, 
-                        "xlabels" => xlabels, 
-                        "ylabels" => ylabels,
-						"matrixvals" => matrixvals)
+    return OrderedDict(:matrix => msamatrix, 
+                        :xlabels => xlabels, 
+                        :ylabels => ylabels,
+						:matrixvals => matrixvals)
 end
 function plottingdata(msa::Vector{FASTX.FASTA.Record})
 	ylabels = [identifier(msa[i]) for i in 1:size(msa,1)]
@@ -72,10 +72,10 @@ function plottingdata(msa::Vector{FASTX.FASTA.Record})
 	msamatrix = msamatrix[:,:]
 	matrixvals = msavalues(msamatrix)
 
-    return OrderedDict("matrix" => msamatrix, 
-                        "xlabels" => xlabels, 
-                        "ylabels" => ylabels,
-						"matrixvals" => matrixvals)
+    return OrderedDict(:matrix => msamatrix, 
+                        :xlabels => xlabels, 
+                        :ylabels => ylabels,
+						:matrixvals => matrixvals)
 end
 function plottingdata(msa::Observable{T}) where {T<:Vector{FASTX.FASTA.Record}}
 	ylabels = @lift [identifier($msa[i]) for i in 1:size($msa,1)]
@@ -87,10 +87,10 @@ function plottingdata(msa::Observable{T}) where {T<:Vector{FASTX.FASTA.Record}}
 	msamatrix[] = msamatrixtemp
 	matrixvals = @lift msavalues($msamatrix)
 
-    return OrderedDict("matrix" => msamatrix, 
-                        "xlabels" => xlabels, 
-                        "ylabels" => ylabels,
-						"matrixvals" => matrixvals)
+    return OrderedDict(:matrix => msamatrix, 
+                        :xlabels => xlabels, 
+                        :ylabels => ylabels,
+						:matrixvals => matrixvals)
 end
 
 """
@@ -98,10 +98,21 @@ end
 
 Returns a matrix of numbers according to the given dictionary,
 where keys are residue letters and values are numbers. This matrix
-is used as input for `plotmsa` for the heatmap colors.
+is used as input for `plotmsa` for the heatmap colors of the residue
+positions. 
 
 Default values for residue letters are from Kidera Factor values. 
-kf 2 is Kidera Factor 2 (size/volume-related). The KF dictionary is in `utils.jl`.
+From:
+Kenta Nakai, Akinori Kidera, Minoru Kanehisa, Cluster analysis of amino acid indices 
+for prediction of protein structure and function, Protein Engineering, Design and Selection, 
+Volume 2, Issue 2, July 1988, Pages 93–100, https://doi.org/10.1093/protein/2.2.93 
+
+kf 2 is Kidera Factor 2 (size/volume-related). The KF dictionary is in `utils.jl`, or
+you can look at the `kideradict` variable.
+
+### Keyword Arguments:
+- resdict ------- kideradict by default, alternatively give a Dict{String,Vector{Float}}
+- kf ------------ 2 by default, alternatively give an integer from 1:10
 """
 function msavalues(msamatrix::AbstractMatrix, resdict = kideradict; kf = 2)
 	matrixvals = []
@@ -162,10 +173,10 @@ function plotmsa!( fig::Figure, msa::Observable{T};
 											   Vector{FASTX.FASTA.Record}}}
 	#
 	plotdata = @lift plottingdata($msa)
-	msamatrix = @lift $plotdata["matrix"]
-	xlabels = @lift $plotdata["xlabels"]
-	ylabels = @lift $plotdata["ylabels"]
-	matrixvals = @lift $plotdata["matrixvals"]
+	msamatrix = @lift $plotdata[:matrix]
+	xlabels = @lift $plotdata[:xlabels]
+	ylabels = @lift $plotdata[:ylabels]
+	matrixvals = @lift $plotdata[:matrixvals]
 
 	grid1 = fig[gridposition...] = GridLayout(resolution = (1100,400))
 	ax = Axis(grid1[1:7,3:9]; height = 300, width = 800)
@@ -262,10 +273,10 @@ function plotmsa!( figposition::GridPosition, msa::Observable{T};
 											   Vector{FASTX.FASTA.Record}}}
 	#
 	plotdata = @lift plottingdata($msa)
-	msamatrix = @lift $plotdata["matrix"]
-	xlabels = @lift $plotdata["xlabels"]
-	ylabels = @lift $plotdata["ylabels"]
-	matrixvals = @lift $plotdata["matrixvals"]
+	msamatrix = @lift $plotdata[:matrix]
+	xlabels = @lift $plotdata[:xlabels]
+	ylabels = @lift $plotdata[:ylabels]
+	matrixvals = @lift $plotdata[:matrixvals]
 
 	grid1 = figposition = GridLayout(resolution = (1100,400))
 	ax = Axis(grid1[1:7,3:9]; height = 300, width = 800)
@@ -365,15 +376,15 @@ function plotmsa!( fig::Figure, plotdata::AbstractDict{String,T};
 	matrixvals = []
 	
 	if T<:Observable
-		msamatrix = plotdata["matrix"]
-		xlabels = plotdata["xlabels"]
-		ylabels = plotdata["ylabels"]
-		matrixvals = plotdata["matrixvals"]
+		msamatrix = plotdata[:matrix]
+		xlabels = plotdata[:xlabels]
+		ylabels = plotdata[:ylabels]
+		matrixvals = plotdata[:matrixvals]
 	else
-		msamatrix = plotdata["matrix"] |> Observable
-		xlabels = plotdata["xlabels"] |> Observable
-		ylabels = plotdata["ylabels"] |> Observable
-		matrixvals = plotdata["matrixvals"] |> Observable
+		msamatrix = plotdata[:matrix] |> Observable
+		xlabels = plotdata[:xlabels] |> Observable
+		ylabels = plotdata[:ylabels] |> Observable
+		matrixvals = plotdata[:matrixvals] |> Observable
 	end
 
 	grid1 = fig[gridposition...] = GridLayout(resolution = (1100,400))
@@ -474,15 +485,15 @@ function plotmsa!( figposition::GridPosition, plotdata::AbstractDict{String,T};
 	matrixvals = []
 	
 	if T<:Observable
-		msamatrix = plotdata["matrix"]
-		xlabels = plotdata["xlabels"]
-		ylabels = plotdata["ylabels"]
-		matrixvals = plotdata["matrixvals"]
+		msamatrix = plotdata[:matrix]
+		xlabels = plotdata[:xlabels]
+		ylabels = plotdata[:ylabels]
+		matrixvals = plotdata[:matrixvals]
 	else
-		msamatrix = plotdata["matrix"] |> Observable
-		xlabels = plotdata["xlabels"] |> Observable
-		ylabels = plotdata["ylabels"] |> Observable
-		matrixvals = plotdata["matrixvals"] |> Observable
+		msamatrix = plotdata[:matrix] |> Observable
+		xlabels = plotdata[:xlabels] |> Observable
+		ylabels = plotdata[:ylabels] |> Observable
+		matrixvals = plotdata[:matrixvals] |> Observable
 	end
 
 	grid1 = figposition = GridLayout(resolution = (1100,400))
@@ -595,15 +606,15 @@ plotmsa( msa; kwargs... )
 - kf ---------------- 2             # If resdict == kideradict, this is the Kidera Factor. KF2 is size/volume-related.
 - kwargs...    						# forwarded to scatter plot
 """
-function plotmsa(msa; kwargs...)
-	fig = Figure()
+function plotmsa(msa; resolution = (1100, 400), kwargs...)
+	fig = Figure(resolution = resolution)
 	plotmsa!(fig, Observable(msa); kwargs...)
 end
-function plotmsa(msa::Observable; kwargs...)
-	fig = Figure()
+function plotmsa(msa::Observable; resolution = (1100, 400), kwargs...)
+	fig = Figure(resolution = resolution)
 	plotmsa!(fig, msa; kwargs...)
 end
-function plotmsa(plotdata::T; kwargs...) where {T<:AbstractDict}
-	fig = Figure()
+function plotmsa(plotdata::T; resolution = (1100, 400), kwargs...) where {T<:AbstractDict}
+	fig = Figure(resolution = resolution)
 	plotmsa!(fig, plotdata; kwargs...)
 end

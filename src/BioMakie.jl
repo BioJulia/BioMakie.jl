@@ -25,7 +25,7 @@ export protsmiles,
        cinemacolors,
        getbiocolors
 #
-
+using ProtoSyn
 using BioStructures, MolecularGraph
 using MIToS, MIToS.Information, MIToS.MSA, MIToS.Pfam, MIToS.SIFTS, MIToS.Utils
 using SplitApplyCombine, TensorCast
@@ -42,6 +42,7 @@ include("../src/utils.jl")
 include("../src/chemdata.jl")
 include("../src/bonds.jl")
 include("../src/structure.jl")
+include("../src/dbinfo.jl")
 include("../src/otherplots.jl")
 include("../src/msa.jl")
 
