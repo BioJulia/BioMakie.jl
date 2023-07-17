@@ -7,6 +7,7 @@ using BioStructures
 using MIToS, MIToS.Information, MIToS.MSA, MIToS.Pfam, MIToS.SIFTS, MIToS.Utils
 using ColorTypes, ColorSchemes, ImageCore, Colors
 using GLMakie
+using ProtoSyn
 
 using BioMakie
 using BioMakie:
@@ -14,6 +15,9 @@ using BioMakie:
     defaultresidue,
     resletterdict,
     kideradict
+
+firstkey(dict::AbstractDict) = first(keys(dict))
+firstvalue(dict::AbstractDict) = first(values(dict))
 
 @testset "Structure plotting" begin
     # BioStructures
@@ -264,4 +268,31 @@ using BioMakie:
     @test atmcolors[][end] == RGB{Float64}(0.65,0.96,0.7)
 end
 
+@testset "MSA plotting" begin
+    # MIToS
+    msa1 = MIToS.MSA.read("./docs/src/assets/pf00062.stockholm.gz",Stockholm)
+    @test size(msa1) == (1733, 123)
+    @test length(msa1.annotations.sequences) == 1748
+    @test length(getbiocolors()) == 7
+    plotdata = plottingdata(msa1)
+    msamatrix = plotdata[:matrix]
+    @test size(msamatrix) == (1733, 123)
+    matrixvals = msavalues(msamatrix)
+    @test firstkey(kideradict) == "A"
+    @test firstvalue(kideradict) == [-1.56, -1.67, -0.97, -0.27, -0.93, -0.78, -0.2, -0.08, 0.21, -0.48]
+end
+
+@testset "ProtoSyn" begin
+    pose = ProtoSyn.Peptides.load("./docs/2vb1.pdb"; bonds_by_distance=true)
+    selectatoms = (TrueSelection{ProtoSyn.Atom}() & ProteinSelection())
+    atms = selectatoms(pose; gather = true) |> Observable
+    @test atomradii(atms[]) == atomradii(atms)[]
+    @test atomradius(atms[][1]) == 0.71f0
+    inspectlabel = getinspectorlabel(atms[], pose)
+    str = inspectlabel(1,3,1)
+    @test str[44:64] == "atom: C   element: C "
+    protgrammar = ProtoSyn.load_grammar_from_file(ProtoSyn.resource_dir*"/Peptides/grammars.yml", "default")
+    @test ProtoSyn.Calculators.Electrostatics.assign_default_charges!(pose, protgrammar)[1] ≈ -0.015476758965047663 
+    ProtoSyn.infer_parenthood!(pose.graph, overwrite=true)
+    @test length(ProtoSyn.travel_graph(atms[][1])) == 1957
 end

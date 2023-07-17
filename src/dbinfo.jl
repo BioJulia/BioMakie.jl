@@ -140,17 +140,15 @@ function getuniprotdata(jsonfile; include_refs = false)
 
     @trycatch accession = jsondata[:accession]
     @trycatch id = jsondata[:id]
-    @trycatch datainfo = OrderedDict(jsondata[:info])
-    @trycatch organism = OrderedDict(jsondata[:organism])
-    @trycatch sequence = jsondata[:sequence][:sequence]
-    @trycatch secondary_accession = jsondata[:secondaryAccession] |> collect
+    @trycatch protinfo = jsondata[:protein] |> Dict
     @trycatch gene = jsondata[:gene][1][:name][:value]
     @trycatch gene_synonyms = jsondata[:gene][1][:name][:value]
-
-    @trycatch protinfo = jsondata[:protein] |> Dict
-
+    @trycatch secondary_accession = jsondata[:secondaryAccession] |> collect
+    @trycatch sequence = jsondata[:sequence][:sequence]
+    @trycatch organism = OrderedDict(jsondata[:organism])
+    @trycatch datainfo = OrderedDict(jsondata[:info])
+ 
     featuredicts = jsondata[:features]
-
     commentdicts = jsondata[:comments]
 
     if include_refs == true
