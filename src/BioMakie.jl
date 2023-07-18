@@ -24,8 +24,7 @@ export protsmiles,
        maecolors, 
        cinemacolors,
        getbiocolors
-#
-using ProtoSyn
+
 using BioStructures, MolecularGraph
 using MIToS, MIToS.Information, MIToS.MSA, MIToS.Pfam, MIToS.SIFTS, MIToS.Utils
 using SplitApplyCombine, TensorCast
