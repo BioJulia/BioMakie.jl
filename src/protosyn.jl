@@ -1,3 +1,7 @@
+using Pkg
+# Add this fork of the ProtoSyn package because it has a bugfix
+Pkg.add(url="https://github.com/kool7d/ProtoSyn.jl")
+
 using ProtoSyn
 
 """
