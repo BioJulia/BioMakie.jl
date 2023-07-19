@@ -4,7 +4,7 @@ EditURL = "<unknown>/docs/src/Examples/alphashape.jl"
 
 # Alpha shape of a protein
 
-````@example alphashape
+````@repl alphashape
 using BioMakie
 using GLMakie
 using GLMakie: Slider
@@ -15,7 +15,7 @@ using BioStructures
 
 SciPy and NumPy are required for this alpha shape algorithm. They need to be installed in your Conda/Python environment.
 
-````@example alphashape
+````@repl alphashape
 using PyCall
 using Conda
 scipy = pyimport("scipy")
@@ -25,7 +25,7 @@ collections = pyimport("collections")
 
 Define the alpha shape algorithm.
 
-````@example alphashape
+````@repl alphashape
 py"""
     from scipy.spatial import Delaunay
     import numpy as np
@@ -61,7 +61,7 @@ py"""
 
 Define a function to get the alpha shape of a set of coordinates.
 
-````@example alphashape
+````@repl alphashape
 indexshift(idxs) = (idxs).+=1   # Python is base 0 and Julia is base 1
 function getalphashape(coords::Matrix, alpha::T) where {T<:Real}
     verts,edges,tris = py"alpha_shape_3D($(coords),$(alpha))"
@@ -72,7 +72,7 @@ end
 Define a function to get points from spheres at a given radius around coordinates
 and a function to get line segments from a set of coordinates.
 
-````@example alphashape
+````@repl alphashape
 function getspherepoints(cords::Matrix, radius::Real)
 	pnts = [GeometryBasics.Point{3,Float64}(cords[i,:]) for i in 1:size(cords,1)] |> Observable
 	spheres = GeometryBasics.Point{3,Float64}[]
@@ -101,7 +101,7 @@ end
 Load the structure with BioStructures.jl and get a coordinates Observable.
 Then set up the Figure and Layout.
 
-````@example alphashape
+````@repl alphashape
 struc = retrievepdb("2vb1")
 atms = collectatoms(struc, standardselector) |> Observable
 cords = @lift coordarray($atms)' |> collect
@@ -111,7 +111,7 @@ layout = fig[1,1] = GridLayout(10, 9)
 
 Add text and interactive elements. It can be helpful to run this line by line to see what is happening.
 
-````@example alphashape
+````@repl alphashape
 strucname = struc.name[1:4]
 sc_scene = layout[1:10,1:6] = LScene(fig; show_axis = false)
 structxt = layout[1,7:8] = Label(fig, text = "Structure ID:  $(strucname)", fontsize = 35)
@@ -127,7 +127,7 @@ radiival = radii1.value
 
 Get the alpha shape of the structure.
 
-````@example alphashape
+````@repl alphashape
 spnts = @lift getspherepoints($cords,$radiival)
 proteinshape = @lift let pnts = $spnts; getalphashape(pnts,$alphaval); end
 alphaverts = @lift $spnts[$(proteinshape)[1],:]
@@ -137,7 +137,7 @@ alphaedges = @lift $spnts[$(proteinshape)[2],:] |> linesegs
 Finally, plot the shape. Moving the sliders will update the plot, but it is slow.
 You may want to click on the slider rather than dragging it. Speed may be improved in the future.
 
-````@example alphashape
+````@repl alphashape
 linesegments!(sc_scene, alphaedges, color = :gray, transparency = true)
 ````
 
@@ -145,13 +145,13 @@ linesegments!(sc_scene, alphaedges, color = :gray, transparency = true)
 
 #To show where the atoms are run the following line.
 
-````@example alphashape
+````@repl alphashape
 meshscatter!(sc_scene, cords, markersize = 0.4, color = :blue)
 ````
 
 #To show the alpha shape vertices run the following line.
 
-````@example alphashape
+````@repl alphashape
 meshscatter!(sc_scene, alphaverts, markersize = 0.4, color = :green)
 ````
 
@@ -159,7 +159,7 @@ meshscatter!(sc_scene, alphaverts, markersize = 0.4, color = :green)
 Define a function to get the surface area of a set of coordinates and connectivity.
 The surface area changes when the alpha value or atom radius is changed.
 
-````@example alphashape
+````@repl alphashape
 using Meshes
 function surfacearea(coordinates, connectivity)
     totalarea = 0.0
@@ -175,7 +175,7 @@ surfatext = layout[2,7:9] = Label(fig, text = lift(X->string("surface area = ", 
 
 Save the figure as a png file.
 
-````@example alphashape
+````@repl alphashape
 save("alphashape.png", fig)
 ````
 
