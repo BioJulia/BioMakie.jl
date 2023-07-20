@@ -3,6 +3,7 @@ on:
   pull_request:
     branches:
       - dev
+      - master
   push:
     branches:
       - dev
@@ -15,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - '1.8'
+          - '1.9'
         os:
           - ubuntu-latest
         arch:
