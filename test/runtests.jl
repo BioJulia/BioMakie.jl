@@ -7,7 +7,6 @@ using BioStructures
 using MIToS, MIToS.Information, MIToS.MSA, MIToS.Pfam, MIToS.SIFTS, MIToS.Utils
 using ColorTypes, ColorSchemes, ImageCore, Colors
 using GLMakie
-using ProtoSyn
 
 using BioMakie
 using BioMakie:
@@ -282,17 +281,4 @@ end
     @test firstvalue(kideradict) == [-1.56, -1.67, -0.97, -0.27, -0.93, -0.78, -0.2, -0.08, 0.21, -0.48]
 end
 
-@testset "ProtoSyn" begin
-    pose = ProtoSyn.Peptides.load("./docs/2vb1.pdb"; bonds_by_distance=true)
-    selectatoms = (TrueSelection{ProtoSyn.Atom}() & ProteinSelection())
-    atms = selectatoms(pose; gather = true) |> Observable
-    @test atomradii(atms[]) == atomradii(atms)[]
-    @test atomradius(atms[][1]) == 0.71f0
-    inspectlabel = getinspectorlabel(atms[], pose)
-    str = inspectlabel(1,3,1)
-    @test str[44:64] == "atom: C   element: C "
-    protgrammar = ProtoSyn.load_grammar_from_file(ProtoSyn.resource_dir*"/Peptides/grammars.yml", "default")
-    @test ProtoSyn.Calculators.Electrostatics.assign_default_charges!(pose, protgrammar)[1] ≈ -0.015476758965047663 
-    ProtoSyn.infer_parenthood!(pose.graph, overwrite=true)
-    @test length(ProtoSyn.travel_graph(atms[][1])) == 1957
 end

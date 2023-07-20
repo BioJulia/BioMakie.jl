@@ -3,6 +3,7 @@ on:
   pull_request:
     branches:
       - dev
+      - master
   push:
     branches:
       - dev
@@ -15,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - '1.8'
+          - '1.9'
         os:
           - ubuntu-latest
         arch:
@@ -48,7 +49,7 @@ jobs:
            pkg"registry add https://github.com/JuliaRegistries/General";
            pkg"registry up General";
            # dev mono repo versions
-           pkg"dev . Makie; add Documenter#master; instantiate"'
+           pkg"add Makie; add Documenter; instantiate"'
       - name: Build and deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

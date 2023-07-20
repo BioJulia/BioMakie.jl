@@ -24,12 +24,11 @@ export protsmiles,
        maecolors, 
        cinemacolors,
        getbiocolors
-#
-using ProtoSyn
+
 using BioStructures, MolecularGraph
 using MIToS, MIToS.Information, MIToS.MSA, MIToS.Pfam, MIToS.SIFTS, MIToS.Utils
 using SplitApplyCombine, TensorCast
-using DataStructures, DelimitedFiles, HTTP
+using DataStructures, DelimitedFiles, HTTP, JSON3
 using Distances, GeometryBasics
 using Colors, ColorSchemes, ColorTypes, ImageCore
 using FileIO, FastaIO, FASTX, OrderedCollections

@@ -73,34 +73,6 @@ function atomradii(atoms::Observable{T}; radiustype = :ballandstick) where T<:Ve
         return radii
     end
 end
-function atomradii(atoms::Vector{T}; radiustype = :ballandstick) where T<:ProtoSyn.Atom
-	if radiustype == :covalent || radiustype == :cov
-		return [covalentradii[x.symbol] for x in atoms]
-	elseif radiustype == :vanderwaals || radiustype == :vdw || radiustype == :spacefilling
-		return [vanderwaalsradii[x.symbol] for x in atoms]
-    elseif radiustype == :ballandstick || radiustype == :bas
-		return [covalentradii[x.symbol] for x in atoms]
-	else
-        println("radiustype not recognized, using covalent radii")
-		return [covalentradii[x.symbol] for x in atoms]
-	end
-end
-function atomradii(atoms::Observable{T}; radiustype = :ballandstick) where T<:Vector{ProtoSyn.Atom}
-    if radiustype == :covalent || radiustype == :cov
-        radii = @lift [covalentradii[x.symbol] for x in $atoms]
-        return radii
-    elseif radiustype == :vanderwaals || radiustype == :vdw || radiustype == :spacefilling
-        radii = @lift [vanderwaalsradii[x.symbol] for x in $atoms]
-        return radii
-    elseif radiustype == :ballandstick || radiustype == :bas
-        radii = @lift [covalentradii[x.symbol] for x in $atoms]
-        return radii
-    else
-        println("radiustype not recognized, using covalent radii")
-        radii = @lift [covalentradii[x.symbol] for x in $atoms]
-        return radii
-    end
-end
 
 """
     atomradius( atom )
@@ -166,34 +138,6 @@ function atomradius(atom::Observable{T}) where T<:MIToS.PDB.PDBAtom
         return radii
     end
 end
-function atomradius(atom::T; radiustype = :ballandstick) where T<:ProtoSyn.Atom
-    if radiustype == :covalent || radiustype == :cov
-        return covalentradii[atom.symbol]
-    elseif radiustype == :vanderwaals || radiustype == :vdw || radiustype == :spacefilling
-        return vanderwaalsradii[atom.symbol]
-    elseif radiustype == :ballandstick || radiustype == :bas
-		return covalentradii[atom.symbol]
-    else
-        println("radiustype not recognized, using covalent radii")
-        return covalentradii[atom.symbol]
-    end
-end
-function atomradius(atom::Observable{T}) where T<:ProtoSyn.Atom
-    if radiustype == :covalent || radiustype == :cov
-        radii = @lift getindex(covalentradii, $atom.symbol)
-        return radii
-    elseif radiustype == :vanderwaals || radiustype == :vdw || radiustype == :spacefilling
-        radii = @lift getindex(vanderwaalsradii, $atom.symbol)
-        return radii
-    elseif radiustype == :ballandstick || radiustype == :bas
-        radii = @lift getindex(covalentradii, $atom.symbol)
-        return radii
-    else
-        println("radiustype not recognized, using covalent radii")
-        radii = @lift getindex(covalentradii, $atom.symbol)
-        return radii
-    end
-end
 
 """
     getinspectorlabel( structure )
@@ -212,14 +156,6 @@ function getinspectorlabel(struc::BioStructures.StructuralElementOrList)
     "serial: $(atms[i].serial)\ncoordinates: $(atms[i].coords)    B: $(atms[i].temp_factor)"
     return func
 end
-function getinspectorlabel(struc::Observable{T}) where {T<:BioStructures.StructuralElementOrList}
-    atms = @lift defaultatom.(BioStructures.collectatoms($struc))
-    func = (self, i, p) -> "chain: $((atms[][i].residue.chain).id)   " *
-    "res: $(atms[][i].residue.name)   resid: $(atms[][i].residue.number)   index: $(i)\n" *
-    "atom: $(atms[][i].name)   element: $(atms[][i].element)   " *
-    "serial: $(atms[][i].serial)\ncoordinates: $(atms[][i].coords)    B: $(atms[][i].temp_factor)"
-    return func
-end
 function getinspectorlabel(resz::Vector{MIToS.PDB.PDBResidue})
     atms = [MIToS.PDB.bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
     func = (self, i, p) -> "atom: $(atms[i].atom)   element: $(atms[i].element)   index: $(i)\n" *
@@ -227,46 +163,10 @@ function getinspectorlabel(resz::Vector{MIToS.PDB.PDBResidue})
     "occupancy: $(atms[i].occupancy)    B: $(atms[i].B)"
     return func
 end
-function getinspectorlabel(resz::Observable{T}) where {T<:Vector{MIToS.PDB.PDBResidue}}
-    atms = @lift [MIToS.PDB.bestoccupancy($resz[i].atoms) for i in 1:length($resz)] |> flatten
-    func = (self, i, p) -> "atom: $(atms[][i].atom)   element: $(atms[][i].element)   index: $(i)\n" *
-    "coordinates: $(atms[][i].coordinates)\n" *
-    "occupancy: $(atms[][i].occupancy)    B: $(atms[][i].B)"
-    return func
-end
 function getinspectorlabel(atms::Vector{MIToS.PDB.PDBAtom})
     func = (self, i, p) -> "atom: $(atms[i].atom)   element: $(atms[i].element)   index: $(i)\n" *
     "coordinates: $(atms[i].coordinates)\n" *
     "occupancy: $(atms[i].occupancy)    B: $(atms[i].B)"
-    return func
-end
-function getinspectorlabel(atms::Observable{T}) where {T<:Vector{MIToS.PDB.PDBAtom}}
-    func = (self, i, p) -> "atom: $(atms[][i].atom)   element: $(atms[][i].element)   index: $(i)\n" *
-    "coordinates: $(atms[][i].coordinates)\n" *
-    "occupancy: $(atms[][i].occupancy)    B: $(atms[][i].B)"
-    return func
-end
-function getinspectorlabel(pose::ProtoSyn.Pose)
-    atmselect = TrueSelection{ProtoSyn.Atom}()
-    atms = atmselect(pose; gather = true)
-    func = (self, i, p) -> "chain: $(atms[i].container.container.name)   " *
-    "res: $(atms[i].container.name)   resid: $(atms[i].container.id)   index: $(i)\n" *
-    "atom: $(atms[i].name)   element: $(atms[i].symbol)   " *
-    "serial: $(atms[i].id)\ncoordinates: $(pose.state[atms[i]].t)"
-    return func
-end
-function getinspectorlabel(atms::Vector{ProtoSyn.Atom}, pose::ProtoSyn.Pose)
-    func = (self, i, p) -> "chain: $(atms[i].container.container.name)   " *
-    "res: $(atms[i].container.name)   resid: $(atms[i].container.id)   index: $(i)\n" *
-    "atom: $(atms[i].name)   element: $(atms[i].symbol)   " *
-    "serial: $(atms[i].id)\ncoordinates: $(pose.state[atms[i]].t)"
-    return func
-end
-function getinspectorlabel(atms::Observable{T}, pose::ProtoSyn.Pose) where {T<:Vector{ProtoSyn.Atom}}
-    func = (self, i, p) -> "chain: $(atms[][i].container.container.name)   " *
-    "res: $(atms[][i].container.name)   resid: $(atms[][i].container.id)   index: $(i)\n" *
-    "atom: $(atms[][i].name)   element: $(atms[][i].symbol)   " *
-    "serial: $(atms[][i].id)\ncoordinates: $(pose.state[atms[][i]].t)"
     return func
 end
 function getinspectorlabel(pdata::AbstractDict)
@@ -290,46 +190,6 @@ function getinspectorlabel(pdata::AbstractDict)
         "res: $(atms[i].residue.name)   resid: $(atms[i].residue.number)   index: $(i)\n" *
         "atom: $(atms[i].name)   element: $(atms[i].element)   " *
         "serial: $(atms[i].serial)\ncoordinates: $(atms[i].coords)    B: $(atms[i].temp_factor)"
-    elseif typeof(pdata[:atoms]) <: Vector{ProtoSyn.Atom}
-        atms = pdata[:atoms]
-        state = pdata[:state]
-        func = (self, i, p) -> "chain: $(atms[i].container.container.name)   " *
-        "res: $(atms[i].container.name)   resid: $(atms[i].container.id)   index: $(i)\n" *
-        "atom: $(atms[i].name)   element: $(atms[i].symbol)   " *
-        "serial: $(atms[i].id)\ncoordinates: $(state[atms[i]].t)"
-    else
-        error("there is a problem with the data type of the atoms for the inspector label")
-    end
-
-    return func
-end
-function getinspectorlabel(pdata::Observable{T}) where {T<:AbstractDict}
-    func = nothing
-
-    if typeof(pdata[][:atoms]) <: Vector{MIToS.PDB.PDBAtom}
-        atms = pdata[][:atoms]
-        func = (self, i, p) -> "atom: $(atms[i].atom)   element: $(atms[i].element)   index: $(i)\n" *
-        "coordinates: $(atms[i].coordinates)\n" *
-        "occupancy: $(atms[i].occupancy)    B: $(atms[i].B)"
-    elseif typeof(pdata[][:atoms]) <: Vector{MIToS.PDB.PDBResidue}
-        atms = [MIToS.PDB.bestoccupancy(pdata[][:atoms][i].atoms) for i in 1:length(pdata[][:atoms])] |> flatten
-        func = (self, i, p) -> "atom: $(atms[i].atom)   element: $(atms[i].element)   index: $(i)\n" *
-        "coordinates: $(atms[i].coordinates)\n" *
-        "occupancy: $(atms[i].occupancy)    B: $(atms[i].B)"
-    elseif typeof(pdata[][:atoms]) <: BioStructures.StructuralElementOrList
-        atms = defaultatom.(BioStructures.collectatoms(pdata[][:atoms]))
-        func = (self, i, p) -> "chain: $((atms[i].residue.chain).id)   " *
-        "res: $(atms[i].residue.name)   resid: $(atms[i].residue.number)   index: $(i)\n" *
-        "atom: $(atms[i].name)   element: $(atms[i].element)   " *
-        "serial: $(atms[i].serial)\ncoordinates: $(atms[i].coords)    B: $(atms[i].temp_factor)"
-    elseif typeof(pdata[][:atoms]) <: Vector{ProtoSyn.Atom}
-        atms = pdata[][:atoms]
-        func = (self, i, p) -> "chain: $(atms[i].container.container.name)   " *
-        "res: $(atms[i].container.name)   resid: $(atms[i].container.id)   index: $(i)\n" *
-        "atom: $(atms[i].name)   element: $(atms[i].symbol)   " *
-        "serial: $(atms[i].id)\ncoordinates: $(pose.state[atms[i]].t)"
-    else
-        error("there is a problem with the data type of the atoms for the inspector label")
     end
 
     return func
@@ -386,14 +246,6 @@ function atomcolors(atms::Observable{T}; colors = elecolors) where {T<:Vector{MI
     colrs = @lift [colors[x.element] for x in $atms]
     return colrs
 end
-function atomcolors(atms::Vector{ProtoSyn.Atom}; colors = elecolors)
-    colrs = [colors[x.symbol] for x in atms]
-    return colrs
-end
-function atomcolors(atms::Observable{T}; colors = elecolors) where {T<:Vector{ProtoSyn.Atom}}
-    colrs = @lift [colors[x.symbol] for x in $atms]
-    return colrs
-end
 
 """
     rescolors( residues )
@@ -441,26 +293,6 @@ function rescolors(atms::Observable{T}; colors = maecolors) where {T<:Vector{MIT
     colrs = @lift [colors[resletterdict[$resnames[j]]] for j in 1:length($resnames)]
     return colrs
 end
-function rescolors(atms::Vector{ProtoSyn.Atom}; colors = maecolors)
-    resnames = [atms[i].container.name for i in 1:length(atms)]
-    colrs = [colors[resletterdict[resnames[j]]] for j in 1:length(resnames)]
-    return colrs
-end
-function rescolors(atms::Observable{T}; colors = maecolors) where {T<:Vector{ProtoSyn.Atom}}
-    resnames = @lift [$atms[i].container.name for i in 1:length($atms)]
-    colrs = @lift [colors[resletterdict[$resnames[j]]] for j in 1:length($resnames)]
-    return colrs
-end
-function rescolors(resz::Vector{ProtoSyn.Residue}; colors = maecolors)
-    resnames = [resz[i].name for i in 1:length(resz)]
-    colrs = [colors[resletterdict[resnames[j]]] for j in 1:length(resnames)]
-    return colrs
-end
-function rescolors(resz::Observable{T}; colors = maecolors) where {T<:Vector{ProtoSyn.Residue}}
-    resnames = @lift [$resz[i].name for i in 1:length($resz)]
-    colrs = @lift [colors[resletterdict[$resnames[j]]] for j in 1:length($resnames)]
-    return colrs
-end
 
 """
     atomsizes( atms )
@@ -497,14 +329,6 @@ function atomsizes(atms::Vector{MIToS.PDB.PDBAtom}; radiustype = :ballandstick)
     return sizes
 end
 function atomsizes(atms::Observable{T}; radiustype = :ballandstick) where {T<:Vector{MIToS.PDB.PDBAtom}}
-    sizes = @lift atomradii($atms; radiustype = radiustype)
-    return sizes
-end
-function atomsizes(atms::Vector{ProtoSyn.Atom}; radiustype = :ballandstick)
-    sizes = atomradii(atms; radiustype = radiustype)
-    return sizes
-end
-function atomsizes(atms::Observable{T}; radiustype = :ballandstick) where {T<:Vector{ProtoSyn.Atom}}
     sizes = @lift atomradii($atms; radiustype = radiustype)
     return sizes
 end
@@ -632,12 +456,13 @@ function plottingdata(atms::Vector{MIToS.PDB.PDBAtom};
     atmcords = [[atms[i].coordinates[1],atms[i].coordinates[2],atms[i].coordinates[3]] for i in 1:length(atms)] |> combinedims |> transpose |> collect
     colrs = to_color.([colors[x.element] for x in atms])
     sizes = atomradii(atms; radiustype = radiustype)
+    bnds = getbonds(atms)
 
     return OrderedDict(:atoms => atms, 
                         :coords => atmcords, 
                         :colors => colrs,
                         :sizes => sizes,
-                        :bonds => nothing)
+                        :bonds => bnds)
 end
 function plottingdata(atms::Observable{T};
                         colors = elecolors,
@@ -647,44 +472,13 @@ function plottingdata(atms::Observable{T};
     atmcords = @lift atmcords = [[$atms[i].coordinates[1],$atms[i].coordinates[2],$atms[i].coordinates[3]] for i in 1:length($atms)] |> combinedims |> transpose |> collect
     colrs = @lift to_color.([colors[x.element] for x in $atms])
     sizes = @lift atomradii($atms; radiustype = radiustype)
+    bnds = @lift getbonds($atms)
 
     return OrderedDict(:atoms => atms, 
                         :coords => atmcords, 
                         :colors => colrs,
                         :sizes => sizes,
-                        :bonds => nothing)
-end
-function plottingdata(pose::ProtoSyn.Pose;
-                        colors = elecolors,
-                        radiustype = :ballandstick,
-                        water = false,
-                        selection = ProtoSyn.ProteinSelection())
-    #
-    if water == false
-        selectwater = FieldSelection{ProtoSyn.Residue}("HOH", :name)
-        selectatoms = (TrueSelection{ProtoSyn.Atom}() & selection & !selectwater)
-        atms = selectatoms(pose; gather = true)
-    else
-        selectatoms = (TrueSelection{ProtoSyn.Atom}() & selection)
-        atms = selectatoms(pose; gather = true)
-    end
-    atmselection = (TrueSelection{ProtoSyn.Atom}() & selection)(pose)
-    atms = selectatoms(pose; gather = true)
-    idxs = [i for i in 1:length(atmselection.content) if atmselection.content[i] .== 1]
-    atmstates = pose.state.items[idxs.+3]
-    
-    atmcords = [atmstates[i].t for i in 1:length(idxs)] |> combinedims |> transpose |> collect
-    colrs = []
-    colrs = to_color.([colors[atms[i].symbol] for i in 1:length(atms)])
-    sizes = atomradii(atms; radiustype = radiustype)
-    bonds = getbonds(atms, atmstates)
-
-    return OrderedDict(:atoms => atms, 
-                        :coords => atmcords, 
-                        :colors => colrs,
-                        :sizes => sizes,
-                        :bonds => bonds,
-                        :states => atmstates)
+                        :bonds => bnds)
 end
 function plottingdata(pdata::AbstractDict; kwargs...)
     return pdata
@@ -727,12 +521,6 @@ strucplot = plotstruc!(fig, struc)
 
 chain_A = retrievepdb("2vb1", dir = "data/")["A"] |> Observable
 strucplot = plotstruc!(fig, chain_A)
-
--------------------------
-using ProtoSyn
-
-pose = ProtoSyn.Peptides.load("2vb1.pdb"; bonds_by_distance=true) |> Observable
-strucplot = plotstruc!(fig, pose)
 ```
 
 ### Keyword Arguments:
@@ -750,15 +538,13 @@ strucplot = plotstruc!(fig, pose)
 """
 function plotstruc!(fig::Figure, struc::T; kwargs...) where {T<:Union{Vector{MIToS.PDB.PDBAtom}, 
                                                     Vector{MIToS.PDB.PDBResidue}, 
-                                                    BioStructures.StructuralElementOrList,
-                                                    OrderedDict}}
+                                                    BioStructures.StructuralElementOrList}}
     strucobs = Observable(struc)
     plotstruc!(fig, strucobs; kwargs...)
 end
 function plotstruc!(figposition::GridPosition, struc::T; kwargs...) where {T<:Union{Vector{MIToS.PDB.PDBAtom}, 
                                                     Vector{MIToS.PDB.PDBResidue}, 
-                                                    BioStructures.StructuralElementOrList,
-                                                    OrderedDict}}
+                                                    BioStructures.StructuralElementOrList}}
     strucobs = Observable(struc)
     plotstruc!(figposition, strucobs; kwargs...)
 end
@@ -847,12 +633,12 @@ function plotstruc!(figposition::GridPosition, struc::Observable;
                     kwargs...
                     )
 	#
-    plotdata = @lift plottingdata($struc; colors = atomcolors, radiustype = plottype, water = water)
-    atms = @lift $plotdata[:atoms]
-    cords = @lift $plotdata[:coords]
-    colrs = @lift $plotdata[:colors]
-    sizs = @lift $plotdata[:sizes]
-    bnds = @lift $plotdata[:bonds]
+    plotdata = plottingdata(struc; colors = atomcolors, radiustype = plottype, water = water)
+    atms = plotdata[:atoms]
+    cords = plotdata[:coords]
+    colrs = plotdata[:colors]
+    sizs = plotdata[:sizes]
+    bnds = plotdata[:bonds]
 
     if inspectorlabel == :default
         inspectorlabel = @lift getinspectorlabel($struc)        
@@ -867,7 +653,7 @@ function plotstruc!(figposition::GridPosition, struc::Observable;
         end
         lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
-        if bnds == nothing
+        if bnds == nothing || typeof(bnds)<:Observable
             bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
         end
         bndshapes = @lift bondshapes($cords, $bnds)
@@ -876,15 +662,13 @@ function plotstruc!(figposition::GridPosition, struc::Observable;
         bmesh.inspectable[] = false
     elseif plottype == :covalent || plottype == :cov
         markersize = @lift $sizs .* markerscale
-        if markerscale < 1.0
-            if bnds == nothing
-                bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
-            end
-            bndshapes = @lift bondshapes($cords, $bnds)
-            bndmeshes = @lift normal_mesh.($bndshapes)
-            bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
-            bmesh.inspectable[] = false
+        if bnds == nothing || typeof(bnds)<:Observable
+            bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
         end
+        bndshapes = @lift bondshapes($cords, $bnds)
+        bndmeshes = @lift normal_mesh.($bndshapes)
+        bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
+        bmesh.inspectable[] = false
         lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
     else
@@ -894,79 +678,7 @@ function plotstruc!(figposition::GridPosition, struc::Observable;
     DataInspector(lscene)
     fig
 end
-function plotstruc!(fig::Figure, pose::Observable{ProtoSyn.Pose{Topology}};
-                    resolution = (420,600),
-                    gridposition = (1,1),
-                    plottype = :ballandstick,
-                    atomcolors = elecolors,
-                    markersize = 0.0,
-                    markerscale = 1.0,
-                    bondtype = :default,
-                    distance = 1.9,
-                    inspectorlabel = :default,
-                    water = false,
-                    kwargs...
-                    )
-	#
-    plotdata = @lift plottingdata($pose; colors = atomcolors, radiustype = plottype, water = water)
-    atms = @lift $plotdata[:atoms]
-    cords = @lift $plotdata[:coords]
-    colrs = @lift $plotdata[:colors]
-    sizs = @lift $plotdata[:sizes]
-    bnds = @lift $plotdata[:bonds]
-    atmstates = @lift $plotdata[:states]
-
-    pxwidths = fig.scene.px_area[].widths
-    needresize = false
-    # the figure needs to be resized if there's a preexisting MSA plot (with default resolution)
-    if pxwidths == [1100,400]
-        needresize = true
-    end
-    if inspectorlabel == :default
-        inspectorlabel = @lift getinspectorlabel($atms, $pose)        
-    end
-    if plottype == :spacefilling || plottype == :vanderwaals || plottype == :vdw
-        markersize = @lift $sizs .* markerscale
-        lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
-        ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
-    elseif plottype == :ballandstick || plottype == :bas
-        if markersize == 0.0
-            markersize = @lift $sizs .* markerscale .* 0.7
-        end
-        lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
-        ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
-        if bnds == nothing
-            bnds = @lift getbonds($atms, $atmstates; algo = bondtype, distance = distance)
-        end
-        bndshapes = @lift bondshapes($cords, $bnds)
-        bndmeshes = @lift normal_mesh.($bndshapes)
-        bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
-        bmesh.inspectable[] = false
-    elseif plottype == :covalent || plottype == :cov
-        markersize = @lift $sizs .* markerscale
-        if markerscale < 1.0
-            if bnds == nothing
-                bnds = @lift getbonds($atms, $atmstates; algo = bondtype, distance = distance)
-            end
-            bndshapes = @lift bondshapes($cords, $bnds)
-            bndmeshes = @lift normal_mesh.($bndshapes)
-            bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
-            bmesh.inspectable[] = false
-        end
-        lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
-        ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
-    else
-        ArgumentError("bad plottype kwarg")
-    end
-    # the window has to be reopened to resize at the moment
-    if needresize == true
-        fig.scene.px_area[] = HyperRectangle{2, Int64}([0, 0], [pxwidths[1], pxwidths[2]+resolution[2]])
-        Makie.update_state_before_display!(fig)
-    end
-    DataInspector(lscene)
-    fig
-end
-function plotstruc!(fig::Figure, plotdata::AbstractDict{String,T};
+function plotstruc!(fig::Figure, plotdata::AbstractDict{Symbol,T};
                     resolution = (420,600),
                     gridposition = (1,1),
                     plottype = :ballandstick,
@@ -1000,7 +712,6 @@ function plotstruc!(fig::Figure, plotdata::AbstractDict{String,T};
         bnds = plotdata[:bonds] |> Observable
     end
 
-
     pxwidths = fig.scene.px_area[].widths
     needresize = false
     # the figure needs to be resized if there's a preexisting MSA plot (with default resolution)
@@ -1008,7 +719,7 @@ function plotstruc!(fig::Figure, plotdata::AbstractDict{String,T};
         needresize = true
     end
     if inspectorlabel == :default
-        inspectorlabel = @lift getinspectorlabel($struc)        
+        inspectorlabel = @lift getinspectorlabel($atms)        
     end
     if plottype == :spacefilling || plottype == :vanderwaals || plottype == :vdw
         markersize = @lift $sizs .* markerscale
@@ -1020,7 +731,7 @@ function plotstruc!(fig::Figure, plotdata::AbstractDict{String,T};
         end
         lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
-        if bnds == nothing
+        if bnds == nothing || typeof(bnds)<:Observable
             bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
         end
         bndshapes = @lift bondshapes($cords, $bnds)
@@ -1029,15 +740,13 @@ function plotstruc!(fig::Figure, plotdata::AbstractDict{String,T};
         bmesh.inspectable[] = false
     elseif plottype == :covalent || plottype == :cov
         markersize = @lift $sizs .* markerscale
-        if markerscale < 1.0
-            if bnds == nothing
-                bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
-            end
-            bndshapes = @lift bondshapes($cords, $bnds)
-            bndmeshes = @lift normal_mesh.($bndshapes)
-            bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
-            bmesh.inspectable[] = false
+        if bnds == nothing || typeof(bnds)<:Observable
+            bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
         end
+        bndshapes = @lift bondshapes($cords, $bnds)
+        bndmeshes = @lift normal_mesh.($bndshapes)
+        bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
+        bmesh.inspectable[] = false
         lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
     else
@@ -1051,7 +760,7 @@ function plotstruc!(fig::Figure, plotdata::AbstractDict{String,T};
     DataInspector(lscene)
     fig
 end
-function plotstruc!(figposition::GridPosition, plotdata::AbstractDict{String,T};
+function plotstruc!(figposition::GridPosition, plotdata::AbstractDict{Symbol,T};
                     resolution = (420,600),
                     gridposition = (1,1),
                     plottype = :ballandstick,
@@ -1098,7 +807,7 @@ function plotstruc!(figposition::GridPosition, plotdata::AbstractDict{String,T};
         end
         lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
-        if bnds == nothing
+        if bnds == nothing || typeof(bnds)<:Observable
             bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
         end
         bndshapes = @lift bondshapes($cords, $bnds)
@@ -1107,15 +816,13 @@ function plotstruc!(figposition::GridPosition, plotdata::AbstractDict{String,T};
         bmesh.inspectable[] = false
     elseif plottype == :covalent || plottype == :cov
         markersize = @lift $sizs .* markerscale
-        if markerscale < 1.0
-            if bnds == nothing
-                bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
-            end
-            bndshapes = @lift bondshapes($cords, $bnds)
-            bndmeshes = @lift normal_mesh.($bndshapes)
-            bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
-            bmesh.inspectable[] = false
+        if bnds == nothing || typeof(bnds)<:Observable
+            bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
         end
+        bndshapes = @lift bondshapes($cords, $bnds)
+        bndmeshes = @lift normal_mesh.($bndshapes)
+        bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
+        bmesh.inspectable[] = false
         lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
     else

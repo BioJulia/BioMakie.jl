@@ -87,6 +87,23 @@ mutable struct UniProtData
     # Database references (EMBL, PDB, etc.)
     dbrefs
 end
+function json_to_dict_or_array(value)
+    if value isa JSON3.Object
+        dict = OrderedDict{Symbol,Any}()
+        for (key, val) in value
+            dict[key] = json_to_dict_or_array(val)  # Recursively convert nested objects or arrays
+        end
+        return dict
+    elseif value isa JSON3.Array
+        arr = []
+        for item in value
+            push!(arr, json_to_dict_or_array(item))  # Recursively convert nested objects or arrays
+        end
+        return arr
+    else
+        return value
+    end
+end
 
 """
     getuniprotdata(jsonfile; include_refs = false)
@@ -133,7 +150,7 @@ function getuniprotdata(jsonfile; include_refs = false)
     similarity = []
     miscellaneous = []
     other_comments = []
-    dbrefs = []
+    dbrefs = OrderedDict[]
 
     filestring = read(jsonfile,String)
     jsondata = JSON3.read(filestring)
@@ -153,212 +170,84 @@ function getuniprotdata(jsonfile; include_refs = false)
 
     if include_refs == true
         dbrefs = jsondata[:dbReferences]
-        dbrefs = OrderedDict{Symbol,String}.(dbrefs)
+        try
+            dbrefs = json_value_to_dict_or_array(dbrefs)
+        catch
+
+        end
     end
 
     for dict in commentdicts
         type = dict[:type]
         if type == "FUNCTION"
             try
-                try
-                    if size(dict[:text]) > 1
-                        outdata = dict[:text]
-                        JSON3.read(outdata, Dict)
-                    else
-                        outdata = dict[:text][1]
-                        JSON3.read(outdata, Dict)
-                    end
-                    push!(func, outdata)
-                catch
-                    try
-                        if size(dict[:text][1]) > 1
-                            outdata = dict[:text][1]
-                            JSON3.read(outdata, Dict)
-                        else
-                            outdata = dict[:text][1][1]
-                            JSON3.read(outdata, Dict)
-                        end
-                        push!(func, outdata)
-                    catch
-                        push!(func, dict[:text])
-                    end
-                end
+                json_value_to_dict_or_array(dict)
             catch
                 push!(func, dict)
             end
         elseif type == "CATALYTIC_ACTIVITY"
-            @trycatch push!(catalytic_activity, dict[:reaction] |> OrderedDict)
+            try
+                json_value_to_dict_or_array(dict)
+            catch
+                push!(catalytic_activity, dict)
+            end
         elseif type == "SUBUNIT"
             try
-                try
-                    if size(dict[:text]) > 1
-                        outdata = dict[:text]
-                    else
-                        outdata = dict[:text][1]
-                    end
-                    push!(subunit, outdata)
-                catch
-                    try
-                        if size(dict[:text][1]) > 1
-                            outdata = dict[:text][1]
-                        else
-                            outdata = dict[:text][1][1]
-                        end
-                        push!(subunit, outdata)
-                    catch
-                        push!(subunit, dict[:text])
-                    end
-                end
+                json_value_to_dict_or_array(dict)
             catch
                 push!(subunit, dict)
             end
         elseif type == "SUBCELLULAR_LOCATION"
-            @trycatch push!(subcellular_location, dict[:locations])
+            try
+                json_value_to_dict_or_array(dict)
+            catch
+                push!(subcellular_location, dict)
+            end
         elseif type == "INTERACTION"
-            @trycatch push!(interaction, dict[:interactions])
+            try
+                json_value_to_dict_or_array(dict)
+            catch
+                push!(interaction, dict)
+            end
         elseif type == "TISSUE_SPECIFICITY"
             try
-                try
-                    if size(dict[:text]) > 1
-                        outdata = dict[:text]
-                    else
-                        outdata = dict[:text][1]
-                    end
-                    push!(tissue_specificity, outdata)
-                catch
-                    try
-                        if size(dict[:text][1]) > 1
-                            outdata = dict[:text][1]
-                        else
-                            outdata = dict[:text][1][1]
-                        end
-                        push!(tissue_specificity, outdata)
-                    catch
-                        push!(tissue_specificity, dict[:text])
-                    end
-                end
+                json_value_to_dict_or_array(dict)
             catch
                 push!(tissue_specificity, dict)
             end
         elseif type == "POLYMORPHISM"
             try
-                try
-                    if size(dict[:text]) > 1
-                        outdata = dict[:text]
-                    else
-                        outdata = dict[:text][1]
-                    end
-                    push!(polymorphism, outdata)
-                catch
-                    try
-                        if size(dict[:text][1]) > 1
-                            outdata = dict[:text][1]
-                        else
-                            outdata = dict[:text][1][1]
-                        end
-                        push!(polymorphism, outdata)
-                    catch
-                        push!(polymorphism, dict[:text])
-                    end
-                end
+                json_value_to_dict_or_array(dict)
             catch
                 push!(polymorphism, dict)
             end
         elseif type == "ALLERGEN"
             try
-                try
-                    if size(dict[:text]) > 1
-                        outdata = dict[:text]
-                    else
-                        outdata = dict[:text][1]
-                    end
-                    push!(allergen, outdata)
-                catch
-                    try
-                        if size(dict[:text][1]) > 1
-                            outdata = dict[:text][1]
-                        else
-                            outdata = dict[:text][1][1]
-                        end
-                        push!(allergen, outdata)
-                    catch
-                        push!(allergen, dict[:text])
-                    end
-                end
+                json_value_to_dict_or_array(dict)
             catch
                 push!(allergen, dict)
             end
         elseif type == "MISCELLANEOUS"
             try
-                try
-                    if size(dict[:text]) > 1
-                        outdata = dict[:text]
-                    else
-                        outdata = dict[:text][1]
-                    end
-                    push!(miscellaneous, outdata)
-                catch
-                    try
-                        if size(dict[:text][1]) > 1
-                            outdata = dict[:text][1]
-                        else
-                            outdata = dict[:text][1][1]
-                        end
-                        push!(miscellaneous, outdata)
-                    catch
-                        push!(miscellaneous, dict[:text])
-                    end
-                end
+                json_value_to_dict_or_array(dict)
             catch
                 push!(miscellaneous, dict)
             end
         elseif type == "WEBRESOURCE"
-            @trycatch push!(web_resource, dict)
+            try
+                json_value_to_dict_or_array(dict)
+            catch
+                push!(web_resource, dict)
+            end
         elseif type == "SIMILARITY"
             try
-                try
-                    if size(dict[:text]) > 1
-                        outdata = dict[:text]
-                    else
-                        outdata = dict[:text][1]
-                    end
-                    push!(similarity, outdata)
-                catch
-                    try
-                        if size(dict[:text][1]) > 1
-                            outdata = dict[:text][1]
-                        else
-                            outdata = dict[:text][1][1]
-                        end
-                        push!(similarity, outdata)
-                    catch
-                        push!(similarity, dict[:text])
-                    end
-                end
+                json_value_to_dict_or_array(dict)
             catch
                 push!(similarity, dict)
             end
         else
             try
-                try
-                    if size(dict[:text]) > 1
-                        outdata = dict[:text]
-                    else
-                        outdata = dict[:text][1]
-                    end
-                    push!(other_comments, outdata)
-                catch
-                    try
-                        if size(dict[:text][1]) > 1
-                            outdata = dict[:text][1]
-                        else
-                            outdata = dict[:text][1][1]
-                        end
-                        push!(other_comments, outdata)
-                    catch
-                        push!(other_comments, dict[:text])
-                    end
-                end
+                json_value_to_dict_or_array(dict)
             catch
                 push!(other_comments, dict)
             end
@@ -461,7 +350,7 @@ function getuniprotdata(jsonfile; include_refs = false)
         secondary_accession,
         sequence,
         organism,
-        info,
+        datainfo,
         molecule_processing,
         domains_and_sites,
         structural,
@@ -492,12 +381,28 @@ end
 
 Prints some of the most important information from a UniProtData object.
 """
-function showuniprotdata(pdata)
-    ["Accession: $(pdata.accession)", 
-    "ID: $(pdata.id)", 
-    "Name: $(pdata.protinfo[:recommendedName][:fullName][:value])", 
-    "EC Number: $(pdata.protinfo[:recommendedName][:ecNumber][1][:value])",
-    "Alternative Name: $(pdata.protinfo[:alternativeName][1][:fullName][:value])",
-    "Gene: $(pdata.gene)", 
-    "Secondary accession: $(pdata.secondary_accession)"]
+function showuniprotdata(io, pdata)
+    if pdata.dbrefs == OrderedDict[]
+        dbref = "None"
+    else
+        dbref = length(pdata.dbrefs)
+    end
+    print.(io, "--- Uniprot Data ---\n",
+    "Accession: $(pdata.accession)\n", 
+    "ID:  $(pdata.id)\n", 
+    "Name:  $(pdata.protinfo[:recommendedName][:fullName][:value])\n", 
+    "EC Number:  $(pdata.protinfo[:recommendedName][:ecNumber][1][:value])\n",
+    "Alternative Name:  $(pdata.protinfo[:alternativeName][1][:fullName][:value])\n",
+    "Gene:  $(pdata.gene)\n", 
+    "Secondary accession:  $(pdata.secondary_accession)\n\n",
+    "Features:  molecule_processing, domains_and_sites, structural, ptm, sequence_information,\n",
+                "\t   mutagenesis, variants, topology, other_features\n",
+    "Comments:  func, catalytic_activity, subunit, subcellular_location, interaction\n",
+                "\t   tissue_specificity, polymorphism, allergen, web_resource, similarity\n", 
+                "\t   miscellaneous, other_comments\n",
+    "Other Database References:  $(dbref)\n",
+    "--------------------\n")
 end
+
+import Base: show
+Base.show(io::IO, data::UniProtData) = showuniprotdata(io, data)
