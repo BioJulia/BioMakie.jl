@@ -633,7 +633,7 @@ function plotstruc!(figposition::GridPosition, struc::Observable;
                     kwargs...
                     )
 	#
-    plotdata = plottingdata($struc; colors = atomcolors, radiustype = plottype, water = water)
+    plotdata = plottingdata(struc; colors = atomcolors, radiustype = plottype, water = water)
     atms = plotdata[:atoms]
     cords = plotdata[:coords]
     colrs = plotdata[:colors]

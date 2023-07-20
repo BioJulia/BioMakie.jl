@@ -786,7 +786,7 @@ function getbonds(resz::Vector{MIToS.PDB.PDBResidue};
 				cutoff = 1.9,
 				extradistance = 0.14,
 				disulfides = false)
-				
+
 	atms = [bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
 	resindices = [[i for j in 1:size(bestoccupancy(resz[i].atoms),1)] for i in 1:length(resz)] |> flatten
 	resnames = [[resz[i].id.name for j in 1:size(bestoccupancy(resz[i].atoms),1)] for i in 1:length(resz)] |> flatten
@@ -1076,18 +1076,19 @@ end
 	getbonds( coords ) -> BitMatrix
 
 Returns a matrix of all bonds using a N x 3 coordinates matrix.
-Uses a plain cutoff distance with algo option :distance, otherwise
-uses covalent distances with :covalent.
+Uses a plain cutoff distance with algo option :distance. This is
+not recommended as it can lead to incorrect results since different 
+atoms have different bond lengths and radii.
 
 ### Keyword Arguments:
-- algo ------------- :covalent 			# (:distance, :covalent) algorithm to find bonds
+- algo ------------- :distance 			# algorithm to find bonds
 - H ---------------- true				# include bonds with hydrogen atoms
 - cutoff ----------- 1.9				# distance cutoff for bonds between heavy atoms
 - extradistance ---- 0.14				# fudge factor for better inclusion
 - disulfides ------- false				# include disulfide bonds
 """
 function getbonds(cords::AbstractArray{T}; 
-				algo = :covalent, 
+				algo = :distance, 
 				H = true,
 				cutoff = 1.9,
 				extradistance = 0.14,
@@ -1096,13 +1097,13 @@ function getbonds(cords::AbstractArray{T};
 	@assert size(cords,2) == 3 "coords must be an N x 3 matrix"
 	numatoms = size(cords,1)
 	bondmatrix = zeros(numatoms, numatoms) |> BitMatrix
+	warn("Using coords for bonds is not recommended, this can lead to incorrect results")
 
-	if algo == :distance
+	if algo == :knowledgebased
+		warn("Knowledge-based algorithm not implemented for coords, using :distance instead")
 		return distancebonds(cords; cutoff = cutoff, H = H, disulfides = disulfides)
-	elseif algo == :covalent
-		return covalentbonds(cords; extradistance = extradistance, H = H, disulfides = disulfides)
 	else # just do the same as :covalent for now
-		return covalentbonds(cords; extradistance = extradistance, H = H, disulfides = disulfides)
+		return distancebonds(cords; cutoff = cutoff, H = H, disulfides = disulfides)
 	end
 
 	return nothing
