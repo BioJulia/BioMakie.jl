@@ -1,23 +1,19 @@
-using BioMakie
 using Documenter
-using Literate
-using PkgDeps
-using MIToS
-using GLMakie
-using GLMakie: Observable
+using BioMakie
 
-DocMeta.setdocmeta!(BioMakie, :DocTestSetup, :(using BioMakie); recursive=true)
-
-makedocs(; modules=[BioMakie], authors="Daniel Kool",
-         repo="https://github.com/kool7d/BioMakie.jl/blob/{commit}{path}#{line}",
-         sitename="BioMakie.jl",
-         format=Documenter.HTML(; canonical="https://kool7d.github.io/BioMakie.jl"),
-         pages=["Home" => "index.md",
-                "Usage" => "usage.md",
-              #   "Examples" => "Examples/alphashape.md",
-                "API" => "API.md",
-                ],
+makedocs(
+    sitename = "BioMakie",
+    format = Documenter.HTML(),
+    modules = [BioMakie]
 )
 
-deploydocs(;repo="github.com/kool7d/BioMakie.jl",
-              push_preview=true)
+deploydocs(
+    repo = "github.com/kool7d/BioMakie.jl.git",
+)
+
+# Documenter can also automatically deploy documentation to gh-pages.
+# See "Hosting Documentation" and deploydocs() in the Documenter manual
+# for more information.
+#=deploydocs(
+    repo = "<repository url>"
+)=#
