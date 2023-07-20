@@ -6,7 +6,7 @@ using MIToS
 using GLMakie
 using GLMakie: Observable
 
-# DocMeta.setdocmeta!(BioMakie, :DocTestSetup, :(using BioMakie); recursive=true)
+DocMeta.setdocmeta!(BioMakie, :DocTestSetup, :(using BioMakie); recursive=true)
 
 makedocs(; modules=[BioMakie], authors="Daniel Kool",
          repo="https://github.com/kool7d/BioMakie.jl/blob/{commit}{path}#{line}",
