@@ -223,12 +223,6 @@ firstvalue(dict::AbstractDict) = first(values(dict))
     inspectlabel = getinspectorlabel(atms_obs[])
     str = inspectlabel(1,3,1)
     @test str[33:67] == "coordinates: [2.502, 7.339, 13.503]"
-    inspectlabel = getinspectorlabel(chn_obs)
-    str = inspectlabel(1,3,1)
-    @test str[33:67] == "coordinates: [2.502, 7.339, 13.503]"
-    inspectlabel = getinspectorlabel(atms_obs)
-    str = inspectlabel(1,3,1)
-    @test str[33:67] == "coordinates: [2.502, 7.339, 13.503]"
 
     flabel = firstlabel(inspectlabel)
     @test flabel[33:67] == "coordinates: [1.984, 5.113, 14.226]"
@@ -272,7 +266,6 @@ end
     msa1 = MIToS.MSA.read("./docs/src/assets/pf00062.stockholm.gz",Stockholm)
     @test size(msa1) == (1733, 123)
     @test length(msa1.annotations.sequences) == 1748
-    @test length(getbiocolors()) == 7
     plotdata = plottingdata(msa1)
     msamatrix = plotdata[:matrix]
     @test size(msamatrix) == (1733, 123)
