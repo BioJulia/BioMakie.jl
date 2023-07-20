@@ -372,6 +372,19 @@ function getinspectorlabel(atms::Observable{T}, pose::ProtoSyn.Pose) where {T<:V
     "serial: $(atms[][i].id)\ncoordinates: $(pose.state[atms[][i]].t)"
     return func
 end
+# elseif typeof(pdata[][:atoms]) <: Vector{ProtoSyn.Atom}
+#     atms = pdata[][:atoms]
+#     func = (self, i, p) -> "chain: $(atms[i].container.container.name)   " *
+#     "res: $(atms[i].container.name)   resid: $(atms[i].container.id)   index: $(i)\n" *
+#     "atom: $(atms[i].name)   element: $(atms[i].symbol)   " *
+#     "serial: $(atms[i].id)\ncoordinates: $(pose.state[atms[i]].t)"
+# elseif typeof(pdata[:atoms]) <: Vector{ProtoSyn.Atom}
+#     atms = pdata[:atoms]
+#     state = pdata[:state]
+#     func = (self, i, p) -> "chain: $(atms[i].container.container.name)   " *
+#     "res: $(atms[i].container.name)   resid: $(atms[i].container.id)   index: $(i)\n" *
+#     "atom: $(atms[i].name)   element: $(atms[i].symbol)   " *
+#     "serial: $(atms[i].id)\ncoordinates: $(state[atms[i]].t)"
 
 """
     atomcolors( atoms )

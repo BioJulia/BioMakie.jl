@@ -42,6 +42,7 @@ macro trycatch(ex)
         end
     end
 end
+typefields(x) = x |> typeof |> fieldnames
 
 # current basic color schemes for atoms and residues
 elecolors = Dict( "C" => :gray,
@@ -177,7 +178,13 @@ cinemacolors = OrderedDict(
     "X" => :gray
 )
 function getbiocolors()
-    return [elecolors, cpkcolors, aquacolors, shapelycolors, leskcolors, maecolors, cinemacolors]
+    return OrderedDict( :elecolors => elecolors, 
+                        :cpkcolors => cpkcolors, 
+                        :aquacolors => aquacolors, 
+                        :shapelycolors => shapelycolors, 
+                        :leskcolors => leskcolors, 
+                        :maecolors => maecolors, 
+                        :cinemacolors => cinemacolors)
 end
 SMILESaa = OrderedDict(
     "A" => "N[C@@]([H])(C)C(=O)O",
