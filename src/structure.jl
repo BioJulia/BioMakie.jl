@@ -524,7 +524,7 @@ strucplot = plotstruc!(fig, chain_A)
 ```
 
 ### Keyword Arguments:
-- resolution ----- (420,600)
+- resolution ----- (600,600)
 - gridposition --- (1,1)  # if an MSA is already plotted, (2,1:3) works well
 - plottype ------- :ballandstick, :covalent, or :spacefilling
 - atomcolors ----- elecolors, others in `getbiocolors()`, or provide a Dict like: "N" => :blue
@@ -549,7 +549,7 @@ function plotstruc!(figposition::GridPosition, struc::T; kwargs...) where {T<:Un
     plotstruc!(figposition, strucobs; kwargs...)
 end
 function plotstruc!(fig::Figure, struc::Observable;
-                    resolution = (420,600),
+                    resolution = (600,600),
                     gridposition = (1,1),
                     plottype = :ballandstick,
                     atomcolors = elecolors,
@@ -562,17 +562,17 @@ function plotstruc!(fig::Figure, struc::Observable;
                     kwargs...
                     )
 	#
-    plotdata = @lift plottingdata($struc; colors = atomcolors, radiustype = plottype, water = water)
-    atms = @lift $plotdata[:atoms]
-    cords = @lift $plotdata[:coords]
-    colrs = @lift $plotdata[:colors]
-    sizs = @lift $plotdata[:sizes]
-    bnds = @lift $plotdata[:bonds]
+    plotdata = plottingdata(struc; colors = atomcolors, radiustype = plottype, water = water)
+    atms = plotdata[:atoms]
+    cords = plotdata[:coords]
+    colrs = plotdata[:colors]
+    sizs = plotdata[:sizes]
+    bnds = plotdata[:bonds]
 
     pxwidths = fig.scene.px_area[].widths
     needresize = false
     # the figure needs to be resized if there's a preexisting MSA plot (with default resolution)
-    if pxwidths == [1100,400]
+    if pxwidths == [1000,350]
         needresize = true
     end
     if inspectorlabel == :default
@@ -597,15 +597,13 @@ function plotstruc!(fig::Figure, struc::Observable;
         bmesh.inspectable[] = false
     elseif plottype == :covalent || plottype == :cov
         markersize = @lift $sizs .* markerscale
-        if markerscale < 1.0
-            if bnds == nothing
-                bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
-            end
-            bndshapes = @lift bondshapes($cords, $bnds)
-            bndmeshes = @lift normal_mesh.($bndshapes)
-            bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
-            bmesh.inspectable[] = false
+        if bnds == nothing
+            bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
         end
+        bndshapes = @lift bondshapes($cords, $bnds)
+        bndmeshes = @lift normal_mesh.($bndshapes)
+        bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
+        bmesh.inspectable[] = false
         lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
     else
@@ -620,7 +618,7 @@ function plotstruc!(fig::Figure, struc::Observable;
     fig
 end
 function plotstruc!(figposition::GridPosition, struc::Observable;
-                    resolution = (420,600),
+                    resolution = (600,600),
                     gridposition = (1,1),
                     plottype = :ballandstick,
                     atomcolors = elecolors,
@@ -640,6 +638,12 @@ function plotstruc!(figposition::GridPosition, struc::Observable;
     sizs = plotdata[:sizes]
     bnds = plotdata[:bonds]
 
+    pxwidths = fig.scene.px_area[].widths
+    needresize = false
+    # the figure needs to be resized if there's a preexisting MSA plot (with default resolution)
+    if pxwidths == [1000,350]
+        needresize = true
+    end
     if inspectorlabel == :default
         inspectorlabel = @lift getinspectorlabel($struc)        
     end
@@ -653,7 +657,7 @@ function plotstruc!(figposition::GridPosition, struc::Observable;
         end
         lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
-        if bnds == nothing || typeof(bnds)<:Observable
+        if bnds == nothing
             bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
         end
         bndshapes = @lift bondshapes($cords, $bnds)
@@ -662,7 +666,7 @@ function plotstruc!(figposition::GridPosition, struc::Observable;
         bmesh.inspectable[] = false
     elseif plottype == :covalent || plottype == :cov
         markersize = @lift $sizs .* markerscale
-        if bnds == nothing || typeof(bnds)<:Observable
+        if bnds == nothing
             bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
         end
         bndshapes = @lift bondshapes($cords, $bnds)
@@ -674,12 +678,16 @@ function plotstruc!(figposition::GridPosition, struc::Observable;
     else
         ArgumentError("bad plottype kwarg")
     end
-
+    # the window has to be reopened to resize at the moment
+    if needresize == true
+        fig.scene.px_area[] = HyperRectangle{2, Int64}([0, 0], [pxwidths[1], pxwidths[2]+resolution[2]])
+        Makie.update_state_before_display!(fig)
+    end
     DataInspector(lscene)
     fig
 end
 function plotstruc!(fig::Figure, plotdata::AbstractDict{Symbol,T};
-                    resolution = (420,600),
+                    resolution = (600,600),
                     gridposition = (1,1),
                     plottype = :ballandstick,
                     atomcolors = elecolors,
@@ -715,7 +723,7 @@ function plotstruc!(fig::Figure, plotdata::AbstractDict{Symbol,T};
     pxwidths = fig.scene.px_area[].widths
     needresize = false
     # the figure needs to be resized if there's a preexisting MSA plot (with default resolution)
-    if pxwidths == [1100,400]
+    if pxwidths == [1000,350]
         needresize = true
     end
     if inspectorlabel == :default
@@ -731,7 +739,7 @@ function plotstruc!(fig::Figure, plotdata::AbstractDict{Symbol,T};
         end
         lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
-        if bnds == nothing || typeof(bnds)<:Observable
+        if bnds == nothing
             bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
         end
         bndshapes = @lift bondshapes($cords, $bnds)
@@ -740,7 +748,7 @@ function plotstruc!(fig::Figure, plotdata::AbstractDict{Symbol,T};
         bmesh.inspectable[] = false
     elseif plottype == :covalent || plottype == :cov
         markersize = @lift $sizs .* markerscale
-        if bnds == nothing || typeof(bnds)<:Observable
+        if bnds == nothing
             bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
         end
         bndshapes = @lift bondshapes($cords, $bnds)
@@ -761,7 +769,7 @@ function plotstruc!(fig::Figure, plotdata::AbstractDict{Symbol,T};
     fig
 end
 function plotstruc!(figposition::GridPosition, plotdata::AbstractDict{Symbol,T};
-                    resolution = (420,600),
+                    resolution = (600,600),
                     gridposition = (1,1),
                     plottype = :ballandstick,
                     atomcolors = elecolors,
@@ -794,6 +802,12 @@ function plotstruc!(figposition::GridPosition, plotdata::AbstractDict{Symbol,T};
         bnds = plotdata[:bonds] |> Observable
     end
 
+    pxwidths = fig.scene.px_area[].widths
+    needresize = false
+    # the figure needs to be resized if there's a preexisting MSA plot (with default resolution)
+    if pxwidths == [1000,350]
+        needresize = true
+    end
     if inspectorlabel == :default
         inspectorlabel = @lift getinspectorlabel($atms)        
     end
@@ -807,7 +821,7 @@ function plotstruc!(figposition::GridPosition, plotdata::AbstractDict{Symbol,T};
         end
         lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
-        if bnds == nothing || typeof(bnds)<:Observable
+        if bnds == nothing
             bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
         end
         bndshapes = @lift bondshapes($cords, $bnds)
@@ -816,7 +830,7 @@ function plotstruc!(figposition::GridPosition, plotdata::AbstractDict{Symbol,T};
         bmesh.inspectable[] = false
     elseif plottype == :covalent || plottype == :cov
         markersize = @lift $sizs .* markerscale
-        if bnds == nothing || typeof(bnds)<:Observable
+        if bnds == nothing
             bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
         end
         bndshapes = @lift bondshapes($cords, $bnds)
@@ -828,7 +842,11 @@ function plotstruc!(figposition::GridPosition, plotdata::AbstractDict{Symbol,T};
     else
         ArgumentError("bad plottype kwarg")
     end
-
+    # the window has to be reopened to resize at the moment
+    if needresize == true
+        fig.scene.px_area[] = HyperRectangle{2, Int64}([0, 0], [pxwidths[1], pxwidths[2]+resolution[2]])
+        Makie.update_state_before_display!(fig)
+    end
     DataInspector(lscene)
     fig
 end
@@ -867,8 +885,9 @@ strucplot = plotstruc(chain_A)
 ```
 
 ### Keyword Arguments:
-- resolution ----- (420,600)
-- gridposition --- (1,1)  # if an MSA is already plotted, (2,1:3) works well
+- figresolution -- (600,600)    # because `resolution` applies to the plot
+- resolution ----- (600,600)
+- gridposition --- (1,1)        # if an MSA is already plotted, (2,1:3) works well
 - plottype ------- :ballandstick, :covalent, or :spacefilling
 - atomcolors ----- elecolors, others in `getbiocolors()`, or provide a Dict like: "N" => :blue
 - markersize ----- 0.0
@@ -879,15 +898,15 @@ strucplot = plotstruc(chain_A)
 - water ---------- false  # show water molecules
 - kwargs... ------ keyword arguments passed to the atom `meshscatter`
 """
-function plotstruc(struc; resolution = (420,600), kwargs...)
-	fig = Figure(resolution = resolution)
+function plotstruc(struc; figresolution = (600,600), kwargs...)
+	fig = Figure(resolution = figresolution)
     plotstruc!(fig, Observable(struc); kwargs...)
 end
-function plotstruc(struc::Observable; resolution = (420,600), kwargs...)
-	fig = Figure(resolution = resolution)
+function plotstruc(struc::Observable; figresolution = (600,600), kwargs...)
+	fig = Figure(resolution = figresolution)
     plotstruc!(fig, struc; kwargs...)
 end
-function plotstruc(plotdata::T; resolution = (420,600), kwargs...) where {T<:AbstractDict}
-	fig = Figure(resolution = resolution)
+function plotstruc(plotdata::T; figresolution = (600,600), kwargs...) where {T<:AbstractDict}
+	fig = Figure(resolution = figresolution)
     plotstruc!(fig, plotdata; kwargs...)
 end
