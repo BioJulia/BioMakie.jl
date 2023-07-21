@@ -1,5 +1,5 @@
 ```@meta
-EditURL = "<unknown>/docs/src/Examples/alphashape.jl"
+EditURL = "https://github.com/kool7d/BioMakie.jl/blob/dev/docs/src/Examples/alphashape.jl"
 ```
 
 # Alpha shape of a protein

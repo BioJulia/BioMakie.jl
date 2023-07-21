@@ -1,5 +1,5 @@
 ```@meta
-EditURL = "<unknown>/src/usage.jl"
+EditURL = "https://github.com/kool7d/BioMakie.jl/blob/dev/docs/src/usage.jl"
 ```
 
 ## Usage
@@ -14,7 +14,7 @@ There are different representations for protein structures, including "ball and 
 (**:ballandstick**), "covalent" (**:covalent**), and "space filling" (**:spacefilling**). The
 default Makie backend is GLMakie.jl, but some of the functions work with WGLMakie.
 
-````@example usage
+````julia
 using BioMakie
 using GLMakie
 using BioStructures
@@ -23,7 +23,7 @@ struc = retrievepdb("2vb1") |> Observable
 struc = read("2vb1.pdb", BioStructures.PDB) |> Observable
 ````
 
-````@example usage
+````julia
 fig = Figure()
 plotstruc!(fig, struc; plottype = :ballandstick, gridposition = (1,1), atomcolors = aquacolors, resolution = (350,600))
 plotstruc!(fig, struc; plottype = :covalent, gridposition = (1,2), resolution = (350,600))
@@ -38,7 +38,7 @@ loaded with FastaIO.jl or FASTX.jl.
 
 To view a multiple sequence alignment, use the `plotmsa` or `plotmsa!` function with a Pfam MSA or fasta file.
 
-````@example usage
+````julia
 using FASTX
 reader = open(FASTX.FASTA.Reader, "PF00062.fasta")
 msa = [reader...] |> Observable
