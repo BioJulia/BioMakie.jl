@@ -95,18 +95,6 @@ firstvalue(dict::AbstractDict) = first(values(dict))
     inspectlabel = getinspectorlabel(atms_obs[])
     str = inspectlabel(1,1,1)
     @test str[12:19] == "res: LYS"
-    inspectlabel = getinspectorlabel(struc_obs)
-    str = inspectlabel(1,1,1)
-    @test str[12:19] == "res: LYS"
-    inspectlabel = getinspectorlabel(chn_obs)
-    str = inspectlabel(1,1,1)
-    @test str[12:19] == "res: LYS"
-    inspectlabel = getinspectorlabel(resz_obs)
-    str = inspectlabel(1,1,1)
-    @test str[12:19] == "res: LYS"
-    inspectlabel = getinspectorlabel(atms_obs)
-    str = inspectlabel(1,1,1)
-    @test str[12:19] == "res: LYS"
 
     flabel = firstlabel(inspectlabel)
     @test flabel[12:19] == "res: LYS"

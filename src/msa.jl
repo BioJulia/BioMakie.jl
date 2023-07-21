@@ -141,13 +141,14 @@ plotmsa!( fig::Figure, msa::T; kwargs... ) where {T<:Union{MSA.AbstractMultipleS
 ```
 
 ### Keyword Arguments:
-- xlabels ------- {1:height}
-- ylabels ------- {1:width}
 - sheetsize ----- [40,20]
 - gridposition -- (1,1)
 - markersize ---- 12
 - colorscheme --- :buda
 - markercolor --- :black
+- xticklabelsize - 11
+- yticklabelsize - 11
+- resolution ----- (700,300)
 - kwargs...   					# forwarded to scatter plot
 """
 function plotmsa!(fig::Figure, msa::T; kwargs...) where {T<:Union{MSA.AbstractMultipleSequenceAlignment,
@@ -168,18 +169,21 @@ function plotmsa!( fig::Figure, msa::Observable{T};
 				   colorscheme = :buda,
 				   markersize = 12,
 				   markercolor = :black,
+				   xticklabelsize = 11,
+				   yticklabelsize = 11,
+				   resolution = (700,300),
 				   kwargs... ) where {T<:Union{MSA.AbstractMultipleSequenceAlignment,
 											   Vector{Tuple{String,String}},
 											   Vector{FASTX.FASTA.Record}}}
 	#
-	plotdata = @lift plottingdata($msa)
-	msamatrix = @lift $plotdata[:matrix]
-	xlabels = @lift $plotdata[:xlabels]
-	ylabels = @lift $plotdata[:ylabels]
-	matrixvals = @lift $plotdata[:matrixvals]
+	plotdata = plottingdata(msa)
+	msamatrix = plotdata[:matrix]
+	xlabels = plotdata[:xlabels]
+	ylabels = plotdata[:ylabels]
+	matrixvals = plotdata[:matrixvals]
 
-	grid1 = fig[gridposition...] = GridLayout(resolution = (1100,400))
-	ax = Axis(grid1[1:7,3:9]; height = 300, width = 800)
+	grid1 = fig[gridposition...] = GridLayout(resolution = resolution)
+	ax = Axis(grid1[1:7,3:9]; height = 275, width = 700)
 	
 	width1 = sheetsize[1]
 	height1 = sheetsize[2]
@@ -198,10 +202,10 @@ function plotmsa!( fig::Figure, msa::Observable{T};
 	xlabelsize =  @lift size($xlabels,1) - (width1-1)
 	xlabelrange = @lift 1:1:$xlabelsize
 
-	sl1 = GLMakie.Slider(grid1[end+1,3:9], range = xlabelrange, startvalue = 1, width = 800)
+	sl1 = GLMakie.Slider(grid1[end+1,3:9], range = xlabelrange, startvalue = 1, width = 700)
 	sl1.value[] = 1
 	sl2 = GLMakie.Slider(grid1[1:7,10], range = ylabelrange, startvalue = 1, horizontal = false,
-		height = 300)
+		height = 275)
 	sl2.value[] = 1
 
 	ylabelshow = lift(X->ylabels[][(X+(height1-1):-1:X)],sl2.value)	# currently shown y labels, updated with vertical right slider (sl2)
@@ -221,8 +225,8 @@ function plotmsa!( fig::Figure, msa::Observable{T};
 	on(xlabelshow) do ns
 		ax.xticks = ([1:width1...], ns)
 	end
-	ax.xticklabelsize = 11
-	ax.yticklabelsize = 11
+	ax.xticklabelsize[] = xticklabelsize
+	ax.yticklabelsize[] = yticklabelsize
 	ax.xzoomlock[] = true
 	ax.yzoomlock[] = true
 	ax.yticklabelspace[] = 10.0
@@ -268,18 +272,21 @@ function plotmsa!( figposition::GridPosition, msa::Observable{T};
 				   colorscheme = :buda,
 				   markersize = 12,
 				   markercolor = :black,
+				   xticklabelsize = 11,
+				   yticklabelsize = 11,
+				   resolution = (700,300),
 				   kwargs... ) where {T<:Union{MSA.AbstractMultipleSequenceAlignment,
 											   Vector{Tuple{String,String}},
 											   Vector{FASTX.FASTA.Record}}}
 	#
-	plotdata = @lift plottingdata($msa)
-	msamatrix = @lift $plotdata[:matrix]
-	xlabels = @lift $plotdata[:xlabels]
-	ylabels = @lift $plotdata[:ylabels]
-	matrixvals = @lift $plotdata[:matrixvals]
+	plotdata = plottingdata(msa)
+	msamatrix = plotdata[:matrix]
+	xlabels = plotdata[:xlabels]
+	ylabels = plotdata[:ylabels]
+	matrixvals = plotdata[:matrixvals]
 
-	grid1 = figposition = GridLayout(resolution = (1100,400))
-	ax = Axis(grid1[1:7,3:9]; height = 300, width = 800)
+	grid1 = fig[gridposition...] = GridLayout(resolution = (800,300))
+	ax = Axis(grid1[1:7,3:9]; height = 275, width = 700)
 	
 	width1 = sheetsize[1]
 	height1 = sheetsize[2]
@@ -298,10 +305,10 @@ function plotmsa!( figposition::GridPosition, msa::Observable{T};
 	xlabelsize =  @lift size($xlabels,1) - (width1-1)
 	xlabelrange = @lift 1:1:$xlabelsize
 
-	sl1 = GLMakie.Slider(grid1[end+1,3:9], range = xlabelrange, startvalue = 1, width = 800)
+	sl1 = GLMakie.Slider(grid1[end+1,3:9], range = xlabelrange, startvalue = 1, width = 700)
 	sl1.value[] = 1
 	sl2 = GLMakie.Slider(grid1[1:7,10], range = ylabelrange, startvalue = 1, horizontal = false,
-		height = 300)
+		height = 275)
 	sl2.value[] = 1
 
 	ylabelshow = lift(X->ylabels[][(X+(height1-1):-1:X)],sl2.value)	# currently shown y labels, updated with vertical right slider (sl2)
@@ -321,8 +328,8 @@ function plotmsa!( figposition::GridPosition, msa::Observable{T};
 	on(xlabelshow) do ns
 		ax.xticks = ([1:width1...], ns)
 	end
-	ax.xticklabelsize = 11
-	ax.yticklabelsize = 11
+	ax.xticklabelsize[] = xticklabelsize
+	ax.yticklabelsize[] = yticklabelsize
 	ax.xzoomlock[] = true
 	ax.yzoomlock[] = true
 	ax.yticklabelspace[] = 10.0
@@ -362,12 +369,15 @@ function plotmsa!( figposition::GridPosition, msa::Observable{T};
 	display(fig)
 	fig
 end
-function plotmsa!( fig::Figure, plotdata::AbstractDict{String,T};
+function plotmsa!( fig::Figure, plotdata::AbstractDict{Symbol,T};
 				   sheetsize = [40,20],
 				   gridposition = (1,1:3),
 				   colorscheme = :buda,
 				   markersize = 12,
 				   markercolor = :black,
+				   xticklabelsize = 11,
+				   yticklabelsize = 11,
+				   resolution = (700,300),
 				   kwargs... ) where {T}
 	#
 	msamatrix = []
@@ -387,8 +397,8 @@ function plotmsa!( fig::Figure, plotdata::AbstractDict{String,T};
 		matrixvals = plotdata[:matrixvals] |> Observable
 	end
 
-	grid1 = fig[gridposition...] = GridLayout(resolution = (1100,400))
-	ax = Axis(grid1[1:7,3:9]; height = 300, width = 800)
+	grid1 = fig[gridposition...] = GridLayout(resolution = resolution)
+	ax = Axis(grid1[1:7,3:9]; height = 275, width = 700)
 	
 	width1 = sheetsize[1]
 	height1 = sheetsize[2]
@@ -407,10 +417,10 @@ function plotmsa!( fig::Figure, plotdata::AbstractDict{String,T};
 	xlabelsize =  @lift size($xlabels,1) - (width1-1)
 	xlabelrange = @lift 1:1:$xlabelsize
 
-	sl1 = GLMakie.Slider(grid1[end+1,3:9], range = xlabelrange, startvalue = 1, width = 800)
+	sl1 = GLMakie.Slider(grid1[end+1,3:9], range = xlabelrange, startvalue = 1, width = 700)
 	sl1.value[] = 1
 	sl2 = GLMakie.Slider(grid1[1:7,10], range = ylabelrange, startvalue = 1, horizontal = false,
-		height = 300)
+		height = 275)
 	sl2.value[] = 1
 
 	ylabelshow = lift(X->ylabels[][(X+(height1-1):-1:X)],sl2.value)	# currently shown y labels, updated with vertical right slider (sl2)
@@ -430,8 +440,8 @@ function plotmsa!( fig::Figure, plotdata::AbstractDict{String,T};
 	on(xlabelshow) do ns
 		ax.xticks = ([1:width1...], ns)
 	end
-	ax.xticklabelsize = 11
-	ax.yticklabelsize = 11
+	ax.xticklabelsize[] = xticklabelsize
+	ax.yticklabelsize[] = yticklabelsize
 	ax.xzoomlock[] = true
 	ax.yzoomlock[] = true
 	ax.yticklabelspace[] = 10.0
@@ -471,12 +481,15 @@ function plotmsa!( fig::Figure, plotdata::AbstractDict{String,T};
 	display(fig)
 	fig
 end
-function plotmsa!( figposition::GridPosition, plotdata::AbstractDict{String,T};
+function plotmsa!( figposition::GridPosition, plotdata::AbstractDict{Symbol,T};
 				   sheetsize = [40,20],
 				   gridposition = (1,1:3),
 				   colorscheme = :buda,
 				   markersize = 12,
 				   markercolor = :black,
+				   xticklabelsize = 11,
+				   yticklabelsize = 11,
+				   resolution = (700,300),
 				   kwargs... ) where {T}
 	#
 	msamatrix = []
@@ -496,8 +509,8 @@ function plotmsa!( figposition::GridPosition, plotdata::AbstractDict{String,T};
 		matrixvals = plotdata[:matrixvals] |> Observable
 	end
 
-	grid1 = figposition = GridLayout(resolution = (1100,400))
-	ax = Axis(grid1[1:7,3:9]; height = 300, width = 800)
+	grid1 = fig[gridposition...] = GridLayout(resolution = resolution)
+	ax = Axis(grid1[1:7,3:9]; height = 275, width = 700)
 	
 	width1 = sheetsize[1]
 	height1 = sheetsize[2]
@@ -516,10 +529,10 @@ function plotmsa!( figposition::GridPosition, plotdata::AbstractDict{String,T};
 	xlabelsize =  @lift size($xlabels,1) - (width1-1)
 	xlabelrange = @lift 1:1:$xlabelsize
 
-	sl1 = GLMakie.Slider(grid1[end+1,3:9], range = xlabelrange, startvalue = 1, width = 800)
+	sl1 = GLMakie.Slider(grid1[end+1,3:9], range = xlabelrange, startvalue = 1, width = 700)
 	sl1.value[] = 1
 	sl2 = GLMakie.Slider(grid1[1:7,10], range = ylabelrange, startvalue = 1, horizontal = false,
-		height = 300)
+		height = 275)
 	sl2.value[] = 1
 
 	ylabelshow = lift(X->ylabels[][(X+(height1-1):-1:X)],sl2.value)	# currently shown y labels, updated with vertical right slider (sl2)
@@ -539,8 +552,8 @@ function plotmsa!( figposition::GridPosition, plotdata::AbstractDict{String,T};
 	on(xlabelshow) do ns
 		ax.xticks = ([1:width1...], ns)
 	end
-	ax.xticklabelsize = 11
-	ax.yticklabelsize = 11
+	ax.xticklabelsize[] = xticklabelsize
+	ax.yticklabelsize[] = yticklabelsize
 	ax.xzoomlock[] = true
 	ax.yzoomlock[] = true
 	ax.yticklabelspace[] = 10.0
@@ -590,7 +603,7 @@ a Figure and Observables for interaction.
 
 # Examples
 ```julia
-downloadpfam("PF00062")
+MIToS.Pfam.downloadpfam("PF00062")	# download PF00062 MSA
 msa = MIToS.MSA.read("PF00062.stockholm.gz", Stockholm, 
 					generatemapping =true, useidcoordinates=true)
 
@@ -598,23 +611,25 @@ plotmsa( msa; kwargs... )
 ```
 
 ### Keyword Arguments:
-- resolution -------- (1100, 400)
+- figresolution ----- (1000,350)	# because `resolution` applies to the MSA plot
 - sheetsize --------- [40,20]
-- gridposition ------ (1,1)
-- colorscheme ------- :viridis
-- resdict ----------- kideradict    # Dictionary of values (::Dict{String,Float}, "Y" => 1.48) for heatmap.
-- kf ---------------- 2             # If resdict == kideradict, this is the Kidera Factor. KF2 is size/volume-related.
+- gridposition ------ (1,1:3)
+- colorscheme ------- :buda
+- markersize -------- 12
+- markercolor ------- :black
+- xticklabelsize ---- 11
+- yticklabelsize ---- 11
 - kwargs...    						# forwarded to scatter plot
 """
-function plotmsa(msa; resolution = (1100, 400), kwargs...)
-	fig = Figure(resolution = resolution)
+function plotmsa(msa; figresolution = (1000,350), kwargs...)
+	fig = Figure(resolution = figresolution)
 	plotmsa!(fig, Observable(msa); kwargs...)
 end
-function plotmsa(msa::Observable; resolution = (1100, 400), kwargs...)
-	fig = Figure(resolution = resolution)
+function plotmsa(msa::Observable; figresolution = (1000,350), kwargs...)
+	fig = Figure(resolution = figresolution)
 	plotmsa!(fig, msa; kwargs...)
 end
-function plotmsa(plotdata::T; resolution = (1100, 400), kwargs...) where {T<:AbstractDict}
-	fig = Figure(resolution = resolution)
+function plotmsa(plotdata::T; figresolution = (1000,350), kwargs...) where {T<:AbstractDict}
+	fig = Figure(resolution = figresolution)
 	plotmsa!(fig, plotdata; kwargs...)
 end
