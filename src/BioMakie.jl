@@ -28,10 +28,11 @@ export protsmiles,
 using BioStructures, MolecularGraph
 using MIToS, MIToS.Information, MIToS.MSA, MIToS.Pfam, MIToS.SIFTS, MIToS.Utils
 using SplitApplyCombine, TensorCast
-using DataStructures, DelimitedFiles, HTTP, JSON3
+using DataStructures, DelimitedFiles, OrderedCollections
 using Distances, GeometryBasics
 using Colors, ColorSchemes, ColorTypes, ImageCore
-using FileIO, FastaIO, FASTX, OrderedCollections
+using FileIO, FastaIO, FASTX
+using HTTP, JSON3
 using JSServe
 using WGLMakie
 using GLMakie

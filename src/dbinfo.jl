@@ -8,43 +8,43 @@ export UniProtData,
 A struct containing all the information from a UniProt entry.
 
 # General information
-accession
-id
-protinfo
-gene
-gene_synonyms
-secondary_accession
-sequence
-organism
-datainfo
+`accession`
+`id`
+`protinfo`
+`gene`
+`gene_synonyms`
+`secondary_accession`
+`sequence`
+`organism`
+`datainfo`
 
 # Features
-molecule_processing
-domains_and_sites
-structural
-ptm
-sequence_information
-mutagenesis
-variants
-topology
-other_features
+`molecule_processing`
+`domains_and_sites`
+`structural`
+`ptm`
+`sequence_information`
+`mutagenesis`
+`variants`
+`topology`
+`other_features`
 
 # Comments
-func
-catalytic_activity
-subunit
-subcellular_location
-interaction
-tissue_specificity
-polymorphism
-allergen
-web_resource
-similarity
-miscellaneous
-other_comments
+`func`
+`catalytic_activity`
+`subunit`
+`subcellular_location`
+`interaction`
+`tissue_specificity`
+`polymorphism`
+`allergen`
+`web_resource`
+`similarity`
+`miscellaneous`
+`other_comments`
 
 # Database references (EMBL, PDB, etc.)
-dbrefs
+`dbrefs`
 
 """
 mutable struct UniProtData
@@ -87,6 +87,7 @@ mutable struct UniProtData
     # Database references (EMBL, PDB, etc.)
     dbrefs
 end
+
 function json_to_dict_or_array(value)
     if value isa JSON3.Object
         dict = OrderedDict{Symbol,Any}()
@@ -106,15 +107,15 @@ function json_to_dict_or_array(value)
 end
 
 """
-    getuniprotdata(jsonfile; include_refs = false)
+    readuniprotdata(jsonfile; include_refs = false)
 
 Reads a UniProt JSON file and returns a UniProtData struct.
 
 ### Keyword  Arguments:
-- include_refs::Bool = false    Whether to include allthe database references (EMBL, PDB, etc.) in the struct.
+- include_refs::Bool = false    Whether to include all the database references (EMBL, PDB, etc.) in the struct.
                                 can be very large, so it is `false` by default.
 """
-function getuniprotdata(jsonfile; include_refs = false)
+function readuniprotdata(jsonfile::String; include_refs = false)
     # General information
     accession = ""
     id = ""
@@ -374,6 +375,24 @@ function getuniprotdata(jsonfile; include_refs = false)
         other_comments,
         dbrefs
         )
+end
+
+"""
+    getuniprotdata(accession, filename=nothing; include_refs = false)
+
+Downloads and reads a UniProt JSON file and returns a UniProtData struct.
+
+### Keyword  Arguments:
+- include_refs::Bool = false    Whether to include all the database references (EMBL, PDB, etc.) in the struct.
+                                can be very large, so it is `false` by default.
+"""
+function getuniprotdata(accession::String, filename=nothing; include_refs = false)
+    if filename == nothing
+        filename = "$(accession).json"
+    end
+    Base.download("https://www.ebi.ac.uk/proteins/api/proteins/$(accession)",filename)
+    println("*** Downloaded $(accession) to file: $(filename) ***")
+    return readuniprotdata(filename)
 end
 
 """
