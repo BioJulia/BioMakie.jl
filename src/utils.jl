@@ -33,6 +33,7 @@ convert(::Type{String}, i::Int) = "$i"
 function convert(::Type{String}, f::T) where T<:Union{Float16,Float32,Float64}
 	"$f"
 end
+Matrix{Float64}(vecvec::Vector{Vector{Float64}}) = Matrix{Float64}(vecvec |> combinedims)
 macro trycatch(ex)
     quote
         try
@@ -45,37 +46,37 @@ end
 typefields(x) = x |> typeof |> fieldnames
 
 # current basic color schemes for atoms and residues
-elecolors = Dict( "C" => :gray,
-                  "N" => :blue,
-                  "H" => :white,
-                  "O" => :red,
-                  "S" => :yellow,
-				  "ZN" => :gray,
-				  "CL" => :gray,
-                  "X" => :gray
+elecolors = OrderedDict("C" => :gray,
+                        "N" => :blue,
+                        "H" => :white,
+                        "O" => :red,
+                        "S" => :yellow,
+                        "ZN" => :gray,
+                        "CL" => :gray,
+                        "X" => :gray
 )
-cpkcolors = Dict( "C" => RGB(200.0,200.0,200.0),
-                  "N" => RGB(143.0,143.0,255.0),
-                  "H" => RGB(255.0,255.0,255.0),
-                  "O" => RGB(240.0,0.0,0.0),
-                  "S" => RGB(255.0,200.0,50.0),
-                  "P" => RGB(255.0,165.0,0.0),
-                  "CL" => RGB(0.0,255.0,0.0),
-                  "BR" => RGB(165.0,42.0,42.0),
-				  "ZN" => RGB(165.0,42.0,42.0),
-                  "NA" => RGB(0.0,0.0,255.0),
-                  "FE" => RGB(255.0,165.0,0.0),
-                  "CA" => RGB(128.0,128.0,144.0),
-                  "X" => RGB(255.0,20.0,147.0)			  
+cpkcolors = OrderedDict("C" => RGB(200.0,200.0,200.0),
+                        "N" => RGB(143.0,143.0,255.0),
+                        "H" => RGB(255.0,255.0,255.0),
+                        "O" => RGB(240.0,0.0,0.0),
+                        "S" => RGB(255.0,200.0,50.0),
+                        "P" => RGB(255.0,165.0,0.0),
+                        "CL" => RGB(0.0,255.0,0.0),
+                        "BR" => RGB(165.0,42.0,42.0),
+                        "ZN" => RGB(165.0,42.0,42.0),
+                        "NA" => RGB(0.0,0.0,255.0),
+                        "FE" => RGB(255.0,165.0,0.0),
+                        "CA" => RGB(128.0,128.0,144.0),
+                        "X" => RGB(255.0,20.0,147.0)			  
 )
-aquacolors = Dict("C" => RGB(0.5,0.5,0.5),
-                  "N" => RGB(0.472,0.211,0.499),
-                  "H" => RGB(0.65,0.96,0.70),
-                  "O" => RGB(0.111,0.37,0.999),
-                  "S" => RGB(0.992,0.753,0.525),
-				  "ZN" => RGB(0.5,0.5,0.5),
-				  "CL" => RGB(0.5,0.5,0.5),
-                  "X" => RGB(0.5,0.5,0.5)
+aquacolors = OrderedDict(   "C" => RGB(0.5,0.5,0.5),
+                            "N" => RGB(0.472,0.211,0.499),
+                            "H" => RGB(0.65,0.96,0.70),
+                            "O" => RGB(0.111,0.37,0.999),
+                            "S" => RGB(0.992,0.753,0.525),
+                            "ZN" => RGB(0.5,0.5,0.5),
+                            "CL" => RGB(0.5,0.5,0.5),
+                            "X" => RGB(0.5,0.5,0.5)
 )
 shapelycolors = OrderedDict(
     "A" => RGB(200.0,200.0,200.0),
