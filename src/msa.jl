@@ -14,40 +14,18 @@ The MSA object can be a:
 - vector of tuples 'Vector{Tuple{String,String}}' from FastaIO, 
 - vector of FASTA records 'Vector{FASTX.FASTA.Record}' from FASTX.
 """
-function plottingdata(msa::MSA.AbstractMultipleSequenceAlignment)
-	ylabels = keys(msa.matrix.dicts[1]) |> collect
-	xlabels = keys(msa.matrix.dicts[2]) |> collect
-	msamatrix = Matrix(msa) .|> string
-	matrixvals = msavalues(msamatrix)
-
-    return OrderedDict(:matrix => msamatrix, 
-                        :xlabels => xlabels, 
-                        :ylabels => ylabels,
-						:matrixvals => matrixvals)
-end
 function plottingdata(msa::Observable{T}) where {T<:MSA.AbstractMultipleSequenceAlignment}
 	ylabels = @lift keys($msa.matrix.dicts[1]) |> collect
-	xlabels = @lift keys($msa.matrix.dicts[2]) |> collect
+	xlabels = @lift [1:size($msa.matrix.array,2)...] |> collect .|> string
 	msamatrix = @lift Matrix($msa) .|> string
 	matrixvals = @lift msavalues($msamatrix)
+	selected = Observable("None")
 
     return OrderedDict(:matrix => msamatrix, 
                         :xlabels => xlabels, 
                         :ylabels => ylabels,
-						:matrixvals => matrixvals)
-end
-function plottingdata(msa::Vector{Tuple{String,String}})
-	ylabels = [msa[i][1] for i in 1:size(msa,1)]
-	xlabels = [1:length(msa[1][2])...] |> collect .|> string
-	msamatrix = [[msa[i][2]...] for i in 1:size(msa,1)] |> combinedims .|> string
-	@cast msamatrix[i,j] := msamatrix[j,i]
-	msamatrix = msamatrix[:,:]
-	matrixvals = msavalues(msamatrix)
-
-    return OrderedDict(:matrix => msamatrix, 
-                        :xlabels => xlabels, 
-                        :ylabels => ylabels,
-						:matrixvals => matrixvals)
+						:matrixvals => matrixvals,
+						:selected => selected)
 end
 function plottingdata(msa::Observable{T}) where {T<:Vector{Tuple{String,String}}}
 	ylabels = @lift [$msa[i][1] for i in 1:size($msa,1)]
@@ -58,24 +36,13 @@ function plottingdata(msa::Observable{T}) where {T<:Vector{Tuple{String,String}}
 	msamatrixtemp = msamatrixtemp[:,:]
 	msamatrix[] = msamatrixtemp
 	matrixvals = @lift msavalues($msamatrix)
+	selected = Observable("None")
 
     return OrderedDict(:matrix => msamatrix, 
                         :xlabels => xlabels, 
                         :ylabels => ylabels,
-						:matrixvals => matrixvals)
-end
-function plottingdata(msa::Vector{FASTX.FASTA.Record})
-	ylabels = [identifier(msa[i]) for i in 1:size(msa,1)]
-	xlabels = [1:length(msa)...] |> collect .|> string
-	msamatrix = [[sequence(msa[i])...] for i in 1:size(msa,1)] |> combinedims .|> string
-	@cast msamatrix[i,j] := msamatrix[j,i]
-	msamatrix = msamatrix[:,:]
-	matrixvals = msavalues(msamatrix)
-
-    return OrderedDict(:matrix => msamatrix, 
-                        :xlabels => xlabels, 
-                        :ylabels => ylabels,
-						:matrixvals => matrixvals)
+						:matrixvals => matrixvals,
+						:selected => selected)
 end
 function plottingdata(msa::Observable{T}) where {T<:Vector{FASTX.FASTA.Record}}
 	ylabels = @lift [identifier($msa[i]) for i in 1:size($msa,1)]
@@ -86,11 +53,18 @@ function plottingdata(msa::Observable{T}) where {T<:Vector{FASTX.FASTA.Record}}
 	msamatrixtemp = msamatrixtemp[:,:]
 	msamatrix[] = msamatrixtemp
 	matrixvals = @lift msavalues($msamatrix)
+	selected = Observable("None")
 
     return OrderedDict(:matrix => msamatrix, 
                         :xlabels => xlabels, 
                         :ylabels => ylabels,
-						:matrixvals => matrixvals)
+						:matrixvals => matrixvals,
+						:selected => selected)
+end
+function plottingdata(msa::T) where {T<:Union{Vector{Tuple{String,String}},
+											   Vector{FASTX.FASTA.Record},
+											   MSA.AbstractMultipleSequenceAlignment}}
+	return plottingdata(Observable(msa))
 end
 
 """
@@ -151,18 +125,6 @@ plotmsa!( fig::Figure, msa::T; kwargs... ) where {T<:Union{MSA.AbstractMultipleS
 - resolution ----- (700,300)
 - kwargs...   					# forwarded to scatter plot
 """
-function plotmsa!(fig::Figure, msa::T; kwargs...) where {T<:Union{MSA.AbstractMultipleSequenceAlignment,
-											   Vector{Tuple{String,String}},
-											   Vector{FASTX.FASTA.Record}}}
-    msaobs = Observable(msa)
-    plotmsa!(fig, msaobs; kwargs...)
-end
-function plotmsa!(figposition::GridPosition, msa::T; kwargs...) where {T<:Union{MSA.AbstractMultipleSequenceAlignment,
-											   Vector{Tuple{String,String}},
-											   Vector{FASTX.FASTA.Record}}}
-    msaobs = Observable(msa)
-    plotmsa!(figposition, msaobs; kwargs...)
-end
 function plotmsa!( fig::Figure, msa::Observable{T};
 				   sheetsize = [40,20],
 				   gridposition = (1,1:3),
@@ -181,6 +143,7 @@ function plotmsa!( fig::Figure, msa::Observable{T};
 	xlabels = plotdata[:xlabels]
 	ylabels = plotdata[:ylabels]
 	matrixvals = plotdata[:matrixvals]
+	selected = plotdata[:selected]
 
 	grid1 = fig[gridposition...] = GridLayout(resolution = resolution)
 	ax = Axis(grid1[1:7,3:9]; height = 275, width = 700)
@@ -263,6 +226,31 @@ function plotmsa!( fig::Figure, msa::Observable{T};
 	ax.xticklabelrotation[] = 1f0
 	deregister_interaction!(fig.current_axis.x,:rectanglezoom)
 	DataInspector(ax)
+
+	selectedidx = Observable(-1)
+	selectionlines = @lift $selectedidx == -1 ? Vector{Float64}(undef,0) : [$selectedidx-0.5,$selectedidx+0.5]
+	showncols = @lift $(fig.content[1].xticks)[2]
+	showncols[]
+	on(showncols) do scols
+		if selected[] in scols
+			selectedidx[] = findfirst(x->x==selected[],scols)
+			selectionlines[] = [selectedidx[]-0.5,selectedidx[]+0.5]
+		else
+			selectedidx[] = -1
+		end
+	end
+	
+	xx = vlines!(fig.content[1], selectionlines; color = :blue, linewidth = 4, inspectable = false)
+	xx2 = vlines!(fig.content[1], selectionlines; color = :cyan, linewidth = 3, inspectable = false)
+	
+	mouseevents = addmouseevents!(fig.content[1].scene, fig.content[1].scene.plots[2]; priority = 1)
+	onmouseleftclick(mouseevents) do event
+		picked = mouse_selection(fig.content[1].scene)
+		selectedplace = [picked...][2]
+		selectedidx[] = div(selectedplace,height1[])+1
+		selected[] = showncols[][selectedidx[]]
+	end
+	
 	display(fig)
 	fig
 end
@@ -284,6 +272,7 @@ function plotmsa!( figposition::GridPosition, msa::Observable{T};
 	xlabels = plotdata[:xlabels]
 	ylabels = plotdata[:ylabels]
 	matrixvals = plotdata[:matrixvals]
+	selected = plotdata[:selected]
 
 	grid1 = fig[gridposition...] = GridLayout(resolution = (800,300))
 	ax = Axis(grid1[1:7,3:9]; height = 275, width = 700)
@@ -366,6 +355,31 @@ function plotmsa!( figposition::GridPosition, msa::Observable{T};
 	ax.xticklabelrotation[] = 1f0
 	deregister_interaction!(fig.current_axis.x,:rectanglezoom)
 	DataInspector(ax)
+
+	selectedidx = Observable(-1)
+	selectionlines = @lift $selectedidx == -1 ? Vector{Float64}(undef,0) : [$selectedidx-0.5,$selectedidx+0.5]
+	showncols = @lift $(fig.content[1].xticks)[2]
+	showncols[]
+	on(showncols) do scols
+		if selected[] in scols
+			selectedidx[] = findfirst(x->x==selected[],scols)
+			selectionlines[] = [selectedidx[]-0.5,selectedidx[]+0.5]
+		else
+			selectedidx[] = -1
+		end
+	end
+	
+	xx = vlines!(fig.content[1], selectionlines; color = :blue, linewidth = 4, inspectable = false)
+	xx2 = vlines!(fig.content[1], selectionlines; color = :cyan, linewidth = 3, inspectable = false)
+	
+	mouseevents = addmouseevents!(fig.content[1].scene, fig.content[1].scene.plots[2]; priority = 1)
+	onmouseleftclick(mouseevents) do event
+		picked = mouse_selection(fig.content[1].scene)
+		selectedplace = [picked...][2]
+		selectedidx[] = div(selectedplace,height1[])+1
+		selected[] = showncols[][selectedidx[]]
+	end
+
 	display(fig)
 	fig
 end
@@ -378,24 +392,13 @@ function plotmsa!( fig::Figure, plotdata::AbstractDict{Symbol,T};
 				   xticklabelsize = 11,
 				   yticklabelsize = 11,
 				   resolution = (700,300),
-				   kwargs... ) where {T}
+				   kwargs... ) where {T<:Observable}
 	#
-	msamatrix = []
-	xlabels = []
-	ylabels = []
-	matrixvals = []
-	
-	if T<:Observable
-		msamatrix = plotdata[:matrix]
-		xlabels = plotdata[:xlabels]
-		ylabels = plotdata[:ylabels]
-		matrixvals = plotdata[:matrixvals]
-	else
-		msamatrix = plotdata[:matrix] |> Observable
-		xlabels = plotdata[:xlabels] |> Observable
-		ylabels = plotdata[:ylabels] |> Observable
-		matrixvals = plotdata[:matrixvals] |> Observable
-	end
+	msamatrix = plotdata[:matrix]
+	xlabels = plotdata[:xlabels]
+	ylabels = plotdata[:ylabels]
+	matrixvals = plotdata[:matrixvals]
+	selected = plotdata[:selected]
 
 	grid1 = fig[gridposition...] = GridLayout(resolution = resolution)
 	ax = Axis(grid1[1:7,3:9]; height = 275, width = 700)
@@ -478,6 +481,31 @@ function plotmsa!( fig::Figure, plotdata::AbstractDict{Symbol,T};
 	ax.xticklabelrotation[] = 1f0
 	deregister_interaction!(fig.current_axis.x,:rectanglezoom)
 	DataInspector(ax)
+
+	selectedidx = Observable(-1)
+	selectionlines = @lift $selectedidx == -1 ? Vector{Float64}(undef,0) : [$selectedidx-0.5,$selectedidx+0.5]
+	showncols = @lift $(fig.content[1].xticks)[2]
+	showncols[]
+	on(showncols) do scols
+		if selected[] in scols
+			selectedidx[] = findfirst(x->x==selected[],scols)
+			selectionlines[] = [selectedidx[]-0.5,selectedidx[]+0.5]
+		else
+			selectedidx[] = -1
+		end
+	end
+	
+	xx = vlines!(fig.content[1], selectionlines; color = :blue, linewidth = 4, inspectable = false)
+	xx2 = vlines!(fig.content[1], selectionlines; color = :cyan, linewidth = 3, inspectable = false)
+	
+	mouseevents = addmouseevents!(fig.content[1].scene, fig.content[1].scene.plots[2]; priority = 1)
+	onmouseleftclick(mouseevents) do event
+		picked = mouse_selection(fig.content[1].scene)
+		selectedplace = [picked...][2]
+		selectedidx[] = div(selectedplace,height1[])+1
+		selected[] = showncols[][selectedidx[]]
+	end
+
 	display(fig)
 	fig
 end
@@ -492,22 +520,11 @@ function plotmsa!( figposition::GridPosition, plotdata::AbstractDict{Symbol,T};
 				   resolution = (700,300),
 				   kwargs... ) where {T}
 	#
-	msamatrix = []
-	xlabels = []
-	ylabels = []
-	matrixvals = []
-	
-	if T<:Observable
-		msamatrix = plotdata[:matrix]
-		xlabels = plotdata[:xlabels]
-		ylabels = plotdata[:ylabels]
-		matrixvals = plotdata[:matrixvals]
-	else
-		msamatrix = plotdata[:matrix] |> Observable
-		xlabels = plotdata[:xlabels] |> Observable
-		ylabels = plotdata[:ylabels] |> Observable
-		matrixvals = plotdata[:matrixvals] |> Observable
-	end
+	msamatrix = plotdata[:matrix]
+	xlabels = plotdata[:xlabels]
+	ylabels = plotdata[:ylabels]
+	matrixvals = plotdata[:matrixvals]
+	selected = plotdata[:selected]
 
 	grid1 = fig[gridposition...] = GridLayout(resolution = resolution)
 	ax = Axis(grid1[1:7,3:9]; height = 275, width = 700)
@@ -590,8 +607,45 @@ function plotmsa!( figposition::GridPosition, plotdata::AbstractDict{Symbol,T};
 	ax.xticklabelrotation[] = 1f0
 	deregister_interaction!(fig.current_axis.x,:rectanglezoom)
 	DataInspector(ax)
+
+	selectedidx = Observable(-1)
+	selectionlines = @lift $selectedidx == -1 ? Vector{Float64}(undef,0) : [$selectedidx-0.5,$selectedidx+0.5]
+	showncols = @lift $(fig.content[1].xticks)[2]
+	showncols[]
+	on(showncols) do scols
+		if selected[] in scols
+			selectedidx[] = findfirst(x->x==selected[],scols)
+			selectionlines[] = [selectedidx[]-0.5,selectedidx[]+0.5]
+		else
+			selectedidx[] = -1
+		end
+	end
+	
+	xx = vlines!(fig.content[1], selectionlines; color = :blue, linewidth = 4, inspectable = false)
+	xx2 = vlines!(fig.content[1], selectionlines; color = :cyan, linewidth = 3, inspectable = false)
+	
+	mouseevents = addmouseevents!(fig.content[1].scene, fig.content[1].scene.plots[2]; priority = 1)
+	onmouseleftclick(mouseevents) do event
+		picked = mouse_selection(fig.content[1].scene)
+		selectedplace = [picked...][2]
+		selectedidx[] = div(selectedplace,height1[])+1
+		selected[] = showncols[][selectedidx[]]
+	end
+
 	display(fig)
 	fig
+end
+function plotmsa!(fig::Figure, msa::T; kwargs...) where {T<:Union{MSA.AbstractMultipleSequenceAlignment,
+											   Vector{Tuple{String,String}},
+											   Vector{FASTX.FASTA.Record}}}
+    msaobs = Observable(msa)
+    plotmsa!(fig, msaobs; kwargs...)
+end
+function plotmsa!(figposition::GridPosition, msa::T; kwargs...) where {T<:Union{MSA.AbstractMultipleSequenceAlignment,
+											   Vector{Tuple{String,String}},
+											   Vector{FASTX.FASTA.Record}}}
+    msaobs = Observable(msa)
+    plotmsa!(figposition, msaobs; kwargs...)
 end
 
 """

@@ -524,7 +524,6 @@ function plottingdata(pose::ProtoSyn.Pose;
 						radiustype = radiustype, water = water, selection = selection)
 end
 
-import BioMakie: plotstruc!
 """
     plotstruc!( fig, structure )
     plotstruc!( gridposition, structure )

@@ -403,20 +403,6 @@ function plottingdata(struc::Observable{T};
                         :resids => resids,
                         :selected => selected)
 end
-function plottingdata(struc::BioStructures.StructuralElementOrList;
-                        colors = elecolors,
-                        radiustype = :ballandstick,
-                        water = false)
-    #
-    return plottingdata(Observable(struc); colors = colors, radiustype = radiustype, water = water)
-end
-function plottingdata(resz::Vector{MIToS.PDB.PDBResidue};
-                        colors = elecolors,
-                        radiustype = :ballandstick,
-                        water = false)
-    #
-    return plottingdata(Observable(resz); colors = colors, radiustype = radiustype, water = water)
-end
 function plottingdata(resz::Observable{T};
                         colors = elecolors,
                         radiustype = :ballandstick,
@@ -455,37 +441,19 @@ function plottingdata(resz::Observable{T};
                         :resids => Observable(residvec),
                         :selected => selected)
 end
-function plottingdata(atms::Vector{MIToS.PDB.PDBAtom};
+function plottingdata(struc::BioStructures.StructuralElementOrList;
                         colors = elecolors,
                         radiustype = :ballandstick,
                         water = false)
     #
-    atmcords = [[atms[i].coordinates[1],atms[i].coordinates[2],atms[i].coordinates[3]] for i in 1:length(atms)] |> combinedims |> transpose |> collect
-    colrs = to_color.([colors[x.element] for x in atms])
-    sizes = atomradii(atms; radiustype = radiustype)
-    bnds = getbonds(atms)
-
-    return OrderedDict(:atoms => atms, 
-                        :coords => atmcords, 
-                        :colors => colrs,
-                        :sizes => sizes,
-                        :bonds => bnds)
+    return plottingdata(Observable(struc); colors = colors, radiustype = radiustype, water = water)
 end
-function plottingdata(atms::Observable{T};
+function plottingdata(resz::Vector{MIToS.PDB.PDBResidue};
                         colors = elecolors,
                         radiustype = :ballandstick,
-                        water = false) where {T<:Vector{MIToS.PDB.PDBAtom}}
+                        water = false)
     #
-    atmcords = @lift atmcords = [[$atms[i].coordinates[1],$atms[i].coordinates[2],$atms[i].coordinates[3]] for i in 1:length($atms)] |> combinedims |> transpose |> collect
-    colrs = @lift to_color.([colors[x.element] for x in $atms])
-    sizes = @lift atomradii($atms; radiustype = radiustype)
-    bnds = @lift getbonds($atms)
-
-    return OrderedDict(:atoms => atms, 
-                        :coords => atmcords, 
-                        :colors => colrs,
-                        :sizes => sizes,
-                        :bonds => bnds)
+    return plottingdata(Observable(resz); colors = colors, radiustype = radiustype, water = water)
 end
 function plottingdata(pdata::AbstractDict; kwargs...)
     return pdata
