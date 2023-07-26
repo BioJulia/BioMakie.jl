@@ -205,7 +205,9 @@ function plotmsa!( fig::Figure, msa::Observable{T};
 			marker = charvec,
 			markersize = markersize,
 			color = markercolor,
-			inspector_label = (self, i, p) -> "$(ylabelshow[][Int64(p[2])])\n$(resletterdict[string(charvec[][i])])  $(xlabelshow[][Int64(p[1])]) 	 value: $(colorvals[][Int64.(p)...])",
+			inspector_label = (self, i, p) -> "$(ylabelshow[][Int64(p[2])])\n" *
+				"$(resletterdict[string(charvec[][i])])  $(xlabelshow[][Int64(p[1])]) 	 " * 
+				"value: $(colorvals[][Int64(p[1]),Int64(p[2])])",
 			kwargs...
 	)
 	hl = hlines!(ax,
@@ -334,7 +336,9 @@ function plotmsa!( figposition::GridPosition, msa::Observable{T};
 			marker = charvec,
 			markersize = markersize,
 			color = markercolor,
-			inspector_label = (self, i, p) -> "$(ylabelshow[][Int64(p[2])])\n$(resletterdict[string(charvec[][i])])  $(xlabelshow[][Int64(p[1])]) 	 value: $(colorvals[][Int64.(p)...])",
+			inspector_label = (self, i, p) -> "$(ylabelshow[][Int64(p[2])])\n" *
+				"$(resletterdict[string(charvec[][i])])  $(xlabelshow[][Int64(p[1])]) 	 " * 
+				"value: $(colorvals[][Int64(p[1]),Int64(p[2])])",
 			kwargs...
 	)
 	hl = hlines!(ax,
@@ -460,7 +464,9 @@ function plotmsa!( fig::Figure, plotdata::AbstractDict{Symbol,T};
 			marker = charvec,
 			markersize = markersize,
 			color = markercolor,
-			inspector_label = (self, i, p) -> "$(ylabelshow[][Int64(p[2])])\n$(resletterdict[string(charvec[][i])])  $(xlabelshow[][Int64(p[1])]) 	 value: $(colorvals[][Int64.(p)...])",
+			inspector_label = (self, i, p) -> "$(ylabelshow[][Int64(p[2])])\n" *
+				"$(resletterdict[string(charvec[][i])])  $(xlabelshow[][Int64(p[1])]) 	 " * 
+				"value: $(colorvals[][Int64(p[1]),Int64(p[2])])",
 			kwargs...
 	)
 	hl = hlines!(ax,
@@ -586,7 +592,9 @@ function plotmsa!( figposition::GridPosition, plotdata::AbstractDict{Symbol,T};
 			marker = charvec,
 			markersize = markersize,
 			color = markercolor,
-			inspector_label = (self, i, p) -> "$(ylabelshow[][Int64(p[2])])\n$(resletterdict[string(charvec[][i])])  $(xlabelshow[][Int64(p[1])]) 	 value: $(colorvals[][Int64.(p)...])",
+			inspector_label = (self, i, p) -> "$(ylabelshow[][Int64(p[2])])\n" *
+				"$(resletterdict[string(charvec[][i])])  $(xlabelshow[][Int64(p[1])]) 	 " * 
+				"value: $(colorvals[][Int64(p[1]),Int64(p[2])])",
 			kwargs...
 	)
 	hl = hlines!(ax,
