@@ -1,7 +1,7 @@
 name = "BioMakie"
 uuid = "7de43156-b762-4475-b39f-ba1e1e59ee2f"
 authors = ["Daniel Kool"]
-version = "0.2.3"
+version = "0.3.0"
 
 [deps]
 BioAlignments = "00701ae9-d1dc-5365-b64a-a3a3ebf5695e"
