@@ -5,8 +5,9 @@ Pkg.add("SplitApplyCombine")
 Pkg.add("Colors")
 Pkg.add("Meshes")
 Pkg.add("GeometryBasics")
+Pkg.add("OrderedCollections")
 
-using ProtoSyn, SplitApplyCombine, Colors, Meshes, GeometryBasics
+using ProtoSyn, SplitApplyCombine, Colors, Meshes, GeometryBasics, OrderedCollections
 import BioMakie: plotstruc!, plotstruc, covalentradii, getbonds, atomradii, 
 	atomradius, getinspectorlabel
 

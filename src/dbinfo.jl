@@ -1,6 +1,7 @@
 export UniProtData,
     getuniprotdata,
-    showuniprotdata
+    showuniprotdata,
+    readuniprotdata
 
 """
     UniProtData::DataType
