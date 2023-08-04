@@ -1,8 +1,13 @@
 using Pkg
 # Add this fork of the ProtoSyn package because it has a bugfix
 Pkg.add(url="https://github.com/kool7d/ProtoSyn.jl")
+Pkg.add("SplitApplyCombine")
+Pkg.add("Colors")
+Pkg.add("Meshes")
+Pkg.add("GeometryBasics")
+Pkg.add("OrderedCollections")
 
-using ProtoSyn
+using ProtoSyn, SplitApplyCombine, Colors, Meshes, GeometryBasics, OrderedCollections
 import BioMakie: plotstruc!, plotstruc, covalentradii, getbonds, atomradii, 
 	atomradius, getinspectorlabel
 

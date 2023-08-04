@@ -6,7 +6,9 @@ makedocs(
     pages=[
 		"Home" => "index.md",
 		"Usage" => "usage.md",
-		"Examples" => "alphashape.md",
+		"Mesh" => "alphashape.md",
+		"Info Text" => "infotext.md",
+		"MSA Selection" => "msaselection.md",
 		"API" => "API.md",
     ]
 )

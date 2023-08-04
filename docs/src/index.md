@@ -10,12 +10,12 @@ other related plots like protein structure contact maps.
 So far, plotting methods exist for packages:
 - BioStructures.jl
 - MIToS.jl
-- ProtoSyn.jl
 - FastaIO.jl
 - FASTX.jl
 
 Other packages with plotting methods in development:
 - MolecularGraph.jl
+- ProtoSyn.jl
 
 
 ## Installation
