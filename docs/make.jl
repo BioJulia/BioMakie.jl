@@ -9,6 +9,7 @@ makedocs(
 		"Mesh" => "alphashape.md",
 		"Info Text" => "infotext.md",
 		"MSA Selection" => "msaselection.md",
+		"Mutation" => "mutation.md",
 		"API" => "API.md",
     ]
 )

@@ -1097,16 +1097,8 @@ function getbonds(cords::AbstractArray{T};
 	@assert size(cords,2) == 3 "coords must be an N x 3 matrix"
 	numatoms = size(cords,1)
 	bondmatrix = zeros(numatoms, numatoms) |> BitMatrix
-	warn("Using coords for bonds is not recommended, this can lead to incorrect results")
 
-	if algo == :knowledgebased
-		warn("Knowledge-based algorithm not implemented for coords, using :distance instead")
-		return distancebonds(cords; cutoff = cutoff, H = H, disulfides = disulfides)
-	else # just do the same as :covalent for now
-		return distancebonds(cords; cutoff = cutoff, H = H, disulfides = disulfides)
-	end
-
-	return nothing
+	return distancebonds(cords; cutoff = cutoff, H = H, disulfides = disulfides)
 end
 
 """
