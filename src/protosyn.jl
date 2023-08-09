@@ -6,8 +6,9 @@ Pkg.add("Colors")
 Pkg.add("Meshes")
 Pkg.add("GeometryBasics")
 Pkg.add("OrderedCollections")
+Pkg.add("Distances")
 
-using ProtoSyn, SplitApplyCombine, Colors, Meshes, GeometryBasics, OrderedCollections
+using ProtoSyn, SplitApplyCombine, Colors, Meshes, GeometryBasics, OrderedCollections, Distances
 import BioMakie: plotstruc!, plotstruc, covalentradii, getbonds, atomradii, 
 	atomradius, getinspectorlabel
 
@@ -24,22 +25,22 @@ This function uses 'bestoccupancy' or 'defaultatom' to ensure only one position 
 - H ---------------- true  # include bonds with hydrogen atoms
 - disulfides ------- false # include disulfide bonds
 """
-function distancebonds(atms::Vector{T}, atmstate::Vector{S}; 
+function distancebonds(atms::Vector{T}, atmstates::Vector{S}; 
 						cutoff = 1.9, 
 						hydrogencutoff = 1.14, 
 						H = true,
 						disulfides = false) where {T<:ProtoSyn.Atom, S<:ProtoSyn.AtomState}
 	numatoms = size(atms, 1)
 	bondmatrix = zeros(numatoms, numatoms) |> BitMatrix
-	if atmstate[1].index == -1 && atmstate[2].index == -1 && atmstate[3].index == -1 && atmstate[4].index != -1
-		atmstate = atmstate[4:end]
+	if atmstates[1].index == -1 && atmstates[2].index == -1 && atmstates[3].index == -1 && atmstates[4].index != -1
+		atmstates = atmstates[4:end]
 	end
-	@assert length(atmstate) == numatoms
+	@assert length(atmstates) == numatoms
 
 	for i in 1:numatoms
 		for j in (i+1):numatoms
 			if atms[i].name in ["N","CA","C","O"] && atms[j].name in ["N","CA","C","O"]
-				if euclidean(atmstate[i].t, atmstate[j].t) < cutoff
+				if euclidean(atmstates[i].t, atmstates[j].t) < cutoff
 					bondmatrix[i,j] = 1
 					bondmatrix[j,i] = 1
 				end
@@ -50,19 +51,19 @@ function distancebonds(atms::Vector{T}, atmstate::Vector{S};
 			if atms[i].container == atms[j].container
 				if H == true
 					if atms[i].symbol == "H" || atms[j].symbol == "H"
-						if euclidean(atmstate[i].t, atmstate[j].t) < hydrogencutoff
+						if euclidean(atmstates[i].t, atmstates[j].t) < hydrogencutoff
 							bondmatrix[i,j] = 1
 							bondmatrix[j,i] = 1
 						end
 					elseif !(atms[i].symbol == "H" || atms[j].symbol == "H")
-						if euclidean(atmstate[i].t, atmstate[j].t) < cutoff
+						if euclidean(atmstates[i].t, atmstates[j].t) < cutoff
 							bondmatrix[i,j] = 1
 							bondmatrix[j,i] = 1
 						end
 					end
 				else
 					if !(atms[i].symbol == "H" || atms[j].symbol == "H")
-						if euclidean(atmstate[i].t, atmstate[j].t) < cutoff
+						if euclidean(atmstates[i].t, atmstates[j].t) < cutoff
 							bondmatrix[i,j] = 1
 							bondmatrix[j,i] = 1
 						end
@@ -74,7 +75,7 @@ function distancebonds(atms::Vector{T}, atmstate::Vector{S};
 		if disulfides == true
 			for k in 1:numatoms
 				if i != k && atms[i].symbol == "S" && atms[k].symbol == "S"
-					if euclidean(atmstate[i].t, atmstate[k].t) < 2.1
+					if euclidean(atmstates[i].t, atmstates[k].t) < 2.1
 						bondmatrix[i,k] = 1
 						bondmatrix[k,i] = 1
 					end
@@ -104,10 +105,10 @@ function covalentbonds(atms::Vector{T}, atmstates::Vector{S};
 						disulfides = false) where {T<:ProtoSyn.Atom, S<:ProtoSyn.AtomState}
 	numatoms = size(atms, 1)
 	bondmatrix = zeros(numatoms, numatoms) |> BitMatrix
-	if atmstate[1].index == -1 && atmstate[2].index == -1 && atmstate[3].index == -1 && atmstate[4].index != -1
-		atmstate = atmstate[4:end]
+	if atmstates[1].index == -1 && atmstates[2].index == -1 && atmstates[3].index == -1 && atmstates[4].index != -1
+		atmstates = atmstates[4:end]
 	end
-	@assert length(atmstate) == numatoms
+	@assert length(atmstates) == numatoms
 
 	for i in 1:numatoms
 		for j in (i+1):numatoms
@@ -145,7 +146,7 @@ function covalentbonds(atms::Vector{T}, atmstates::Vector{S};
 		if disulfides == true
 			for k in 1:numatoms
 				if i != k && atms[i].symbol == "S" && atms[k].symbol == "S"
-					if euclidean(atmstates[i].t, aatmstatestms[k].t) < 2.1
+					if euclidean(atmstates[i].t, atmstates[k].t) < 2.1
 						bondmatrix[i,k] = 1
 						bondmatrix[k,i] = 1
 					end
@@ -173,7 +174,7 @@ The default algorithm is acquiring bonds based on the
 - extradistance ---- 0.14				# fudge factor for better inclusion
 - disulfides ------- false				# include disulfide bonds
 """
-function getbonds(atms::Vector{T}, atmstate::Vector{S};
+function getbonds(atms::Vector{T}, atmstates::Vector{S};
 				algo = :default,
 				H = true,
 				cutoff = 1.9,
@@ -182,7 +183,6 @@ function getbonds(atms::Vector{T}, atmstate::Vector{S};
 	#
 	numatoms = size(atms, 1)
 	bondmatrix = zeros(numatoms, numatoms) |> BitMatrix
-
 
 	# Do this later!
 	# if algo == :knowledgebased
@@ -255,20 +255,20 @@ function getbonds(atms::Vector{T}, atmstate::Vector{S};
 	# 	return bondmatrix
 	
 	if algo == :distance
-		return distancebonds(atms, atmstate; cutoff = cutoff, H = H, disulfides = disulfides)
+		return distancebonds(atms, atmstates; cutoff = cutoff, H = H, disulfides = disulfides)
 	elseif algo == :covalent
-		return covalentbonds(atms, atmstate; extradistance = extradistance, H = H, disulfides = disulfides)
+		return covalentbonds(atms, atmstates; extradistance = extradistance, H = H, disulfides = disulfides)
 	# ProtoSyn.Atoms store bond information, so we can just use that
-	elseif algo == :default
-		for i in 1:length(atms)
-			for ii in 1:length(atms[i].bonds)
-				bondmatrix[atms[i].id, atms[i].bonds[ii].id] = true
-				bondmatrix[atms[i].bonds[ii].id, atms[i].id] = true
-			end
-		end
-		return bondmatrix
+	# elseif algo == :default
+	# 	for i in 1:length(atms)
+	# 		for ii in 1:length(atms[i].bonds)
+	# 			bondmatrix[atms[i].id, atms[i].bonds[ii].id] = true
+	# 			bondmatrix[atms[i].bonds[ii].id, atms[i].id] = true
+	# 		end
+	# 	end
+	# 	return bondmatrix
 	else # just do the same as :covalent for now
-		return covalentbonds(atms, atmstate; extradistance = extradistance, H = H, disulfides = disulfides)
+		return covalentbonds(atms, atmstates; extradistance = extradistance, H = H, disulfides = disulfides)
 	end
 	return nothing
 end
@@ -362,28 +362,28 @@ function getinspectorlabel(pose::ProtoSyn.Pose)
     func = (self, i, p) -> "chain: $(atms[i].container.container.name)   " *
     "res: $(atms[i].container.name)   resid: $(atms[i].container.id)   index: $(i)\n" *
     "atom: $(atms[i].name)   element: $(atms[i].symbol)   " *
-    "serial: $(atms[i].id)\ncoordinates: $(pose.state[atms[i]].t)"
+    "serial: $(atms[i].id)\ncoordinates: $(trunc.(pose.state[atms[i]].t; digits=5))"
     return func
 end
 function getinspectorlabel(atms::Vector{ProtoSyn.Atom}, pose::ProtoSyn.Pose)
     func = (self, i, p) -> "chain: $(atms[i].container.container.name)   " *
     "res: $(atms[i].container.name)   resid: $(atms[i].container.id)   index: $(i)\n" *
     "atom: $(atms[i].name)   element: $(atms[i].symbol)   " *
-    "serial: $(atms[i].id)\ncoordinates: $(pose.state[atms[i]].t)"
+    "serial: $(atms[i].id)\ncoordinates: $(trunc.(pose.state[atms[i]].t; digits=5))"
     return func
 end
 function getinspectorlabel(atms::Observable{T}, pose::ProtoSyn.Pose) where {T<:Vector{ProtoSyn.Atom}}
     func = (self, i, p) -> "chain: $(atms[][i].container.container.name)   " *
     "res: $(atms[][i].container.name)   resid: $(atms[][i].container.id)   index: $(i)\n" *
     "atom: $(atms[][i].name)   element: $(atms[][i].symbol)   " *
-    "serial: $(atms[][i].id)\ncoordinates: $(pose.state[atms[][i]].t)"
+    "serial: $(atms[][i].id)\ncoordinates: $(trunc.(pose.state[atms[][i]].t; digits=5))"
     return func
 end
 function getinspectorlabel(atms::T, states::S) where {T<:Vector{ProtoSyn.Atom},S<:Vector{AtomState{Float64}}}
     func = (self, i, p) -> "chain: $(atms[i].container.container.name)   " *
     "res: $(atms[i].container.name)   resid: $(atms[i].container.id)   index: $(i)\n" *
     "atom: $(atms[i].name)   element: $(atms[i].symbol)   " *
-    "serial: $(atms[i].id)\ncoordinates: $(states[i].t)"
+    "serial: $(atms[i].id)\ncoordinates: $(trunc.(states[i].t; digits=5))"
     return func
 end
 
@@ -460,7 +460,6 @@ function atomsizes(atms::Observable{T}; radiustype = :ballandstick) where {T<:Ve
     return sizes
 end
 
-import BioMakie: plottingdata
 """
 	plottingdata( structure )
     plottingdata( residues )
@@ -482,12 +481,14 @@ By default the kwarg 'water' is set to false, so water molecules are not include
 - radiustype --- :ballandstick  | Options - :cov, :covalent, :vdw, :vanderwaals, :bas, :ballandstick, :spacefilling
 - water -------- false          | Options - true, false
 """
+
 function plottingdata(pose::Observable{T};
                         colors = elecolors,
                         radiustype = :ballandstick,
                         water = false,
-                        selection = ProtoSyn.ProteinSelection()) where {T<:ProtoSyn.Pose{Topology}}
+                        selection = ProtoSyn.ProteinSelection()) where {T<:ProtoSyn.Pose}
     #
+    atms = @lift (TrueSelection{ProtoSyn.Atom}())($pose; gather = true)
     if water == false
         selectwater = FieldSelection{ProtoSyn.Residue}("HOH", :name)
         selectatoms = (TrueSelection{ProtoSyn.Atom}() & selection & !selectwater)
@@ -496,19 +497,16 @@ function plottingdata(pose::Observable{T};
         selectatoms = (TrueSelection{ProtoSyn.Atom}() & selection)
         atms = @lift selectatoms($pose; gather = true)
     end
-    atmselection = @lift (TrueSelection{ProtoSyn.Atom}() & selection)($pose)
-    idxs = @lift [i for i in 1:length($atmselection.content) if $atmselection.content[i] .== 1]
+
+    idxs = @lift [$atms[i].id for i in 1:size($atms,1)]
     atmstates = @lift $pose.state.items[$idxs.+3]
-	
-    atmcords = @lift [$atmstates[i].t for i in 1:length($idxs)] |> combinedims |> transpose |> collect
+    atmcords = @lift [$atmstates[i].t for i in 1:length(idxs[])] |> combinedims |> transpose |> collect
     colrs = []
-    colrs = @lift to_color.([colors[$atms[i].symbol] for i in 1:length($atms)])
-    sizes = @lift atomradii($atms; radiustype = radiustype)
-    bonds = @lift getbonds($atms, $atmstates)
-
-	resids = @lift [$atms[i].container.id for i in 1:length($atms)]
-
-	selected = @lift [false for i in 1:length($atms)]
+    colrs = lift(atmcords->to_color.([colors[atms[][i].symbol] for i in 1:length(atms[])]), atmcords)
+    sizes = lift(atmcords->atomradii(atms[]; radiustype = radiustype), atmcords)
+    bonds = lift(atmcords->getbonds(atms[], atmstates[]), atmcords)
+    resids = lift(atmcords->[atms[][i].container.id for i in 1:length(atms[])], atmcords)
+	selected = lift(atmcords->[false for i in 1:length(atms[])], atmcords)
 
     return OrderedDict(:atoms => atms, 
                         :coords => atmcords, 
@@ -560,7 +558,7 @@ strucplot = plotstruc!(fig, pose)
 - water ---------- false  # show water molecules
 - kwargs... ------ keyword arguments passed to the atom `meshscatter`
 """
-function plotstruc!(fig::Figure, pose::Observable{ProtoSyn.Pose{Topology}};
+function plotstruc!(fig::Figure, pose::Observable{ProtoSyn.Pose};
                     resolution = (600,600),
                     gridposition = (1,1),
                     plottype = :ballandstick,
@@ -718,7 +716,7 @@ function _plotstruc!(fig::Figure, plotdata::AbstractDict{Symbol,T};
                     atomcolors = elecolors, # has no effect since plotdata already has colors
                     markersize = 0.0,
                     markerscale = 1.0,
-                    bondtype = :knowledgebased,
+                    bondtype = :covalent,
                     distance = 1.9,
                     inspectorlabel = :default,
                     water = false,
@@ -783,10 +781,7 @@ function _plotstruc!(fig::Figure, plotdata::AbstractDict{Symbol,T};
         end
         lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
-        if bnds == nothing
-            bnds = @lift getbonds($atms, $atmstates; algo = bondtype, distance = distance)
-        end
-        bndshapes = @lift bondshapes($cords, $bnds)
+        bndshapes = @lift bondshapes(cords[], $bnds)
         bndmeshes = @lift normal_mesh.($bndshapes)
         bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
         bmesh.inspectable[] = false
@@ -795,10 +790,7 @@ function _plotstruc!(fig::Figure, plotdata::AbstractDict{Symbol,T};
         slc.attributes.inspectable[] = false
     elseif plottype == :covalent || plottype == :cov
         markersize = @lift $sizes .* markerscale
-		if bnds == nothing
-			bnds = @lift getbonds($atms, $atmstates; algo = bondtype, distance = distance)
-		end
-		bndshapes = @lift bondshapes($cords, $bnds)
+		bndshapes = @lift bondshapes(cords[], $bnds)
 		bndmeshes = @lift normal_mesh.($bndshapes)
 		bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
 		bmesh.inspectable[] = false
@@ -831,12 +823,12 @@ function _plotstruc!(fig::Figure, plotdata::AbstractDict{Symbol,T};
     fig
 end
 function plotstruc!(fig::Figure, struc::T; atomcolors = elecolors, plottype = :ballandstick, 
-					water = false, kwargs...) where {T<:ProtoSyn.Pose{Topology}}
+					water = false, kwargs...) where {T<:ProtoSyn.Pose}
 	plotdata = plottingdata(struc; colors = atomcolors, radiustype = plottype, water = water)
 	plotstruc!(fig, plotdata; atomcolors = atomcolors, plottype = plottype, water = water, kwargs...)
 end
 function plotstruc!(figposition::GridPosition, pose::T; atomcolors = elecolors, plottype = :ballandstick, 
-					water = false, kwargs...) where {T<:Observable{ProtoSyn.Pose{Topology}}}
+					water = false, kwargs...) where {T<:Observable{ProtoSyn.Pose}}
 	plotdata = plottingdata(struc; colors = atomcolors, radiustype = plottype, water = water)
 	plotstruc!(figposition, plotdata; atomcolors = atomcolors, plottype = plottype, water = water, kwargs...)
 end
