@@ -1,4 +1,4 @@
-<p align="center" img src="docs/src/assets/biomakiename1.png" width="400" height="79">
+<p align="center"><img src="docs/src/assets/biomakiename1.png" width="400" height="79"></p>
 
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://kool7d.github.io/BioMakie.jl/dev) [![Build Status](https://github.com/kool7d/BioMakie.jl/workflows/ci/badge.svg)](https://github.com/kool7d/BioMakie.jl/actions?query=workflow%3Aci)
 <!-- [![codecov.io](http://codecov.io/github/kool7d/BioMakie.jl/coverage.svg?branch=master)](http://codecov.io/github/kool7d/BioMakie.jl?branch=master) -->
