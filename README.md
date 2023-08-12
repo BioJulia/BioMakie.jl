@@ -1,6 +1,5 @@
-<p align="center">
-    <img src="docs/src/assets/biomakiename1.png" width="400" height="300">
-</p>
+<p align="center" img src="docs/src/assets/biomakiename1.png" width="400" height="79">
+
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://kool7d.github.io/BioMakie.jl/dev) [![Build Status](https://github.com/kool7d/BioMakie.jl/workflows/ci/badge.svg)](https://github.com/kool7d/BioMakie.jl/actions?query=workflow%3Aci)
 <!-- [![codecov.io](http://codecov.io/github/kool7d/BioMakie.jl/coverage.svg?branch=master)](http://codecov.io/github/kool7d/BioMakie.jl?branch=master) -->
 
@@ -27,6 +26,7 @@ plotstruc!(fig, struc; plottype = :ballandstick, gridposition = (1,1), atomcolor
 plotstruc!(fig, struc; plottype = :covalent, gridposition = (1,2))
 ```
 <p align="center"><img src="docs/src/assets/2vb1crop.png"></p>
+
 To view a multiple sequence alignment, use the `plotmsa` function with a Pfam MSA or fasta file.
 
 ```julia
