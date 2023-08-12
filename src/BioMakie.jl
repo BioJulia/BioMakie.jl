@@ -33,8 +33,6 @@ using Distances, GeometryBasics
 using Colors, ColorSchemes, ColorTypes, ImageCore
 using FileIO, FastaIO, FASTX
 using HTTP, JSON3
-using JSServe
-using WGLMakie
 using GLMakie
 GLMakie.activate!()
 
