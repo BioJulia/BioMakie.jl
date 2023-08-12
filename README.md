@@ -1,29 +1,17 @@
-# BioMakie.jl
-[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://kool7d.github.io/BioMakie.jl/dev)
+<p align="center"><img src="docs/src/assets/biomakiename1.png" width="400" height="79"></p>
 
-[![Build Status](https://github.com/kool7d/BioMakie.jl/workflows/ci/badge.svg)](https://github.com/kool7d/BioMakie.jl/actions?query=workflow%3Aci)
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://kool7d.github.io/BioMakie.jl/dev) [![Build Status](https://github.com/kool7d/BioMakie.jl/workflows/ci/badge.svg)](https://github.com/kool7d/BioMakie.jl/actions?query=workflow%3Aci)
 <!-- [![codecov.io](http://codecov.io/github/kool7d/BioMakie.jl/coverage.svg?branch=master)](http://codecov.io/github/kool7d/BioMakie.jl?branch=master) -->
-
-This package provides plotting functions for protein structures, multiple sequence alignments, and some other related plots like protein structure contact maps.
-
-So far, plotting methods exist for packages: 
- - BioStructures.jl
- - MIToS.jl
- - FastaIO.jl
- - FASTX.jl
-
-Plotting methods in development:
- - MolecularGraph.jl
- - ProtoSyn.jl
 
 ## Installation
  
-Enter the package mode by pressing ] and run `add BioMakie`.
+Enter the package mode by pressing ] and run `add BioMakie`. 
+To get the latest features that may not be in the current release, run `add BioMakie#master`.
 
-## Usage
+## About
 
-The main plotting functions are **plotstruc** and **plotmsa**, along with their mutating 
-versions, **plotstruc!** and **plotmsa!**. The mutating functions allow the user to add multiple plots to the same Figure, using grid positions.
+This package provides plotting functions for protein structures, multiple sequence alignments, and some other related plots like protein structure contact maps.
+The main plotting functions are **plotstruc** and **plotmsa**, along with their mutating versions, **plotstruc!** and **plotmsa!**.
 
 ```julia
 using BioMakie
@@ -37,7 +25,7 @@ fig = Figure()
 plotstruc!(fig, struc; plottype = :ballandstick, gridposition = (1,1), atomcolors = aquacolors)
 plotstruc!(fig, struc; plottype = :covalent, gridposition = (1,2))
 ```
-<p align="center"><img src="docs/src/assets/2vb1.png"></p>
+<p align="center"><img src="docs/src/assets/2vb1crop.png"></p>
 
 To view a multiple sequence alignment, use the `plotmsa` function with a Pfam MSA or fasta file.
 
@@ -55,8 +43,39 @@ fig = plotmsa(msa; colorscheme = :tableau_blue_green)
 ```
 <p align="center"><img src="docs/src/assets/msa.png"></p>
 
-## Additional examples
+### Implemented packages:
+Significant or full coverage: 
+ - BioStructures.jl
+ - MIToS.jl
+ - FastaIO.jl
+ - FASTX.jl
 
-## Alpha shapes can be used to visualize the surface of a protein structure
+Some coverage:
+ - MolecularGraph.jl
+ - ProtoSyn.jl
 
-<p align="center"><img src="docs/src/assets/alphashape.png"></p>
+### Implemented visualizations:
+- Structures
+  - Ball and stick, spacefilling, covalent representations
+  - Selections
+  - Alpha shapes
+- Multiple sequence alignments
+  - Grid display
+  - Selections
+  - Frequency plot
+- Data acquisition from `www.ebi.ac.uk` and display 
+
+### To Do:
+- Support for non-standard and modified amino acids
+- Connect MSA and structure plot
+- Protein dynamics
+
+## Examples
+
+### Viewing the frequencies of amino acids in a multiple sequence alignment
+
+<p align="center"><img src="docs/src/assets/msaselection.gif"></p>
+
+### Alpha shapes can be used to visualize the surface of a protein structure
+
+<p align="center"><img src="docs/src/assets/fullalphamesh.gif"></p>
