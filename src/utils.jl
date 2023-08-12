@@ -466,3 +466,16 @@ function kdict(str::AbstractString)
     end
 end
 kdict(c::Char) = kdict(string(c))
+function getprotosyn(filename = "protosyn.jl")
+    url = "https://raw.githubusercontent.com/kool7d/BioMakie.jl/master/src/protosyn.jl"  # Replace with the actual URL
+
+    response = HTTP.get(url)
+    if response.status == 200
+        open(filename, "w") do file
+            write(file, response.body)
+        end
+        println("File downloaded and saved as $filename")
+    else
+        println("Failed to download the file.")
+    end
+end
