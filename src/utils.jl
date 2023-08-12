@@ -467,7 +467,7 @@ function kdict(str::AbstractString)
 end
 kdict(c::Char) = kdict(string(c))
 function getprotosyn(filename = "protosyn.jl")
-    url = "https://raw.githubusercontent.com/kool7d/BioMakie.jl/master/src/protosyn.jl"  # Replace with the actual URL
+    url = "https://raw.githubusercontent.com/kool7d/BioMakie.jl/master/src/protosyn.jl"
 
     response = HTTP.get(url)
     if response.status == 200
