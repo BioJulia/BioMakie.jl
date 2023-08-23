@@ -6,10 +6,12 @@ makedocs(
     pages=[
 		"Home" => "index.md",
 		"Usage" => "usage.md",
-		"Mesh" => "alphashape.md",
-		"Info Text" => "infotext.md",
-		"MSA Selection" => "msaselection.md",
-		"Mutation" => "mutation.md",
+		"Examples" => [
+			"MSA Selection" => "msaselection.md",
+			"Alpha Shape" => "alphashape.md",
+			"Info Text" => "infotext.md",
+			"Mutation" => "mutation.md",
+		]
 		"API" => "API.md",
     ]
 )

@@ -1,8 +1,8 @@
 ```@meta
-EditURL = "https://github.com/kool7d/BioMakie.jl/blob/dev/docs/src/msaselection.jl"
+EditURL = "msaselection.jl"
 ```
 
-## MSA Selection
+# MSA Selection
 In this demo we plot an MSA and allow the user to select a residue.
 The selected residue is highlighted in the MSA and the amino acid frequencies
 are plotted on the right.
@@ -15,7 +15,7 @@ using GLMakie
 using Lazy
 ````
 
-### Acquire the data
+## Acquire the data
 Use MIToS to download a Pfam MSA, then prepare the plotting data.
 
 ````julia
@@ -25,12 +25,16 @@ msa2 = Observable(msa1)
 plotdata = plottingdata(msa2)
 ````
 
-### Plot the MSA
+## Plot the MSA
+We make the figure resolution a bit bigger than default because we want to
+add in the frequency plot on the right.
 
 ````julia
 fig = Figure(resolution = (1400,400))
 msa = plotmsa!(fig, plotdata)
 ````
+
+![msa](../assets/msa1.png)
 
 Prepare column data for the frequency plot. In this example we color based
 on hydrophobicity value from a set of physicochemical property values,
@@ -54,7 +58,7 @@ new_aalabels = allaas[sortaas]
 hydrophobicities = [BioMakie.kideradict[new_aalabels[i]][2] for i in 1:length(new_aalabels)]
 ````
 
-### Create the Observables to sync the data between the MSA and the frequency plot.
+## Create the Observables to sync the data between the MSA and the frequency plot.
 Utilize observables to update the frequency plot when the user selects a residue.
 
 ````julia
@@ -71,7 +75,7 @@ aafreqspercent = @lift $aafreqs ./ sum($aafreqs) .* 100
 new_aafreqs = @lift $aafreqspercent[sortaas]
 ````
 
-### Create the frequency plot
+## Create the frequency plot
 The keyword arguments for the Axis and barplot are adjusted to make it look nice.
 
 ````julia
@@ -85,6 +89,8 @@ bp = barplot!(ax, 1:22, aafreqspercent; color = hydrophobicities, strokewidth = 
 ylims!(ax, (0, 100))
 xlims!(ax, (0, 23))
 ````
+
+![msaselection](../assets/msaselection.gif)
 
 ---
 

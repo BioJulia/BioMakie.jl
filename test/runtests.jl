@@ -251,13 +251,14 @@ end
 
 @testset "MSA plotting" begin
     # MIToS
-    msa1 = MIToS.MSA.read("./docs/src/assets/pf00062.stockholm.gz",Stockholm)
-    @test size(msa1) == (1733, 123)
-    @test length(msa1.annotations.sequences) == 1748
+    downloadpfam("pf00062")
+    msa1 = MIToS.MSA.read("pf00062.stockholm.gz",Stockholm)
+    @test size(msa1) == (2181, 123)
+    @test length(msa1.annotations.sequences) == 2196
     plotdata = plottingdata(msa1)
     msamatrix = plotdata[:matrix]
-    @test size(msamatrix) == (1733, 123)
-    matrixvals = msavalues(msamatrix)
+    @test size(msamatrix[]) == (2181, 123)
+    matrixvals = msavalues(msamatrix[])
     @test firstkey(kideradict) == "A"
     @test firstvalue(kideradict) == [-1.56, -1.67, -0.97, -0.27, -0.93, -0.78, -0.2, -0.08, 0.21, -0.48]
 end
