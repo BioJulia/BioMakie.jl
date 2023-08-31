@@ -39,6 +39,9 @@ jobs:
             ${{ runner.os }}-test-
             ${{ runner.os }}-
       - name: Install Julia dependencies
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
         run: >
           DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24'
           julia --project=docs -e
@@ -48,10 +51,4 @@ jobs:
           pkg"registry up General";
           # dev mono repo versions
           pkg"add Makie; add Documenter; instantiate"'
-      - name: Build and deploy
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
-        run: >
-          DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24'
           julia --project=docs --color=yes docs/make.jl
