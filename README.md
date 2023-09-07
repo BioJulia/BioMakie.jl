@@ -87,3 +87,7 @@ Some coverage:
 ### Alpha shapes can be used to visualize the surface of a protein structure
 
 <p align="center"><img src="docs/src/assets/fullalphamesh.gif"></p>
+
+### Database information can be displayed for a protein (including a GPT response)
+
+<p align="center"><img src="docs/src/assets/dbinfo.gif"></p>
