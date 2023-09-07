@@ -81,6 +81,7 @@ hidespines!(ax)
 hideydecorations!(ax)
 hidexdecorations!(ax)
 ````
+![dbinfo](../assets/dbinfo.gif)
 
 ---
 
