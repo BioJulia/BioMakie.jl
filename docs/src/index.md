@@ -22,6 +22,8 @@ Other packages with plotting methods in development:
 
 Enter the package mode by pressing ] and run `add BioMakie`.
 
+<img src="https://github.com/goswami-rahul/alien-invasion-game/blob/master/assets/demo.gif" width=1000>
+
 ---
 
 *This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
