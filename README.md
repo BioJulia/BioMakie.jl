@@ -9,7 +9,7 @@
 
 <!-- [![codecov.io](http://codecov.io/github/kool7d/BioMakie.jl/coverage.svg?branch=master)](http://codecov.io/github/kool7d/BioMakie.jl?branch=master) -->
 
-### A new version will soon be released (v0.2.3 -> v0.3.0) which introduces many new features, bugfixes, and breaking changes. The package is also planned to be moved into the BioJulia organization. Stay tuned...
+### A new version will soon be released (v0.2.3 -> v0.3.0) which introduces many new features, bugfixes, and breaking changes. Stay tuned...
 
 ## Installation
  
