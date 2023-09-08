@@ -43,7 +43,17 @@ macro trycatch(ex)
         end
     end
 end
+macro trycatch(ex, ex2)
+    quote
+        try
+            $(esc(ex))
+        catch
+            $(esc(ex2))
+        end
+    end
+end
 typefields(x) = x |> typeof |> fieldnames
+tyf(x) = x |> typeof |> fieldnames
 
 # current basic color schemes for atoms and residues
 elecolors = OrderedDict("C" => :gray,
