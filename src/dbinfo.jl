@@ -1,6 +1,6 @@
 export UniProtData,
     getuniprotdata,
-    showuniprotdata,
+    showsummary,
     readuniprotdata
 
 """
@@ -397,11 +397,11 @@ function getuniprotdata(accession::String, filename=nothing; include_refs = fals
 end
 
 """
-    showuniprotdata(pdata)
+    showsummary(pdata)
 
 Prints some of the most important information from a UniProtData object.
 """
-function showuniprotdata(io, pdata)
+function showsummary(io, pdata)
     if pdata.dbrefs == OrderedDict[]
         dbref = "None"
     else
@@ -414,15 +414,8 @@ function showuniprotdata(io, pdata)
     "EC Number:  $(pdata.protinfo[:recommendedName][:ecNumber][1][:value])\n",
     "Alternative Name:  $(pdata.protinfo[:alternativeName][1][:fullName][:value])\n",
     "Gene:  $(pdata.gene)\n", 
-    "Secondary accession:  $(pdata.secondary_accession)\n\n",
-    "Features:  molecule_processing, domains_and_sites, structural, ptm, sequence_information,\n",
-                "\t   mutagenesis, variants, topology, other_features\n",
-    "Comments:  func, catalytic_activity, subunit, subcellular_location, interaction\n",
-                "\t   tissue_specificity, polymorphism, allergen, web_resource, similarity\n", 
-                "\t   miscellaneous, other_comments\n",
-    "Other Database References:  $(dbref)\n",
     "--------------------\n")
 end
 
 import Base: show
-Base.show(io::IO, data::UniProtData) = showuniprotdata(io, data)
+Base.show(io::IO, data::UniProtData) = showsummary(io, data)

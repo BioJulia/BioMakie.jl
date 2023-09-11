@@ -9,8 +9,8 @@ Pkg.add("OrderedCollections")
 Pkg.add("Distances")
 
 using ProtoSyn, SplitApplyCombine, Colors, Meshes, GeometryBasics, OrderedCollections, Distances
-import BioMakie: plotstruc!, plotstruc, covalentradii, getbonds, atomradii, 
-	atomradius, getinspectorlabel
+import BioMakie: distancebonds, covalentbonds, plotstruc!, plotstruc, covalentradii, getbonds, 
+    atomradii, atomradius, getinspectorlabel, atomcolors, rescolors, atomsizes, plottingdata
 
 """
 	distancebonds( atms, atmstates ) -> BitMatrix
@@ -461,34 +461,38 @@ function atomsizes(atms::Observable{T}; radiustype = :ballandstick) where {T<:Ve
 end
 
 """
-	plottingdata( structure )
-    plottingdata( residues )
-    plottingdata( atoms )
+	plottingdata( pose )
 
 This function returns an OrderedDict of the main data used for plotting. 
-This function uses 'MIToS.PDB.bestoccupancy' or 'defaultatom' to ensure only one position per atom.
-By default the kwarg 'water' is set to false, so water molecules are not included.
+It selects only protein atoms with `ProtoSyn.ProteinSelection` by default.
 
 ### Returns:
     OrderedDict(:atoms => ..., 
                 :coords => ..., 
                 :colors => ...,
                 :sizes => ...,
-                :bonds => ...)
+                :bonds => ...,
+                :states => ...,
+				:resids => ...,
+				:selected => ...)
+end
 
 ### Keyword Arguments:
 - colors ------- elecolors      | Options - elecolors, aquacolors, shapelycolors, maecolors
 - radiustype --- :ballandstick  | Options - :cov, :covalent, :vdw, :vanderwaals, :bas, :ballandstick, :spacefilling
 - water -------- false          | Options - true, false
+- selection ---- ProteinSelection()
 """
-
 function plottingdata(pose::Observable{T};
-                        colors = elecolors,
+                        colors = :default,
                         radiustype = :ballandstick,
                         water = false,
                         selection = ProtoSyn.ProteinSelection()) where {T<:ProtoSyn.Pose}
     #
     atms = @lift (TrueSelection{ProtoSyn.Atom}())($pose; gather = true)
+    if colors == :default
+        colors = elecolors
+    end
     if water == false
         selectwater = FieldSelection{ProtoSyn.Residue}("HOH", :name)
         selectatoms = (TrueSelection{ProtoSyn.Atom}() & selection & !selectwater)
@@ -518,11 +522,14 @@ function plottingdata(pose::Observable{T};
 						:selected => selected)
 end
 function plottingdata(pose::ProtoSyn.Pose;
-                        colors = elecolors,
+                        colors = :default,
                         radiustype = :ballandstick,
                         water = false,
                         selection = ProtoSyn.ProteinSelection())
     #
+    if colors == :default
+        colors = elecolors
+    end
 	return plottingdata(Observable(pose); colors = colors, 
 						radiustype = radiustype, water = water, selection = selection)
 end
@@ -530,8 +537,6 @@ end
 """
     plotstruc!( fig, structure )
     plotstruc!( gridposition, structure )
-    plotstruc!( fig, plotdata )
-    plotstruc!( gridposition, plotdata )
 
 Plot a protein structure(pose) into a Figure. 
 
@@ -822,13 +827,121 @@ function _plotstruc!(fig::Figure, plotdata::AbstractDict{Symbol,T};
     DataInspector(lscene; indicator_linewidth = 0)
     fig
 end
-function plotstruc!(fig::Figure, struc::T; atomcolors = elecolors, plottype = :ballandstick, 
+function _plotstruc!(figposition::GridPosition, plotdata::AbstractDict{Symbol,T};
+                    resolution = (600,600),
+                    # gridposition = (1,1),
+                    plottype = :ballandstick,
+                    atomcolors = elecolors, # has no effect since plotdata already has colors
+                    markersize = 0.0,
+                    markerscale = 1.0,
+                    bondtype = :covalent,
+                    distance = 1.9,
+                    inspectorlabel = :default,
+                    water = false,
+                    kwargs...
+                    ) where {T<:Observable}
+	#
+    atms = plotdata[:atoms]
+    cords = plotdata[:coords]
+    colrs = plotdata[:colors]
+    sizes = plotdata[:sizes]
+    bnds = plotdata[:bonds]
+	resz = plotdata[:resids]
+    atmstates = plotdata[:states]
+	selected = plotdata[:selected]
+
+    selectioncolor = RGBA(0.5647059f0,0.93333334f0,0.5647059f0,0.7f0)
+    if atomcolors == aquacolors
+        selectioncolor = RGBA(1.0f0,0.7529412f0,0.79607844f0,0.7f0)
+    end
+
+	selectedcoords = Observable(Matrix{Float64}(undef,0,3))
+    on(selected; update = true) do sel
+        if sum(sel) == 0
+            selectedcoords[] = Matrix{Float64}(undef,0,3)
+        else
+            try
+                selectedcoords[] = [cords[][i,:] for i in 1:length(sel) if sel[i] == true] |> combinedims |> transpose |> collect
+            catch
+                selectedcoords[] = [cords[][i,:] for i in 1:length(sel) if sel[i] == true] |> transpose |> collect
+            end
+        end
+    end 
+    
+    sizs = Observable(Vector{Float32}(undef,length(selected[])) .= 0)
+    on(selected; update = true) do sel
+        if sum(sel) == 0
+            sizs[] = Vector{Float32}(undef,0) .= 0
+        else
+            sizs[] = [sizes[][i] for i in 1:length(selected[]) if selected[][i] == true] .+ 0.3
+        end
+    end
+
+    if inspectorlabel == :default
+        inspectorlabel = @lift getinspectorlabel($atms, $atmstates)        
+    end
+    if plottype == :spacefilling || plottype == :vanderwaals || plottype == :vdw
+        markersize = @lift $sizes .* markerscale
+        lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
+        ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
+		slc = meshscatter!(lscene, selectedcoords; 
+                            color = selectioncolor, markersize = sizs)
+        slc.attributes.inspectable[] = false
+    elseif plottype == :ballandstick || plottype == :bas
+        if markersize == 0.0
+            markersize = @lift $sizes .* markerscale .* 0.7
+        end
+        lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
+        ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
+        bndshapes = @lift bondshapes(cords[], $bnds)
+        bndmeshes = @lift normal_mesh.($bndshapes)
+        bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
+        bmesh.inspectable[] = false
+		slc = meshscatter!(lscene, selectedcoords; 
+                            color = selectioncolor, markersize = sizs)
+        slc.attributes.inspectable[] = false
+    elseif plottype == :covalent || plottype == :cov
+        markersize = @lift $sizes .* markerscale
+		bndshapes = @lift bondshapes(cords[], $bnds)
+		bndmeshes = @lift normal_mesh.($bndshapes)
+		bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
+		bmesh.inspectable[] = false
+        lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
+        ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
+		slc = meshscatter!(lscene, selectedcoords; 
+                            color = selectioncolor, markersize = sizs)
+        slc.attributes.inspectable[] = false
+    else
+        ArgumentError("bad plottype kwarg")
+    end
+
+	# mouse selection
+    mouseevents = addmouseevents!(figposition.layout.parent.parent.content[1].scene, figposition.layout.parent.parent.content[1].scene.plots[1]; priority = 1)
+    onmouseleftclick(mouseevents) do event
+        picked = mouse_selection(figposition.layout.parent.parent.content[1].scene)
+        selectedatm = [picked...][2]
+        selectres = Vector{Bool}(undef,length(selected[])) .= false
+        atmidxs = [i for i in 1:length(resz[]) if resz[][i] == resz[][selectedatm]]
+        selectres[atmidxs] .= true
+        selected[] = selectres
+    end
+
+    DataInspector(lscene; indicator_linewidth = 0)
+    fig
+end
+function plotstruc!(fig::Figure, struc::T; atomcolors = :default, plottype = :ballandstick, 
 					water = false, kwargs...) where {T<:ProtoSyn.Pose}
+    if atomcolors == :default
+        atomcolors = elecolors
+    end
 	plotdata = plottingdata(struc; colors = atomcolors, radiustype = plottype, water = water)
 	plotstruc!(fig, plotdata; atomcolors = atomcolors, plottype = plottype, water = water, kwargs...)
 end
-function plotstruc!(figposition::GridPosition, pose::T; atomcolors = elecolors, plottype = :ballandstick, 
+function plotstruc!(figposition::GridPosition, pose::T; atomcolors = :default, plottype = :ballandstick, 
 					water = false, kwargs...) where {T<:Observable{ProtoSyn.Pose}}
+    if atomcolors == :default
+        atomcolors = elecolors
+    end
 	plotdata = plottingdata(struc; colors = atomcolors, radiustype = plottype, water = water)
-	plotstruc!(figposition, plotdata; atomcolors = atomcolors, plottype = plottype, water = water, kwargs...)
+	_plotstruc!(figposition, plotdata; atomcolors = atomcolors, plottype = plottype, water = water, kwargs...)
 end
