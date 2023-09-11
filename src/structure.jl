@@ -220,29 +220,47 @@ This function uses 'MIToS.PDB.bestoccupancy' or 'defaultatom' to ensure only one
 """
 function atomcolors(struc::BioStructures.StructuralElementOrList; colors = elecolors)
     atms = defaultatom.(BioStructures.collectatoms(struc))
+    if colors == :default
+        colors = elecolors
+    end
     colrs = [colors[BioStructures.element(x)] for x in atms]
     return colrs
 end
 function atomcolors(struc::Observable{T}; colors = elecolors) where {T<:BioStructures.StructuralElementOrList}
     atms = @lift defaultatom.(BioStructures.collectatoms($struc))
+    if colors == :default
+        colors = elecolors
+    end
     colrs = @lift [colors[BioStructures.element(x)] for x in $atms]
     return colrs
 end
 function atomcolors(resz::Vector{MIToS.PDB.PDBResidue}; colors = elecolors)
     atms = [MIToS.PDB.bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
+    if colors == :default
+        colors = elecolors
+    end
     colrs = [colors[x.element] for x in atms]
     return colrs
 end
 function atomcolors(resz::Observable{T}; colors = elecolors) where {T<:Vector{MIToS.PDB.PDBResidue}}
     atms = @lift [MIToS.PDB.bestoccupancy($resz[i].atoms) for i in 1:length($resz)] |> flatten
+    if colors == :default
+        colors = elecolors
+    end
     colrs = @lift [colors[x.element] for x in $atms]
     return colrs
 end
 function atomcolors(atms::Vector{MIToS.PDB.PDBAtom}; colors = elecolors)
+    if colors == :default
+        colors = elecolors
+    end
     colrs = [colors[x.element] for x in atms]
     return colrs
 end
 function atomcolors(atms::Observable{T}; colors = elecolors) where {T<:Vector{MIToS.PDB.PDBAtom}}
+    if colors == :default
+        colors = elecolors
+    end
     colrs = @lift [colors[x.element] for x in $atms]
     return colrs
 end
@@ -261,14 +279,14 @@ This function uses 'MIToS.PDB.bestoccupancy' or 'defaultatom' to ensure only one
 """
 function rescolors(struc::BioStructures.StructuralElementOrList; colors = maecolors)
     atms = defaultatom.(BioStructures.collectatoms(struc))
-    resnames = [resletterdict[atms[i].residue.name] for i in 1:length(atms)]
-    colrs = [colors[resnames[j]] for j in 1:length(resnames)]
+    resnames = [@trycatch(resletterdict[atms[i].residue.name],"XAA") for i in 1:length(atms)]
+    colrs = [@trycatch(colors[resnames[j]],:gray) for j in 1:length(resnames)]
     return colrs
 end
 function rescolors(struc::Observable{T}; colors = maecolors) where {T<:BioStructures.StructuralElementOrList}
     atms = @lift defaultatom.(BioStructures.collectatoms($struc))
-    resnames = @lift [resletterdict[$atms[i].residue.name] for i in 1:length($atms)]
-    colrs = @lift [colors[$resnames[j]] for j in 1:length($resnames)]
+    resnames = @lift [@trycatch(resletterdict[$atms[i].residue.name],"XAA") for i in 1:length($atms)]
+    colrs = @lift [@trycatch(colors[$resnames[j]],:gray) for j in 1:length($resnames)]
     return colrs
 end
 function rescolors(resz::Vector{MIToS.PDB.PDBResidue}; colors = maecolors)
@@ -369,11 +387,14 @@ By default the kwarg 'water' is set to false, so water molecules are not include
 - water -------- false          | Options - true, false
 """
 function plottingdata(struc::Observable{T};
-                        colors = elecolors,
+                        colors = :default,
                         radiustype = :ballandstick,
                         water = false) where {T<:BioStructures.StructuralElementOrList}
     #
     atms = @lift defaultatom.(BioStructures.collectatoms($struc))
+    if colors == :default
+        colors = elecolors
+    end
     if water == false
         atms = @lift defaultatom.(BioStructures.collectatoms($struc,!waterselector))
     end
@@ -404,11 +425,14 @@ function plottingdata(struc::Observable{T};
                         :selected => selected)
 end
 function plottingdata(resz::Observable{T};
-                        colors = elecolors,
+                        colors = :default,
                         radiustype = :ballandstick,
                         water = false) where {T<:Vector{MIToS.PDB.PDBResidue}}
     #
     atms = @lift [MIToS.PDB.bestoccupancy($resz[i].atoms) for i in 1:length($resz)] |> flatten
+    if colors == :default
+        colors = elecolors
+    end
     if water == false
         resz2 = @lift notwater($resz)
         atms = @lift [MIToS.PDB.bestoccupancy($resz2[i].atoms) for i in 1:length($resz2)] |> flatten
@@ -442,17 +466,23 @@ function plottingdata(resz::Observable{T};
                         :selected => selected)
 end
 function plottingdata(struc::BioStructures.StructuralElementOrList;
-                        colors = elecolors,
+                        colors = :default,
                         radiustype = :ballandstick,
                         water = false)
     #
+    if colors == :default
+        colors = elecolors
+    end
     return plottingdata(Observable(struc); colors = colors, radiustype = radiustype, water = water)
 end
 function plottingdata(resz::Vector{MIToS.PDB.PDBResidue};
-                        colors = elecolors,
+                        colors = :default,
                         radiustype = :ballandstick,
                         water = false)
     #
+    if colors == :default
+        colors = elecolors
+    end
     return plottingdata(Observable(resz); colors = colors, radiustype = radiustype, water = water)
 end
 function plottingdata(pdata::AbstractDict; kwargs...)
@@ -515,7 +545,7 @@ function plotstruc!(fig::Figure, struc::Observable;
                     resolution = (600,600),
                     gridposition = (1,1),
                     plottype = :ballandstick,
-                    atomcolors = elecolors,
+                    atomcolors = :default,
                     markersize = 0.0,
                     markerscale = 1.0,
                     bondtype = :knowledgebased,
@@ -535,8 +565,11 @@ function plotstruc!(fig::Figure, struc::Observable;
     selected = plotdata[:selected]
 
     selectioncolor = RGBA(0.5647059f0,0.93333334f0,0.5647059f0,0.7f0)
-    if atomcolors == aquacolors
+    if atomcolors == :default
+        atomcolors = elecolors
+    elseif atomcolors == aquacolors
         selectioncolor = RGBA(1.0f0,0.7529412f0,0.79607844f0,0.7f0)
+    else
     end
 
     selectedcoords = Observable(Matrix{Float64}(undef,0,3))
@@ -630,11 +663,11 @@ function plotstruc!(fig::Figure, struc::Observable;
     DataInspector(lscene; indicator_linewidth = 0)
     fig
 end
-function plotstruc!(fig::Figure, plotdata::AbstractDict{Symbol,T};
+function plotstruc!(figposition::GridPosition, struc::Observable;
                     resolution = (600,600),
-                    gridposition = (1,1),
+                    # gridposition = (1,1),
                     plottype = :ballandstick,
-                    atomcolors = elecolors, # has no effect since plotdata already has colors
+                    atomcolors = :default,
                     markersize = 0.0,
                     markerscale = 1.0,
                     bondtype = :knowledgebased,
@@ -642,8 +675,9 @@ function plotstruc!(fig::Figure, plotdata::AbstractDict{Symbol,T};
                     inspectorlabel = :default,
                     water = false,
                     kwargs...
-                    ) where {T<:Observable}
+                    )
 	#
+    plotdata = plottingdata(struc; colors = atomcolors, radiustype = plottype, water = water)
     atms = plotdata[:atoms]
     cords = plotdata[:coords]
     colrs = plotdata[:colors]
@@ -653,8 +687,122 @@ function plotstruc!(fig::Figure, plotdata::AbstractDict{Symbol,T};
     selected = plotdata[:selected]
 
     selectioncolor = RGBA(0.5647059f0,0.93333334f0,0.5647059f0,0.7f0)
-    if atomcolors == aquacolors
+    if atomcolors == :default
+        atomcolors = elecolors
+    elseif atomcolors == aquacolors
         selectioncolor = RGBA(1.0f0,0.7529412f0,0.79607844f0,0.7f0)
+    else
+    end
+
+    selectedcoords = Observable(Matrix{Float64}(undef,0,3))
+    on(selected; update = true) do sel
+        if sum(sel) == 0
+            selectedcoords[] = Matrix{Float64}(undef,0,3)
+        else
+            try
+                selectedcoords[] = [cords[][i,:] for i in 1:length(sel) if sel[i] == true] |> combinedims |> transpose |> collect
+            catch
+                selectedcoords[] = [cords[][i,:] for i in 1:length(sel) if sel[i] == true] |> transpose |> collect
+            end
+        end
+    end 
+
+    sizs = Observable(Vector{Float32}(undef,length(selected[])) .= 0)
+    on(selected; update = true) do sel
+        if sum(sel) == 0
+            sizs[] = Vector{Float32}(undef,0) .= 0
+        else
+            sizs[] = [sizes[][i] for i in 1:length(selected[]) if selected[][i] == true] .+ 0.3
+        end
+    end
+
+    if inspectorlabel == :default
+        inspectorlabel = @lift getinspectorlabel($struc)        
+    end
+    if plottype == :spacefilling || plottype == :vanderwaals || plottype == :vdw
+        markersize = @lift $sizes .* markerscale
+        lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
+        ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
+        slc = meshscatter!(lscene, selectedcoords; 
+                            color = selectioncolor, markersize = sizs)
+        slc.attributes.inspectable[] = false
+    elseif plottype == :ballandstick || plottype == :bas
+        if markersize == 0.0
+            markersize = @lift $sizes .* markerscale .* 0.7
+        end
+        lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
+        ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
+        if bnds == nothing
+            bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
+        end
+        bndshapes = @lift bondshapes($cords, $bnds)
+        bndmeshes = @lift normal_mesh.($bndshapes)
+        bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
+        bmesh.inspectable[] = false
+        slc = meshscatter!(lscene, selectedcoords; 
+                            color = selectioncolor, markersize = sizs)
+        slc.attributes.inspectable[] = false
+    elseif plottype == :covalent || plottype == :cov
+        markersize = @lift $sizes .* markerscale
+        if bnds == nothing
+            bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
+        end
+        bndshapes = @lift bondshapes($cords, $bnds)
+        bndmeshes = @lift normal_mesh.($bndshapes)
+        bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
+        bmesh.inspectable[] = false
+        lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
+        ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
+        slc = meshscatter!(lscene, selectedcoords; 
+                            color = selectioncolor, markersize = sizs)
+        slc.attributes.inspectable[] = false
+    else
+        ArgumentError("bad plottype kwarg")
+    end
+
+    # mouse selection
+    mouseevents = addmouseevents!(figposition.layout.parent.parent.content[1].scene, figposition.layout.parent.parent.content[1].scene.plots[1]; priority = 1)
+    onmouseleftclick(mouseevents) do event
+        picked = mouse_selection(figposition.layout.parent.parent.content[1].scene)
+        selectedatm = [picked...][2]
+        selectres = Vector{Bool}(undef,length(selected[])) .= false
+        atmidxs = [i for i in 1:length(resz[]) if resz[][i] == resz[][selectedatm]]
+        selectres[atmidxs] .= true
+        selected[] = selectres
+    end
+
+    DataInspector(lscene; indicator_linewidth = 0)
+    figposition.layout.parent
+end
+function plotstruc!(fig::Figure, plotdata::AbstractDict{Symbol,T};
+                    resolution = (600,600),
+                    gridposition = (1,1),
+                    plottype = :ballandstick,
+                    atomcolors = :default, 
+                    markersize = 0.0,
+                    markerscale = 1.0,
+                    bondtype = :knowledgebased,
+                    distance = 1.9,
+                    inspectorlabel = :default,
+                    water = false,
+                    kwargs...
+                    ) where {T<:Observable}
+	#
+
+    atms = plotdata[:atoms]
+    cords = plotdata[:coords]
+    colrs = plotdata[:colors]
+    sizes = plotdata[:sizes]
+    bnds = plotdata[:bonds]
+    resz = plotdata[:resids]
+    selected = plotdata[:selected]
+
+    selectioncolor = RGBA(0.5647059f0,0.93333334f0,0.5647059f0,0.7f0)
+    if atomcolors == :default
+        atomcolors = elecolors
+    elseif atomcolors == aquacolors
+        selectioncolor = RGBA(1.0f0,0.7529412f0,0.79607844f0,0.7f0)
+    else
     end
 
     selectedcoords = Observable(Matrix{Float64}(undef,0,3))
@@ -747,6 +895,116 @@ function plotstruc!(fig::Figure, plotdata::AbstractDict{Symbol,T};
     end
     DataInspector(lscene; indicator_linewidth = 0)
     fig
+end
+function plotstruc!(figposition::GridPosition, plotdata::AbstractDict{Symbol,T};
+                    resolution = (600,600),
+                    # gridposition = (1,1),
+                    plottype = :ballandstick,
+                    atomcolors = :default,
+                    markersize = 0.0,
+                    markerscale = 1.0,
+                    bondtype = :knowledgebased,
+                    distance = 1.9,
+                    inspectorlabel = :default,
+                    water = false,
+                    kwargs...
+                    ) where {T<:Observable}
+	#
+    atms = plotdata[:atoms]
+    cords = plotdata[:coords]
+    colrs = plotdata[:colors]
+    sizes = plotdata[:sizes]
+    bnds = plotdata[:bonds]
+    resz = plotdata[:resids]
+    selected = plotdata[:selected]
+
+    selectioncolor = RGBA(0.5647059f0,0.93333334f0,0.5647059f0,0.7f0)
+    if atomcolors == :default
+        atomcolors = elecolors
+    elseif atomcolors == aquacolors
+        selectioncolor = RGBA(1.0f0,0.7529412f0,0.79607844f0,0.7f0)
+    else
+    end
+
+    selectedcoords = Observable(Matrix{Float64}(undef,0,3))
+    on(selected; update = true) do sel
+        if sum(sel) == 0
+            selectedcoords[] = Matrix{Float64}(undef,0,3)
+        else
+            try
+                selectedcoords[] = [cords[][i,:] for i in 1:length(sel) if sel[i] == true] |> combinedims |> transpose |> collect
+            catch
+                selectedcoords[] = [cords[][i,:] for i in 1:length(sel) if sel[i] == true] |> transpose |> collect
+            end
+        end
+    end 
+
+    sizs = Observable(Vector{Float32}(undef,length(selected[])) .= 0)
+    on(selected; update = true) do sel
+        if sum(sel) == 0
+            sizs[] = Vector{Float32}(undef,0) .= 0
+        else
+            sizs[] = [sizes[][i] for i in 1:length(selected[]) if selected[][i] == true] .+ 0.3
+        end
+    end
+
+    if inspectorlabel == :default
+        inspectorlabel = @lift getinspectorlabel($atms)        
+    end
+    if plottype == :spacefilling || plottype == :vanderwaals || plottype == :vdw
+        markersize = @lift $sizes .* markerscale
+        lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
+        ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
+        slc = meshscatter!(lscene, selectedcoords; 
+                            color = selectioncolor, markersize = sizs)
+        slc.attributes.inspectable[] = false
+    elseif plottype == :ballandstick || plottype == :bas
+        if markersize == 0.0
+            markersize = @lift $sizes .* markerscale .* 0.7
+        end
+        lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
+        ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
+        if bnds == nothing
+            bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
+        end
+        bndshapes = @lift bondshapes($cords, $bnds)
+        bndmeshes = @lift normal_mesh.($bndshapes)
+        bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
+        bmesh.inspectable[] = false
+        slc = meshscatter!(lscene, selectedcoords; 
+                            color = selectioncolor, markersize = sizs)
+        slc.attributes.inspectable[] = false
+    elseif plottype == :covalent || plottype == :cov
+        markersize = @lift $sizes .* markerscale
+        if bnds == nothing
+            bnds = @lift getbonds($atms; algo = bondtype, distance = distance)
+        end
+        bndshapes = @lift bondshapes($cords, $bnds)
+        bndmeshes = @lift normal_mesh.($bndshapes)
+        bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
+        bmesh.inspectable[] = false
+        lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
+        ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
+        slc = meshscatter!(lscene, selectedcoords; 
+                            color = selectioncolor, markersize = sizs)
+        slc.attributes.inspectable[] = false
+    else
+        ArgumentError("bad plottype kwarg")
+    end
+
+    # mouse selection
+    mouseevents = addmouseevents!(figposition.layout.parent.parent.content[1].scene, figposition.layout.parent.parent.content[1].scene.plots[1]; priority = 1)
+    onmouseleftclick(mouseevents) do event
+        picked = mouse_selection(figposition.layout.parent.parent.content[1].scene)
+        selectedatm = [picked...][2]
+        selectres = Vector{Bool}(undef,length(selected[])) .= false
+        atmidxs = [i for i in 1:length(resz[]) if resz[][i] == resz[][selectedatm]]
+        selectres[atmidxs] .= true
+        selected[] = selectres
+    end
+
+    DataInspector(lscene; indicator_linewidth = 0)
+    figposition.layout.parent
 end
 function plotstruc!(fig::Figure, struc::T; atomcolors = elecolors, plottype = :ballandstick, 
                     water = false, kwargs...) where {T<:Union{Vector{MIToS.PDB.PDBAtom}, 

@@ -21,7 +21,7 @@ txtbuffer = IOBuffer()
 uniprottxt = begin BioMakie.showsummary(txtbuffer, dat); String(take!(txtbuffer)) end
 fig = Figure(resolution = (900, 700))
 layout = fig[1,1] = GridLayout(10, 9)
-fig = plotstruc!(layout[1:10,1:5], pdata; resolution = (600, 700))
+plotstruc!(layout[1:10,1:5], pdata; resolution = (600, 700))
 ENV["APIKEY"] = "{Your API key}"    # Need to set your API key here!
 model = "gpt-3.5-turbo"
 txt = Observable("")
@@ -89,7 +89,7 @@ uniprottxt = begin BioMakie.showsummary(txtbuffer, dat); String(take!(txtbuffer)
 ````julia
 fig = Figure(resolution = (900, 700))
 layout = fig[1,1] = GridLayout(10, 9)
-fig = plotstruc!(layout[1:10,1:5], pdata; resolution = (600, 700))
+plotstruc!(layout[1:10,1:5], pdata; resolution = (600, 700))
 ````
 
 ## Set up the text box to prompt GPT-3.5-turbo
