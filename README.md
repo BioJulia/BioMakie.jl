@@ -1,24 +1,36 @@
 <p align="center"><img src="docs/src/assets/biomakiename1.png" width="400" height="79"></p>
 
+**Status:**
+
 [![Latest release](https://img.shields.io/github/release/BioJulia/BioMakie.jl.svg)](https://github.com/BioJulia/BioMakie.jl/releases/latest)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/BioJulia/BioMakie.jl/blob/master/LICENSE.md)
 [![Build Status](https://github.com/BioJulia/BioMakie.jl/workflows/ci/badge.svg)](https://github.com/BioJulia/BioMakie.jl/actions?query=workflow%3Aci) 
-![GitHub last commit (branch)](https://img.shields.io/github/last-commit/BioJulia/BioMakie.jl/master?label=last%20commit%20%7C%20master)
+![BioJulia maintainer: kool7d](https://img.shields.io/badge/BioJulia%20Maintainer-kool7d-orange.svg)
+
+**Documentation:**
 
 [![Docs](https://img.shields.io/badge/docs-dev-blue.svg?label=documentation)](https://BioJulia.github.io/BioMakie.jl/dev)
 
 <!-- [![codecov.io](http://codecov.io/github/BioJulia/BioMakie.jl/coverage.svg?branch=master)](http://codecov.io/github/BioJulia/BioMakie.jl?branch=master) -->
 
-### A new version will soon be released (v0.2.3 -> v0.3.0) which introduces many new features, bugfixes, and breaking changes. Stay tuned...
+
+#### A new version will soon be released (v0.2.3 -> v0.3.0) which introduces many new features, bugfixes, and breaking changes. Stay tuned...
 
 ## Installation
- 
-Enter the package mode by pressing ] and run `add BioMakie`. 
-To get the latest features that may not be in the current release, run `add BioMakie#master`.
+
+Install BioMakie from the Julia package REPL, which can be accessed by
+pressing **`]`** from the Julia REPL, then run **`add BioMakie`**.
+
+## Contributing and questions
+
+Anyone can contribute to this package, by doing things like reporting bugs, fixing issues,
+improving performance, adding new features, and adding examples. Feel free to open an **Issue** or **Pull Request**,
+or communicate on the **#biology** or **#makie** channels of the [Julia Slack](https://join.slack.com/t/julialang/shared_invite/zt-1ab2rnvlw-mfODD9DJC_apVEULyKXDrA).
 
 ## About
 
-This package provides plotting functions for protein structures, multiple sequence alignments, and some other related plots like protein structure contact maps.
+This package provides plotting functions for protein structures, multiple sequence alignments, and some other related plots like protein structure contact maps. 
+It also provides more complicated examples that show off additional functionality and interfaces. 
 The main plotting functions are **plotstruc** and **plotmsa**, along with their mutating versions, **plotstruc!** and **plotmsa!**.
 
 ```julia
@@ -51,34 +63,7 @@ fig = plotmsa(msa; colorscheme = :tableau_blue_green)
 ```
 <p align="center"><img src="docs/src/assets/msa.png"></p>
 
-### Implemented packages:
-Significant or full coverage: 
- - BioStructures.jl
- - MIToS.jl
- - FastaIO.jl
- - FASTX.jl
-
-Some coverage:
- - MolecularGraph.jl
- - ProtoSyn.jl
-
-### Implemented visualizations:
-- Structures
-  - Ball and stick, spacefilling, covalent representations
-  - Selections
-  - Alpha shapes
-- Multiple sequence alignments
-  - Grid display
-  - Selections
-  - Frequency plot
-- Data acquisition from `www.ebi.ac.uk` and display 
-
-### To Do:
-- Support for non-standard and modified amino acids
-- Connect MSA and structure plot
-- Protein dynamics
-
-## Examples
+## Other examples
 
 ### Viewing the frequencies of amino acids in a multiple sequence alignment
 
