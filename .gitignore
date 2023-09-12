@@ -2,12 +2,14 @@
 *.jl.cov
 *.jl.mem
 *.pdb
+*.cif
 .DS_Store
 /Manifest.toml
 /dev/
 /docs/site/
 /data/
 /docs/build/
+/docs/src/*.jl
 /docs/Manifest.toml
 */Manifest.toml
 page/__site
