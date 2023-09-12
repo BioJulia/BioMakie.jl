@@ -10,8 +10,8 @@ makedocs(
 			"Alpha Shape" => "alphashape.md",
 			"Database Info" => "dbinfo.md",
 			"Mutation" => "mutation.md",
-		]
-		"API" => "API.md",
+		],
+		"API" => "API.md"
     ]
 )
 
