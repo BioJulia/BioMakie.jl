@@ -16,7 +16,7 @@ makedocs(
 )
 
 deploydocs(
-	repo="github.com/kool7d/BioMakie.jl.git",
+	repo="github.com/BioJulia/BioMakie.jl.git",
     push_preview=true
 )
 
