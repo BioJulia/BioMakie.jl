@@ -10,10 +10,6 @@ EditURL = "https://github.com/kool7d/BioMakie.jl/blob/dev/docs/src/index.md"
 [![Build Status](https://github.com/BioJulia/BioMakie.jl/workflows/ci/badge.svg)](https://github.com/BioJulia/BioMakie.jl/actions?query=workflow%3Aci) 
 ![BioJulia maintainer: kool7d](https://img.shields.io/badge/BioJulia%20Maintainer-kool7d-orange.svg)
 
-**Documentation:**
-
-[![Docs](https://img.shields.io/badge/docs-dev-blue.svg?label=documentation)](https://BioJulia.github.io/BioMakie.jl/dev)
-
 #### A new version will soon be released (v0.2.3 -> v0.3.0) which introduces many new features, bugfixes, and breaking changes. Stay tuned...
 
 ## Installation
