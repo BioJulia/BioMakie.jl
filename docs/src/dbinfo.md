@@ -50,7 +50,7 @@ hideydecorations!(ax)
 hidexdecorations!(ax)
 ````
 
-![dbinfo](../assets/dbinfo.png)
+![dbinfo](./assets/dbinfo.png)
 
 ## Database information explanation
 First are the regular imports.
