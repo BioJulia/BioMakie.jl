@@ -1,5 +1,5 @@
 ```@meta
-EditURL = "mutation.jl"
+EditURL = "https://github.com/kool7d/BioMakie.jl/blob/dev/docs/src/mutation.md"
 ```
 
 # ProtoSyn Protein Mutation
@@ -42,7 +42,7 @@ fig = Figure()
 _plotstruc!(fig, pdata)
 ````
 
-![wildtypearg](../assets/wildtypearg.png)
+![wildtypearg](./assets/wildtypearg.png)
 
 ## Prepare the structure
 We can use `diagnose` to get an idea of what is missing and of inconsistencies
@@ -99,7 +99,7 @@ ProtoSyn.Peptides.mutate!(pose[], pose[].graph[1][128], res_lib, seq"Y")
 fixpose!(pose)
 ````
 
-![mutanttyr](../assets/mutanttyr.png)
+![mutanttyr](./assets/mutanttyr.png)
 
 To choose different rotamers/orientations, we can use the rotamer library. ProtoSyn
 provides a stack of the most likely rotamers based on the dihedral angles of the residue.
@@ -114,7 +114,7 @@ ProtoSyn.Peptides.apply!(pose[].state, stack[3], pose[].graph[1][128])
 fixpose!(pose)
 ````
 
-![mutanttyrrotamer](../assets/mutanttyrrotamer.png)
+![mutanttyrrotamer](./assets/mutanttyrrotamer.png)
 
 ---
 
