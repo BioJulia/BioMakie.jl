@@ -1,7 +1,7 @@
 ```@meta
 EditURL = "https://github.com/kool7d/BioMakie.jl/blob/dev/docs/src/index.md"
 ```
-<p align="center"><img src="https://github.com/BioJulia/BioMakie.jl/blob/dev/docs/src/assets/biomakiename1.png" width="400" height="79"></p>
+![biomakiename1](../assets/biomakiename1.png)
 
 **Status:**
 
@@ -45,7 +45,7 @@ fig = Figure()
 plotstruc!(fig, struc; plottype = :ballandstick, gridposition = (1,1), atomcolors = aquacolors)
 plotstruc!(fig, struc; plottype = :covalent, gridposition = (1,2))
 ```
-<p align="center"><img src="https://github.com/BioJulia/BioMakie.jl/blob/dev/docs/src/assets/2vb1crop.png"></p>
+![2vb1crop](../assets/2vb1crop.png)
 
 To view a multiple sequence alignment, use the `plotmsa` function with a Pfam MSA or fasta file.
 
@@ -61,7 +61,7 @@ msa = MIToS.MSA.read("pf00062.stockholm.gz", Stockholm)
 
 fig = plotmsa(msa; colorscheme = :tableau_blue_green)
 ```
-<p align="center"><img src="https://github.com/BioJulia/BioMakie.jl/blob/dev/docs/src/assets/msa.png"></p>
+![msa](../assets/msa.png)
 
 ### Implemented packages:
 Significant or full coverage: 
