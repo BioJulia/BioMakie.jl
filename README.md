@@ -1,5 +1,6 @@
 <p align="center"><img src="docs/src/assets/biomakiename1.png" width="400" height="79"></p>
 
+
 **Status:**
 
 [![Latest release](https://img.shields.io/github/release/BioJulia/BioMakie.jl.svg)](https://github.com/BioJulia/BioMakie.jl/releases/latest)
@@ -18,7 +19,7 @@
 
 ## Installation
 
-Install BioMakie from the Julia package REPL, which can be accessed by
+To install BioMakie, access the Julia package REPL by
 pressing **`]`** from the Julia REPL, then run **`add BioMakie`**.
 
 ## Contributing and questions
