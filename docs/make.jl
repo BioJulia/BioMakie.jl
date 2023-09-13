@@ -5,12 +5,10 @@ makedocs(
     sitename = "BioMakie.jl",
     pages=[
 		"Home" => "index.md",
-		"Examples" => [
-			"MSA Selection" => "msaselection.md",
-			"Alpha Shape" => "alphashape.md",
-			"Database Info" => "dbinfo.md",
-			"Mutation" => "mutation.md",
-		],
+		"MSA Selection" => "msaselection.md",
+		"Alpha Shape" => "alphashape.md",
+		"Database Info" => "dbinfo.md",
+		"Mutation" => "mutation.md"
 		"API" => "API.md"
     ]
 )
