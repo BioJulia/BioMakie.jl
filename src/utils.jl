@@ -6,7 +6,8 @@ export protsmiles,
     leskcolors, 
     maecolors, 
     cinemacolors,
-    getbiocolors
+    getbiocolors,
+    getprotosyn
 
 import Base.convert
 import BioStructures.defaultatom, BioStructures.defaultresidue
@@ -477,7 +478,7 @@ function kdict(str::AbstractString)
 end
 kdict(c::Char) = kdict(string(c))
 function getprotosyn(filename = "protosyn.jl")
-    url = "https://raw.githubusercontent.com/kool7d/BioMakie.jl/master/src/protosyn.jl"
+    url = "https://raw.githubusercontent.com/BioJulia/BioMakie.jl/master/src/protosyn.jl"
 
     response = HTTP.get(url)
     if response.status == 200
