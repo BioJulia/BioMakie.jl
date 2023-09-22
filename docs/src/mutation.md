@@ -8,7 +8,7 @@ rotamers can be selected for the mutated residue. To use ProtoSyn
 you currently have to use a workaround.
 ## Copy-pastable code
 
-````@example mutation
+````julia
 using BioMakie
 using GLMakie
 using BioStructures
@@ -108,7 +108,7 @@ and `include` it. This should install a few packages (SplitApplyCombine,
 Colors, Meshes, GeometryBasics, OrderedCollections, Distances) and then
 import ProtoSyn.
 
-````@example mutation
+````julia
 using BioMakie
 using GLMakie
 
@@ -120,7 +120,7 @@ include("../protosyn.jl")
 To simplify things, we will load a structure with BioStructures and
 save chain "A" as a PDB file. Then we will load the PDB file with ProtoSyn.
 
-````@example mutation
+````julia
 using BioStructures
 struc = retrievepdb("2vb1")
 chn = collectresidues(struc[1]["A"], standardselector)
@@ -131,7 +131,7 @@ pose = ProtoSyn.Peptides.load("2vb1x.pdb"; bonds_by_distance=true) |> Observable
 
 ## Get plotting data and plot it
 
-````@example mutation
+````julia
 pdata = plottingdata(pose)
 fig = Figure()
 _plotstruc!(fig, pdata)
@@ -143,7 +143,7 @@ _plotstruc!(fig, pdata)
 We can use `diagnose` to get an idea of what is missing and of inconsistencies
 in the structure.
 
-````@example mutation
+````julia
 ProtoSyn.Peptides.diagnose(pose[])
 ````
 
@@ -152,7 +152,7 @@ terminal hydrogens. We can use the following functions to address these issues.
 First we load the library of amino acids, to get the Peptide/protein-specific
 data, instead of the default generic data.
 
-````@example mutation
+````julia
 res_lib = ProtoSyn.load_grammar_from_file(ProtoSyn.resource_dir*"/Peptides/grammars.yml", "default")
 ProtoSyn.Peptides.cap!(pose[])
 ProtoSyn.Peptides.assign_default_atom_names!(pose[])
@@ -166,7 +166,7 @@ Now the issues should say `OK`, except for the atom-level graph. We can ignore t
 This `fixpose!` function below may be convenient for syncing and correcting the structure
 after making changes. Using `pose[] = pose[]` can force Makie to update the pose/figure.
 
-````@example mutation
+````julia
 function fixpose!(pose::Observable; res_lib=ProtoSyn.load_grammar_from_file(ProtoSyn.resource_dir*"/Peptides/grammars.yml", "default"))
     ProtoSyn.Peptides.cap!(pose[])
     ProtoSyn.Peptides.assign_default_atom_names!(pose[])
@@ -181,7 +181,7 @@ end
 Get information about a residue. In this example we will use residue 128 because it is
 easy to find on the structure. The long side chain of this arginine extends outward the furthest.
 
-````@example mutation
+````julia
 pose[].graph[1][128]
 ````
 
@@ -189,7 +189,7 @@ Next lets try mutating it to tyrosine. We can use the `mutate!` function to do t
 Combine it with `fixpose!` to get the updated structure. You should see the side chain
 change into the phenol ring of tyrosine.
 
-````@example mutation
+````julia
 ProtoSyn.Peptides.mutate!(pose[], pose[].graph[1][128], res_lib, ["Y"])
 fixpose!(pose)
 ````
@@ -199,7 +199,7 @@ fixpose!(pose)
 To choose different rotamers/orientations, we can use the rotamer library. ProtoSyn
 provides a stack of the most likely rotamers based on the dihedral angles of the residue.
 
-````@example mutation
+````julia
 rot_lib = ProtoSyn.Peptides.load_dunbrack()
 phi = ProtoSyn.getdihedral(pose[].state, ProtoSyn.Peptides.phi(pose[].graph[1][128]))
 psi = ProtoSyn.getdihedral(pose[].state, ProtoSyn.Peptides.psi(pose[].graph[1][128]))
