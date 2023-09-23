@@ -1,9 +1,11 @@
 ```@meta
-EditURL = "https://github.com/BioJulia/BioMakie.jl/blob/dev/docs/src/dbinfo.md"
+EditURL = "https://github.com/kool7d/BioMakie.jl/blob/dev/docs/src/dbinfo.jl"
 ```
 
 # Plotting database information
-
+In this demo a structure is plotted along with information about the protein
+and a text box which can take advantage of OpenAI.jl to generate a description from
+a prompt.
 ## Copy-pastable code (almost, you need your OpenAI API key)
 
 ````julia
@@ -50,7 +52,7 @@ hideydecorations!(ax)
 hidexdecorations!(ax)
 ````
 
-![dbinfo](./assets/dbinfo.png)
+![dbinfo](../assets/dbinfo.png)
 
 ## Database information explanation
 First are the regular imports.
@@ -89,7 +91,7 @@ uniprottxt = begin BioMakie.showsummary(txtbuffer, dat); String(take!(txtbuffer)
 ````julia
 fig = Figure(resolution = (900, 700))
 layout = fig[1,1] = GridLayout(10, 9)
-plotstruc!(layout[1:10,1:5], pdata; resolution = (600, 700))
+fig = plotstruc!(layout[1:10,1:5], pdata; resolution = (600, 700))
 ````
 
 ## Set up the text box to prompt GPT-3.5-turbo
