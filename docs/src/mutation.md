@@ -3,11 +3,13 @@ EditURL = "https://github.com/kool7d/BioMakie.jl/blob/dev/docs/src/mutation.jl"
 ```
 
 # ProtoSyn Protein Mutation
-In this demo we can use ProtoSyn to mutate amino acids. Different
+In this demo we can use ProtoSyn.jl to mutate amino acids. Different
 rotamers can be selected for the mutated residue. To use ProtoSyn
-you currently have to use a workaround.
-## Copy-pastable code
+here you currently have to use a workaround. The `getprotosyn()`
+function downloads the source code, then you can `include` it.
+In the future hopefully it will be built in.
 
+## Copy-pastable code
 ````julia
 using BioMakie
 using GLMakie
@@ -52,14 +54,14 @@ mutate_button = Button(layout[7,6:7]; label = "Mutate!",
                     buttoncolor = :lightgreen, fontsize = 18, width = 80, height = 50
 )
 rotamer = Observable(1)
-rotamer_label = Label(layout[8:9,6]; text = @lift("Rotamer: $($rotamer)"), fontsize = 20)
+rotamer_label = Label(layout[8:9,6]; text = "Change rotamer:", fontsize = 20)
 rotamer_button1 = Button(layout[8,7]; label = "ꜛ",
-                    buttoncolor = :lightgreen, fontsize = 28,
-                    tellwidth = false, width = 50, height = 40
+                    buttoncolor = :lightgreen, fontsize = 40,
+                    tellwidth = false, width = 70, height = 40
 )
 rotamer_button2 = Button(layout[9,7]; label = "ꜜ",
-                    buttoncolor = :lightgreen, fontsize = 28,
-                    tellwidth = false, width = 50, height = 40
+                    buttoncolor = :lightgreen, fontsize = 40,
+                    tellwidth = false, width = 70, height = 40
 )
 on(clear_button.clicks) do s
     pdata[:selected][] = Vector{Bool}(undef,length(pdata[:selected][])) .= false
@@ -101,6 +103,7 @@ on(rotamer_button2.clicks) do s
     end
 end
 ````
+![mutation](../assets/mutation.gif)
 
 ## Load BioMakie and ProtoSyn
 Download the protosyn source code from the src directory of BioMakie

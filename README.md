@@ -74,6 +74,10 @@ fig = plotmsa(msa; colorscheme = :tableau_blue_green)
 
 <p align="center"><img src="docs/src/assets/fullalphamesh.gif"></p>
 
-### Database information can be displayed for a protein (including a GPT response)
+### Database information can be displayed for a protein (including a GPT response, OpenAI.jl)
 
 <p align="center"><img src="docs/src/assets/dbinfo.gif"></p>
+
+### Protein residue mutation and changing rotamers (with ProtoSyn.jl) 
+
+<p align="center"><img src="docs/src/assets/mutation.gif"></p>
