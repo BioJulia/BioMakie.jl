@@ -17,6 +17,3 @@ deploydocs(
 	repo="github.com/BioJulia/BioMakie.jl.git",
     push_preview=true
 )
-
-# using Literate
-# Literate.markdown("src/dbinfo.jl", "src")
