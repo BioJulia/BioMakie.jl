@@ -6,7 +6,6 @@
 [![Latest release](https://img.shields.io/github/release/BioJulia/BioMakie.jl.svg)](https://github.com/BioJulia/BioMakie.jl/releases/latest)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/BioJulia/BioMakie.jl/blob/master/LICENSE.md)
 [![Build Status](https://github.com/BioJulia/BioMakie.jl/workflows/ci/badge.svg)](https://github.com/BioJulia/BioMakie.jl/actions?query=workflow%3Aci) 
-![BioJulia maintainer: kool7d](https://img.shields.io/badge/BioJulia%20Maintainer-kool7d-orange.svg)
 
 **Documentation:**
 
