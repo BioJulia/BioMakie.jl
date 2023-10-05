@@ -6,8 +6,8 @@ EditURL = "https://github.com/kool7d/BioMakie.jl/blob/dev/docs/src/dbinfo.jl"
 In this demo a structure is plotted along with information about the protein
 and a text box which can take advantage of OpenAI.jl to generate a description from
 a prompt.
-## Copy-pastable code (almost, you need your OpenAI API key)
 
+## Copy-pastable code (almost, you need your OpenAI API key)
 ````julia
 using BioMakie
 using BioStructures
@@ -52,7 +52,7 @@ hideydecorations!(ax)
 hidexdecorations!(ax)
 ````
 
-![dbinfo](../assets/dbinfo.png)
+![dbinfo](../assets/dbinfo.gif)
 
 ## Database information explanation
 First are the regular imports.

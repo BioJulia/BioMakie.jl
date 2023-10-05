@@ -67,7 +67,7 @@ on(clear_button.clicks) do s
     pdata[:selected][] = Vector{Bool}(undef,length(pdata[:selected][])) .= false
 end
 on(mutate_button.clicks) do s
-    selectiontext[] = "$(string(pose[].graph[1][selected[][1]]))"
+    selection_text[] = "$(string(pose[].graph[1][selected[][1]]))"
     mutletter = BioMakie.resletterdict[mutate_menu.selection[]]
     ProtoSyn.Peptides.mutate!(pose[], pose[].graph[1][selected[][1]], res_lib, [mutletter])
     fixpose!(pose)
