@@ -103,7 +103,7 @@ on(rotamer_button2.clicks) do s
     end
 end
 ````
-![mutation](../assets/mutation.gif)
+![mutation](./assets/mutation.gif)
 
 ## Load BioMakie and ProtoSyn
 Download the protosyn source code from the src directory of BioMakie
@@ -140,7 +140,7 @@ fig = Figure()
 _plotstruc!(fig, pdata)
 ````
 
-![wildtypearg](../assets/wildtypearg.png)
+![wildtypearg](./assets/wildtypearg.png)
 
 ## Prepare the structure
 We can use `diagnose` to get an idea of what is missing and of inconsistencies
@@ -197,7 +197,7 @@ ProtoSyn.Peptides.mutate!(pose[], pose[].graph[1][128], res_lib, ["Y"])
 fixpose!(pose)
 ````
 
-![mutanttyr](../assets/mutanttyr.png)
+![mutanttyr](./assets/mutanttyr.png)
 
 To choose different rotamers/orientations, we can use the rotamer library. ProtoSyn
 provides a stack of the most likely rotamers based on the dihedral angles of the residue.
@@ -212,7 +212,7 @@ ProtoSyn.Peptides.apply!(pose[].state, stack[3], pose[].graph[1][128])
 fixpose!(pose)
 ````
 
-![mutanttyrrotamer](../assets/mutanttyrrotamer.png)
+![mutanttyrrotamer](./assets/mutanttyrrotamer.png)
 
 ---
 
