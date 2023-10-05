@@ -1,5 +1,5 @@
 using Documenter
-using .BioMakie
+using BioMakie
 
 makedocs(
     sitename = "BioMakie.jl",
