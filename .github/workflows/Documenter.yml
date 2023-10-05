@@ -49,7 +49,7 @@ jobs:
            pkg"registry add https://github.com/JuliaRegistries/General";
            pkg"registry up General";
            # dev mono repo versions
-           pkg"instantiate"'
+           pkg"add Documenter; instantiate"'
       - name: Build and deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
