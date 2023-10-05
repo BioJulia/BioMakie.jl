@@ -945,3 +945,11 @@ function plotstruc!(figposition::GridPosition, pose::T; atomcolors = :default, p
 	plotdata = plottingdata(struc; colors = atomcolors, radiustype = plottype, water = water)
 	_plotstruc!(figposition, plotdata; atomcolors = atomcolors, plottype = plottype, water = water, kwargs...)
 end
+function fixpose!(pose::Observable; res_lib=ProtoSyn.load_grammar_from_file(ProtoSyn.resource_dir*"/Peptides/grammars.yml", "default"))
+    ProtoSyn.Peptides.cap!(pose[])
+    ProtoSyn.Peptides.assign_default_atom_names!(pose[])
+    ProtoSyn.sort_atoms_by_graph!(pose[])
+    ProtoSyn.Calculators.Electrostatics.assign_default_charges!(pose[],res_lib)
+    ProtoSyn.Peptides.sync!(pose[])
+    pose[] = pose[]
+end

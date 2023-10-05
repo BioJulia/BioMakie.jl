@@ -111,7 +111,7 @@ meshscatter!(sc_scene, cords, markersize = 0.3, color = :blue)
 meshscatter!(sc_scene, alphaverts, markersize = 0.3, color = :green)
 ````
 
-![alphashape](./assets/alphashape.png)
+![alphashape](./assets/fullalphamesh.gif)
 
 ## Alpha shape walkthrough
 First are the regular imports.

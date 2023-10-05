@@ -56,9 +56,9 @@ bp = barplot!(ax, 1:22, aafreqspercent; color = hydrophobicities, strokewidth = 
 ylims!(ax, (0, 100))
 xlims!(ax, (0, 23))
 ````
+![msaselection](../assets/msaselection.gif)
 
 ## Imports
-
 ````julia
 using BioMakie
 using MIToS
@@ -141,8 +141,6 @@ bp = barplot!(ax, 1:22, aafreqspercent; color = hydrophobicities, strokewidth = 
 ylims!(ax, (0, 100))
 xlims!(ax, (0, 23))
 ````
-
-![msaselection](../assets/msaselection.gif)
 
 ---
 
