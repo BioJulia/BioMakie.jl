@@ -1,4 +1,5 @@
 using Documenter
+using .BioMakie
 
 makedocs(
     sitename = "BioMakie.jl",
@@ -7,7 +8,7 @@ makedocs(
 		"MSA Selection" => "msaselection.md",
 		"Alpha Shape" => "alphashape.md",
 		"Database Info" => "dbinfo.md",
-		# "Mutation" => "mutation.md",
+		"Mutation" => "mutation.md",
 		"API" => "API.md"
     ]
 )
