@@ -56,7 +56,7 @@ bp = barplot!(ax, 1:22, aafreqspercent; color = hydrophobicities, strokewidth = 
 ylims!(ax, (0, 100))
 xlims!(ax, (0, 23))
 ````
-![msaselection](../assets/msaselection.gif)
+![msaselection](./assets/msaselection.gif)
 
 ## Imports
 ````julia
@@ -86,7 +86,7 @@ fig = Figure(resolution = (1400,400))
 msa = plotmsa!(fig, plotdata)
 ````
 
-![msa](../assets/msa1.png)
+![msa](./assets/msa1.png)
 
 Prepare column data for the frequency plot. In this example we color based
 on hydrophobicity value from a set of physicochemical property values,

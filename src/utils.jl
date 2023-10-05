@@ -7,7 +7,7 @@ export protsmiles,
     maecolors, 
     cinemacolors,
     getbiocolors,
-    # getprotosyn
+    getprotosyn
 
 import Base.convert
 import BioStructures.defaultatom, BioStructures.defaultresidue
@@ -477,16 +477,16 @@ function kdict(str::AbstractString)
     end
 end
 kdict(c::Char) = kdict(string(c))
-# function getprotosyn(filename = "protosyn.jl")
-#     url = "https://raw.githubusercontent.com/BioJulia/BioMakie.jl/master/src/protosyn.jl"
+function getprotosyn(filename = "protosyn.jl")
+    url = "https://raw.githubusercontent.com/BioJulia/BioMakie.jl/master/src/protosyn.jl"
 
-#     response = HTTP.get(url)
-#     if response.status == 200
-#         open(filename, "w") do file
-#             write(file, response.body)
-#         end
-#         println("File downloaded and saved as $filename")
-#     else
-#         println("Failed to download the file.")
-#     end
-# end
+    response = HTTP.get(url)
+    if response.status == 200
+        open(filename, "w") do file
+            write(file, response.body)
+        end
+        println("File downloaded and saved as $filename")
+    else
+        println("Failed to download the file.")
+    end
+end
