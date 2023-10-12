@@ -623,9 +623,9 @@ function plotstruc!(fig::Figure, pose::Observable{ProtoSyn.Pose};
     if inspectorlabel == :default
         inspectorlabel = @lift getinspectorlabel($atms, $atmstates)        
     end
+    lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
     if plottype == :spacefilling || plottype == :vanderwaals || plottype == :vdw
         markersize = @lift $sizes .* markerscale
-        lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
 		slc = meshscatter!(lscene, selectedcoords; 
                             color = selectioncolor, markersize = sizs)
@@ -634,7 +634,6 @@ function plotstruc!(fig::Figure, pose::Observable{ProtoSyn.Pose};
         if markersize == 0.0
             markersize = @lift $sizes .* markerscale .* 0.7
         end
-        lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
         if bnds == nothing
             bnds = @lift getbonds($atms, $atmstates; algo = bondtype, distance = distance)
@@ -655,7 +654,6 @@ function plotstruc!(fig::Figure, pose::Observable{ProtoSyn.Pose};
 		bndmeshes = @lift normal_mesh.($bndshapes)
 		bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
 		bmesh.inspectable[] = false
-        lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
 		slc = meshscatter!(lscene, selectedcoords; 
                             color = selectioncolor, markersize = sizs)
@@ -773,9 +771,9 @@ function _plotstruc!(fig::Figure, plotdata::AbstractDict{Symbol,T};
     if inspectorlabel == :default
         inspectorlabel = @lift getinspectorlabel($atms, $atmstates)        
     end
+    lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
     if plottype == :spacefilling || plottype == :vanderwaals || plottype == :vdw
         markersize = @lift $sizes .* markerscale
-        lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
 		slc = meshscatter!(lscene, selectedcoords; 
                             color = selectioncolor, markersize = sizs)
@@ -784,7 +782,6 @@ function _plotstruc!(fig::Figure, plotdata::AbstractDict{Symbol,T};
         if markersize == 0.0
             markersize = @lift $sizes .* markerscale .* 0.7
         end
-        lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
         bndshapes = @lift bondshapes(cords[], $bnds)
         bndmeshes = @lift normal_mesh.($bndshapes)
@@ -799,7 +796,6 @@ function _plotstruc!(fig::Figure, plotdata::AbstractDict{Symbol,T};
 		bndmeshes = @lift normal_mesh.($bndshapes)
 		bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
 		bmesh.inspectable[] = false
-        lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
 		slc = meshscatter!(lscene, selectedcoords; 
                             color = selectioncolor, markersize = sizs)
@@ -880,9 +876,9 @@ function _plotstruc!(figposition::GridPosition, plotdata::AbstractDict{Symbol,T}
     if inspectorlabel == :default
         inspectorlabel = @lift getinspectorlabel($atms, $atmstates)        
     end
+    lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
     if plottype == :spacefilling || plottype == :vanderwaals || plottype == :vdw
         markersize = @lift $sizes .* markerscale
-        lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
 		slc = meshscatter!(lscene, selectedcoords; 
                             color = selectioncolor, markersize = sizs)
@@ -891,7 +887,6 @@ function _plotstruc!(figposition::GridPosition, plotdata::AbstractDict{Symbol,T}
         if markersize == 0.0
             markersize = @lift $sizes .* markerscale .* 0.7
         end
-        lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
         bndshapes = @lift bondshapes(cords[], $bnds)
         bndmeshes = @lift normal_mesh.($bndshapes)
@@ -906,7 +901,6 @@ function _plotstruc!(figposition::GridPosition, plotdata::AbstractDict{Symbol,T}
 		bndmeshes = @lift normal_mesh.($bndshapes)
 		bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
 		bmesh.inspectable[] = false
-        lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
 		slc = meshscatter!(lscene, selectedcoords; 
                             color = selectioncolor, markersize = sizs)

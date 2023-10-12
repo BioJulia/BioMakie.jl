@@ -12,12 +12,13 @@ using GLMakie
 using GLMakie: Slider
 using SplitApplyCombine
 using GeometryBasics
+using Meshes
 using BioStructures
 using PyCall
 using Conda
-scipy = pyimport("scipy")
-np = pyimport("numpy")
-collections = pyimport("collections")
+scipy = pyimport_conda("scipy", "scipy")
+np = pyimport_conda("numpy", "numpy")
+collections = pyimport_conda("collections", "collections")
 py"""
     from scipy.spatial import Delaunay
     import numpy as np
@@ -95,7 +96,6 @@ spnts = @lift getspherepoints($cords,$radiival)
 proteinshape = @lift let pnts = $spnts; getalphashape(pnts,$alphaval); end
 alphaverts = @lift $spnts[$(proteinshape)[1],:]
 alphaedges = @lift $spnts[$(proteinshape)[2],:] |> linesegs
-using Meshes
 function surfacearea(coordinates, connectivity)
     totalarea = 0.0
     for i = 1:size(connectivity,1)
