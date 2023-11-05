@@ -1,11 +1,10 @@
 <p align="center"><img src="docs/src/assets/biomakiename1.png" width="400" height="79"></p>
 
-
 **Status:**
 
 [![Latest release](https://img.shields.io/github/release/BioJulia/BioMakie.jl.svg)](https://github.com/BioJulia/BioMakie.jl/releases/latest)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/BioJulia/BioMakie.jl/blob/master/LICENSE.md)
-[![Build Status](https://github.com/BioJulia/BioMakie.jl/workflows/ci/badge.svg)](https://github.com/BioJulia/BioMakie.jl/actions/workflows/ci.yml?query=workflow%3Aci)
+[![ci](https://github.com/BioJulia/BioMakie.jl/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/BioJulia/BioMakie.jl/actions/workflows/ci.yml)
 
 **Documentation:**
 
