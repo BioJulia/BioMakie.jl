@@ -1,20 +1,16 @@
 <p align="center"><img src="docs/src/assets/biomakiename1.png" width="400" height="79"></p>
 
-
 **Status:**
 
 [![Latest release](https://img.shields.io/github/release/BioJulia/BioMakie.jl.svg)](https://github.com/BioJulia/BioMakie.jl/releases/latest)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/BioJulia/BioMakie.jl/blob/master/LICENSE.md)
-[![Build Status](https://github.com/BioJulia/BioMakie.jl/workflows/ci/badge.svg)](https://github.com/BioJulia/BioMakie.jl/actions?query=workflow%3Aci) 
+[![ci](https://github.com/BioJulia/BioMakie.jl/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/BioJulia/BioMakie.jl/actions/workflows/ci.yml)
 
 **Documentation:**
 
 [![Docs](https://img.shields.io/badge/docs-dev-blue.svg?label=documentation)](https://BioJulia.github.io/BioMakie.jl/dev)
 
 <!-- [![codecov.io](http://codecov.io/github/BioJulia/BioMakie.jl/coverage.svg?branch=master)](http://codecov.io/github/BioJulia/BioMakie.jl?branch=master) -->
-
-
-#### A new version will soon be released (v0.2.3 -> v0.3.0) which introduces many new features, bugfixes, and breaking changes. Stay tuned...
 
 ## Installation
 
