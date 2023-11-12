@@ -32,6 +32,38 @@ This package provides plotting functions for protein structures, multiple sequen
 It also provides more complicated examples that show off additional functionality and interfaces. 
 The main plotting functions are **plotstruc** and **plotmsa**, along with their mutating versions, **plotstruc!** and **plotmsa!**.
 
+### Implemented packages:
+Significant or full coverage: 
+ - BioStructures.jl
+ - MIToS.jl
+ - FastaIO.jl
+ - FASTX.jl
+
+Some coverage:
+ - MolecularGraph.jl
+ - ProtoSyn.jl
+
+### Implemented visualizations:
+- Structures
+  - Ball and stick, spacefilling, covalent representations
+  - Selections
+  - Alpha shapes
+- Multiple sequence alignments
+  - Grid display
+  - Selections
+  - Frequency plot
+- Data acquisition and GPT-3.5-turbo API
+- Mutating structural residues with ProtoSyn
+
+### To Do:
+- Non-standard and modified amino acids
+- Connect MSA and structure plot
+- Protein dynamics
+- Better support for ligands and multiple chains
+- Database web API interfaces
+- WGLMakie support
+- More examples
+
 ```julia
 using BioMakie
 using GLMakie
