@@ -1,20 +1,23 @@
 ```@meta
 EditURL = "https://github.com/kool7d/BioMakie.jl/blob/dev/docs/src/index.md"
 ```
-# BioMakie.jl
+<p align="center"><img src="assets/biomakiename1.png" width="400" height="79"></p>
 
 **Status:**
 
 [![Latest release](https://img.shields.io/github/release/BioJulia/BioMakie.jl.svg)](https://github.com/BioJulia/BioMakie.jl/releases/latest)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/BioJulia/BioMakie.jl/blob/master/LICENSE.md)
-[![Build Status](https://github.com/BioJulia/BioMakie.jl/workflows/ci/badge.svg)](https://github.com/BioJulia/BioMakie.jl/actions?query=workflow%3Aci) 
-![BioJulia maintainer: kool7d](https://img.shields.io/badge/BioJulia%20Maintainer-kool7d-orange.svg)
+[![ci](https://github.com/BioJulia/BioMakie.jl/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/BioJulia/BioMakie.jl/actions/workflows/ci.yml)
 
-#### A new version will soon be released (v0.2.3 -> v0.3.0) which introduces many new features, bugfixes, and breaking changes. Stay tuned...
+**Documentation:**
+
+[![Docs](https://img.shields.io/badge/docs-dev-blue.svg?label=documentation)](https://BioJulia.github.io/BioMakie.jl/dev)
+
+<!-- [![codecov.io](http://codecov.io/github/BioJulia/BioMakie.jl/coverage.svg?branch=master)](http://codecov.io/github/BioJulia/BioMakie.jl?branch=master) -->
 
 ## Installation
 
-Install BioMakie from the Julia package REPL, which can be accessed by
+To install BioMakie, access the Julia package REPL by
 pressing **`]`** from the Julia REPL, then run **`add BioMakie`**.
 
 ## Contributing and questions
@@ -41,7 +44,7 @@ fig = Figure()
 plotstruc!(fig, struc; plottype = :ballandstick, gridposition = (1,1), atomcolors = aquacolors)
 plotstruc!(fig, struc; plottype = :covalent, gridposition = (1,2))
 ```
-![2vb1crop](./assets/2vb1crop.png)
+<p align="center"><img src="assets/2vb1crop.png"></p>
 
 To view a multiple sequence alignment, use the `plotmsa` function with a Pfam MSA or fasta file.
 
@@ -57,35 +60,22 @@ msa = MIToS.MSA.read("pf00062.stockholm.gz", Stockholm)
 
 fig = plotmsa(msa; colorscheme = :tableau_blue_green)
 ```
-![msa](./assets/msa.png)
+<p align="center"><img src="assets/msa.png"></p>
 
-### Implemented packages:
-Significant or full coverage: 
- - BioStructures.jl
- - MIToS.jl
- - FastaIO.jl
- - FASTX.jl
+## Other examples
 
-Some coverage:
- - MolecularGraph.jl
- - ProtoSyn.jl
+### Viewing the frequencies of amino acids in a multiple sequence alignment
 
-### Implemented visualizations:
-- Structures
-  - Ball and stick, spacefilling, covalent representations
-  - Selections
-  - Alpha shapes
-- Multiple sequence alignments
-  - Grid display
-  - Selections
-  - Frequency plot
-- Data acquisition from `www.ebi.ac.uk` and display 
+<p align="center"><img src="assets/msaselection.gif"></p>
 
-### To Do:
-- Non-standard and modified amino acids
-- Connect MSA and structure plot
-- Protein dynamics
-- Better support for ligands and multiple chains
-- Database web API interfaces
-- WGLMakie support
-- More examples!
+### Alpha shapes can be used to visualize the surface of a protein structure
+
+<p align="center"><img src="assets/fullalphamesh.gif"></p>
+
+### Database information can be displayed for a protein (including a GPT response, OpenAI.jl)
+
+<p align="center"><img src="assets/dbinfo.gif"></p>
+
+### Protein residue mutation and changing rotamers (with ProtoSyn.jl) 
+
+<p align="center"><img src="assets/mutation.gif"></p>
