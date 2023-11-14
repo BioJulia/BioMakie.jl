@@ -1,19 +1,13 @@
 ```@meta
 EditURL = "https://github.com/kool7d/BioMakie.jl/blob/dev/docs/src/index.md"
 ```
-<p align="center"><img src="assets/biomakiename1.png" width="400" height="79"></p>
+![biomakiename1](./assets/biomakiename1.png)
 
 **Status:**
 
 [![Latest release](https://img.shields.io/github/release/BioJulia/BioMakie.jl.svg)](https://github.com/BioJulia/BioMakie.jl/releases/latest)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/BioJulia/BioMakie.jl/blob/master/LICENSE.md)
 [![ci](https://github.com/BioJulia/BioMakie.jl/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/BioJulia/BioMakie.jl/actions/workflows/ci.yml)
-
-**Documentation:**
-
-[![Docs](https://img.shields.io/badge/docs-dev-blue.svg?label=documentation)](https://BioJulia.github.io/BioMakie.jl/dev)
-
-<!-- [![codecov.io](http://codecov.io/github/BioJulia/BioMakie.jl/coverage.svg?branch=master)](http://codecov.io/github/BioJulia/BioMakie.jl?branch=master) -->
 
 ## Installation
 
@@ -76,7 +70,7 @@ fig = Figure()
 plotstruc!(fig, struc; plottype = :ballandstick, gridposition = (1,1), atomcolors = aquacolors)
 plotstruc!(fig, struc; plottype = :covalent, gridposition = (1,2))
 ```
-<p align="center"><img src="assets/2vb1crop.png"></p>
+![2vb1crop](./assets/2vb1crop.png)
 
 To view a multiple sequence alignment, use the `plotmsa` function with a Pfam MSA or fasta file.
 
@@ -92,22 +86,18 @@ msa = MIToS.MSA.read("pf00062.stockholm.gz", Stockholm)
 
 fig = plotmsa(msa; colorscheme = :tableau_blue_green)
 ```
-<p align="center"><img src="assets/msa.png"></p>
+![msa](./assets/msa.png)
 
 ## Other examples
 
 ### Viewing the frequencies of amino acids in a multiple sequence alignment
-
-<p align="center"><img src="assets/msaselection.gif"></p>
+![msaselection](./assets/msaselection.gif)
 
 ### Alpha shapes can be used to visualize the surface of a protein structure
-
-<p align="center"><img src="assets/fullalphamesh.gif"></p>
+![fullalphamesh](./assets/fullalphamesh.gif)
 
 ### Database information can be displayed for a protein (including a GPT response, OpenAI.jl)
-
-<p align="center"><img src="assets/dbinfo.gif"></p>
+![dbinfo](./assets/dbinfo.gif)
 
 ### Protein residue mutation and changing rotamers (with ProtoSyn.jl) 
-
-<p align="center"><img src="assets/mutation.gif"></p>
+![mutation](./assets/mutation.gif)

@@ -1,5 +1,5 @@
 ```@meta
-EditURL = "https://github.com/kool7d/BioMakie.jl/blob/dev/docs/src/msaselection.jl"
+EditURL = "https://github.com/kool7d/BioMakie.jl/blob/dev/docs/src/msaselection.md"
 ```
 
 # MSA Selection
