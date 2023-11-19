@@ -1,7 +1,7 @@
 ```@meta
 EditURL = "https://github.com/kool7d/BioMakie.jl/blob/dev/docs/src/index.md"
 ```
-![biomakiename1](./assets/biomakiename1.png)
+# BioMakie.jl
 
 **Status:**
 
