@@ -35,6 +35,13 @@ function convert(::Type{String}, f::T) where T<:Union{Float16,Float32,Float64}
 	"$f"
 end
 Matrix{Float64}(vecvec::Vector{Vector{Float64}}) = Matrix{Float64}(vecvec |> combinedims)
+function reversekv(dict::AbstractDict{K,V}) where {K,V}
+	vkdict = [x[2].=>x[1] for x in dict]
+    if typeof(dict) <: OrderedDict
+        return OrderedDict{V,K}(vkdict)
+    end
+	return Dict{V,K}(vkdict)
+end
 macro trycatch(ex)
     quote
         try

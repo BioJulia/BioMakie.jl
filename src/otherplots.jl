@@ -3,13 +3,12 @@ export heatmap,
 
 import Makie.heatmap
 import Makie.heatmap!
-using PairwiseListMatrices, NamedArrays
 using MIToS.PDB
 
 """
     heatmap( dmap; kwargs... )
 
-Plot a MIToS distance map.
+Plot a MIToS distance or contact map.
 
 # Example
     
@@ -19,7 +18,8 @@ using MIToS.PDB
 pdbfile = MIToS.PDB.downloadpdb("1IVO", format=PDBFile)
 residues_1ivo = read(pdbfile, PDBFile)
 pdb = @residues residues_1ivo model "1" chain "A" group "ATOM" residue All
-dmap = MIToS.PDB.distance(pdb, criteria="All")
+dmap = MIToS.PDB.distance(pdb, criteria="All") # distance map
+cmap = contact(pdb, 8.0, criteria="CB") # contact map
 
 heatmap(dmap)
 ```
@@ -30,8 +30,7 @@ heatmap(dmap)
 - colormap --------------- :viridis
 - kwargs... -------------- additional keyword arguments to pass to heatmap
 """
-function heatmap(dmap::NamedMatrix{Float64, PairwiseListMatrix{Float64, false, Vector{Float64}}, 
-                Tuple{OrderedDict{String, Int64}, OrderedDict{String, Int64}}}; xlabel = "Item 2", 
+function heatmap(dmap; xlabel = "Item 2", 
                 ylabel = "Item 1", colormap = :ice, kwargs...)
     fig = Figure()
     ax = Axis(fig[1,1])
@@ -57,7 +56,7 @@ end
 """
     heatmap!( fig, dmap; kwargs... )
 
-Plot a MIToS distance map.
+Plot a MIToS distance or contact map.
 
 # Example
     
@@ -69,7 +68,8 @@ using MIToS.PDB
 pdbfile = MIToS.PDB.downloadpdb("1IVO", format=PDBFile)
 residues_1ivo = read(pdbfile, PDBFile)
 pdb = @residues residues_1ivo model "1" chain "A" group "ATOM" residue All
-dmap = MIToS.PDB.distance(pdb, criteria="All")
+dmap = MIToS.PDB.distance(pdb, criteria="All") # distance map 
+cmap = contact(pdb, 8.0, criteria="CB") # contact map
 
 heatmap!(fig, dmap)
 ```
@@ -80,8 +80,7 @@ heatmap!(fig, dmap)
 - colormap --------------- :viridis
 - kwargs... -------------- additional keyword arguments to pass to heatmap
 """
-function heatmap!(fig::Figure, dmap::NamedMatrix{Float64, PairwiseListMatrix{Float64, false, Vector{Float64}}, 
-                Tuple{OrderedDict{String, Int64}, OrderedDict{String, Int64}}}; xlabel = "Item 2", 
+function heatmap!(fig::Figure, dmap; xlabel = "Item 2", 
                 ylabel = "Item 1", colormap = :ice, kwargs...)
     ax = Axis(fig[1,1])
     dmap_1 = dmap.dicts[1] |> reversekv
@@ -95,101 +94,6 @@ function heatmap!(fig::Figure, dmap::NamedMatrix{Float64, PairwiseListMatrix{Flo
 
     ax.xlabel = dmap.dimnames[2]
     ax.ylabel = dmap.dimnames[1]
-    ax.xlabelsize = 20
-    ax.ylabelsize = 20
-    ax.xlabelpadding = 15
-    ax.ylabelpadding = 15
-    DataInspector(fig)
-    fig
-end
-
-"""
-    heatmap( cmap; kwargs... )
-
-Plot a MIToS contact map.
-
-Example:
-    
-```julia
-using MIToS.PDB
-
-pdbfile = MIToS.PDB.downloadpdb("1IVO", format=PDBFile)
-residues_1ivo = read(pdbfile, PDBFile)
-pdb = @residues residues_1ivo model "1" chain "A" group "ATOM" residue All
-cmap = contact(pdb, 8.0, criteria="CB")
-
-heatmap(cmap)
-```
-
-### Keyword Arguments:
-- xlabel ----------------- "Item 2"
-- ylabel ----------------- "Item 1"
-- colormap --------------- Colormap to use
-- kwargs... -------------- additional keyword arguments to pass to heatmap
-"""
-function heatmap(cmap::NamedMatrix{Bool, PairwiseListMatrix{Bool, false, Vector{Bool}}, 
-                Tuple{OrderedDict{String, Int64}, OrderedDict{String, Int64}}}; xlabel = "Item 2", 
-                ylabel = "Item 1", colormap = :ice, kwargs...)
-    fig = Figure()
-    ax = Axis(fig[1,1])
-    cmap_1 = cmap.dicts[1] |> reversekv
-    cmap_2 = cmap.dicts[2] |> reversekv
-    dat = reverse(Matrix(cmap); dims = 1)
-
-    hm = heatmap!(ax, dat; inspector_label = (self, i, p) -> "$(cmap_1[i[2]]): $(i[2])\n$(cmap_1[i[1]]): " *
-        "$(i[1])\nvalue: $(round(dat[i...];digits=6))",
-                    colormap = colormap, kwargs...)
-    
-    ax.xlabel = cmap.dimnames[2]
-    ax.ylabel = cmap.dimnames[1]
-    ax.xlabelsize = 20
-    ax.ylabelsize = 20
-    ax.xlabelpadding = 15
-    ax.ylabelpadding = 15
-    DataInspector(fig)
-    fig
-end
-
-"""
-    heatmap!( fig, cmap; kwargs... )
-
-Plot a MIToS contact map.
-
-Example:
-    
-```julia
-fig = Figure()
-
-using MIToS.PDB
-
-pdbfile = MIToS.PDB.downloadpdb("1IVO", format=PDBFile)
-residues_1ivo = read(pdbfile, PDBFile)
-pdb = @residues residues_1ivo model "1" chain "A" group "ATOM" residue All
-cmap = contact(pdb, 8.0, criteria="CB")
-
-heatmap!(fig, cmap)
-```
-
-### Keyword Arguments:
-- xlabel ----------------- "Item 2"
-- ylabel ----------------- "Item 1"
-- colormap --------------- :ice
-- kwargs... -------------- additional keyword arguments to pass to heatmap
-"""
-function heatmap!(fig::Figure, cmap::NamedMatrix{Bool, PairwiseListMatrix{Bool, false, Vector{Bool}}, 
-                Tuple{OrderedDict{String, Int64}, OrderedDict{String, Int64}}}; xlabel = "Item 2", 
-                ylabel = "Item 1", colormap = :ice, kwargs...)
-    ax = Axis(fig[1,1])
-    cmap_1 = cmap.dicts[1] |> reversekv
-    cmap_2 = cmap.dicts[2] |> reversekv
-    dat = reverse(Matrix(cmap); dims = 1)
-
-    hm = heatmap!(ax, dat; inspector_label = (self, i, p) -> "$(cmap_1[i[2]]): $(i[2])\n$(cmap_1[i[1]]): " *
-        "$(i[1])\nvalue: $(round(dat[i...];digits=6))",
-        colormap = colormap, kwargs...)
-
-    ax.xlabel = cmap.dimnames[2]
-    ax.ylabel = cmap.dimnames[1]
     ax.xlabelsize = 20
     ax.ylabelsize = 20
     ax.xlabelpadding = 15
