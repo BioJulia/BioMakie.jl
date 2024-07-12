@@ -506,14 +506,14 @@ fig = Figure()
 
 using MIToS.PDB
 
-pdbfile = MIToS.PDB.downloadpdb("2vb1")
-struc = MIToS.PDB.read(pdbfile, PDBML) |> Observable
+pdbfile = MIToS.PDB.downloadpdb("2vb1", format=PDBFile)
+struc = MIToS.PDB.read_file(pdbfile, PDBFile) |> Observable
 strucplot = plotstruc!(fig, struc)
 
-chain_A = @residues struc model "1" chain "A" group "ATOM" residue All
+chain_A = select_residues(struc, model="1", chain="A", group="ATOM")
 strucplot = plotstruc!(fig, chain_A)
 
-chnatms = @atoms struc model "1" chain "A" group "ATOM" residue All atom All
+chnatms = select_atoms(struc, model="1", chain="A", group="ATOM")
 strucplot = plotstruc!(fig, chnatms)
 -------------------------
 using BioStructures
@@ -1135,14 +1135,14 @@ Create and return a Makie Figure for a protein structural element.
 ```julia
 using MIToS.PDB
 
-pdbfile = MIToS.PDB.downloadpdb("2vb1")
-struc = MIToS.PDB.read(pdbfile, PDBML) |> Observable
+pdbfile = MIToS.PDB.downloadpdb("2vb1", format=PDBFile)
+struc = MIToS.PDB.read_file(pdbfile, PDBFile) |> Observable
 strucplot = plotstruc(struc)
 
-chain_A = @residues struc model "1" chain "A" group "ATOM" residue All
+chain_A = select_residues(struc, model="1", chain="A", group="ATOM")
 strucplot = plotstruc(chain_A)
 
-chnatms = @atoms struc model "1" chain "A" group "ATOM" residue All atom All
+chnatms = select_atoms(struc, model="1", chain="A", group="ATOM")
 strucplot = plotstruc(chnatms)
 -------------------------
 using BioStructures

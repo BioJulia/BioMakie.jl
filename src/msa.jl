@@ -666,8 +666,8 @@ a Figure and Observables for interaction.
 # Examples
 ```julia
 MIToS.Pfam.downloadpfam("PF00062")	# download PF00062 MSA
-msa = MIToS.MSA.read("PF00062.stockholm.gz", Stockholm, 
-					generatemapping =true, useidcoordinates=true)
+msa = MIToS.MSA.read_file("PF00062.stockholm.gz", Stockholm, 
+	generatemapping =true, useidcoordinates=true)
 
 plotmsa( msa; kwargs... )
 ```

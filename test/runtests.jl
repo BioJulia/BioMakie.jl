@@ -168,9 +168,9 @@ firstvalue(dict::AbstractDict) = first(values(dict))
     @test atmcolors[][end] == RGB{Float64}(0.65,0.96,0.7)
 
     # MIToS
-    struc = MIToS.PDB.read("$(dir)/2VB1.pdb", MIToS.PDB.PDBFile);
-    chn = MIToS.PDB.@residues struc model "1" chain "A" group "ATOM" residue All
-    atms = MIToS.PDB.@atoms chn model "1" chain "A" group "ATOM" residue All atom All
+    struc = MIToS.PDB.read_file("$(dir)/2VB1.pdb", MIToS.PDB.PDBFile);
+    chn = MIToS.PDB.select_residues(struc, model="1", chain="A", group="ATOM")
+    atms = MIToS.PDB.select_atoms(chn, model="1", chain="A", group="ATOM")
     struc_obs = Observable(struc);
     chn_obs = Observable(chn);
     atms_obs = Observable(atms);
@@ -252,7 +252,7 @@ end
 @testset "MSA plotting" begin
     # MIToS
     downloadpfam("pf00062")
-    msa1 = MIToS.MSA.read("pf00062.stockholm.gz",Stockholm)
+    msa1 = MIToS.MSA.read_file("pf00062.stockholm.gz",Stockholm)
     @test size(msa1) == (3023, 123)
     @test length(msa1.annotations.sequences) == 3023
     plotdata = plottingdata(msa1)

@@ -51,9 +51,8 @@ reader = open(FASTX.FASTA.Reader, "PF00062_full.fasta")
 msa = [reader...] |> Observable
 close(reader)
 ## or 
-using MIToS
 using MIToS.MSA
-msa = MIToS.MSA.read("pf00062.stockholm.gz", Stockholm)
+msa = read_file("pf00062.stockholm.gz", Stockholm)
 
 fig = plotmsa(msa; colorscheme = :tableau_blue_green)
 ```
