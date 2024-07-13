@@ -489,7 +489,7 @@ end
 """
 	getbonds( chn::BioStructures.Chain, selectors... ) -> BitMatrix
 	getbonds( modl::BioStructures.Model, selectors... ) -> BitMatrix
-	getbonds( struc::BioStructures.ProteinStructure, selectors... ) -> BitMatrix
+	getbonds( struc::BioStructures.MolecularStructure, selectors... ) -> BitMatrix
 
 Returns a matrix of all bonds in `chn`, where Mat[i,j] = 1 if atoms i and j are bonded. 
 
@@ -678,7 +678,7 @@ function getbonds(modl::BioStructures.Model, selectors...;
 
 	return nothing
 end
-function getbonds(struc::BioStructures.ProteinStructure, selectors...;
+function getbonds(struc::BioStructures.MolecularStructure, selectors...;
 				algo = :knowledgebased, 
 				H = true,
 				cutoff = 1.9,
@@ -1179,7 +1179,7 @@ function bondshapes(chn::BioStructures.Chain; algo = :knowledgebased, distance =
 
     return bshapes
 end
-function bondshapes(struc::BioStructures.ProteinStructure; algo = :knowledgebased, distance = 1.9, bondwidth = 0.2)
+function bondshapes(struc::BioStructures.MolecularStructure; algo = :knowledgebased, distance = 1.9, bondwidth = 0.2)
 	bshapes = Cylinder3{Float32}[]
 	bnds = getbonds(struc; algo = algo, cutoff = distance)
 	atms = BioStructures.collectatoms(struc)
@@ -1274,7 +1274,7 @@ function bondshapes(chn::BioStructures.Chain, bnds::AbstractMatrix; algo = nothi
 
     return bshapes
 end
-function bondshapes(struc::BioStructures.ProteinStructure, bnds::AbstractMatrix; algo = nothing, cutoff = nothing, bondwidth = 0.2)
+function bondshapes(struc::BioStructures.MolecularStructure, bnds::AbstractMatrix; algo = nothing, cutoff = nothing, bondwidth = 0.2)
 	bshapes = Cylinder3{Float32}[]
 	atms = BioStructures.collectatoms(struc)
 

@@ -64,7 +64,7 @@ using GLMakie
 using BioStructures
 struc = retrievepdb("2vb1") |> Observable
 ## or
-struc = read("2vb1.pdb", BioStructures.PDB) |> Observable
+struc = read("2vb1.pdb", BioStructures.PDBFormat) |> Observable
 
 fig = Figure()
 plotstruc!(fig, struc; plottype = :ballandstick, gridposition = (1,1), atomcolors = aquacolors)
