@@ -10,12 +10,11 @@ are plotted on the right.
 ## Copy-pastable code
 ````julia
 using BioMakie
-using MIToS
 using MIToS.MSA, MIToS.Pfam
 using GLMakie
 using Lazy
 downloadpfam("pf00062")
-msa1 = MIToS.MSA.read("pf00062.stockholm.gz",Stockholm)
+msa1 = read_file("pf00062.stockholm.gz",Stockholm)
 msa2 = Observable(msa1)
 plotdata = plottingdata(msa2)
 fig = Figure(resolution = (1400,400))
@@ -61,7 +60,6 @@ xlims!(ax, (0, 23))
 ## Imports
 ````julia
 using BioMakie
-using MIToS
 using MIToS.MSA, MIToS.Pfam
 using GLMakie
 using Lazy
@@ -72,7 +70,7 @@ Use MIToS to download a Pfam MSA, then prepare the plotting data.
 
 ````julia
 downloadpfam("pf00062")
-msa1 = MIToS.MSA.read("pf00062.stockholm.gz",Stockholm)
+msa1 = read_file("pf00062.stockholm.gz",Stockholm)
 msa2 = Observable(msa1)
 plotdata = plottingdata(msa2)
 ````

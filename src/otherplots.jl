@@ -16,8 +16,8 @@ Plot a MIToS distance or contact map.
 using MIToS.PDB
 
 pdbfile = MIToS.PDB.downloadpdb("1IVO", format=PDBFile)
-residues_1ivo = read(pdbfile, PDBFile)
-pdb = @residues residues_1ivo model "1" chain "A" group "ATOM" residue All
+residues_1ivo = read_file(pdbfile, PDBFile)
+pdb = select_residues(residues_1ivo, model="1", chain="A", group="ATOM")
 dmap = MIToS.PDB.distance(pdb, criteria="All") # distance map
 cmap = contact(pdb, 8.0, criteria="CB") # contact map
 
@@ -66,8 +66,8 @@ fig = Figure()
 using MIToS.PDB
 
 pdbfile = MIToS.PDB.downloadpdb("1IVO", format=PDBFile)
-residues_1ivo = read(pdbfile, PDBFile)
-pdb = @residues residues_1ivo model "1" chain "A" group "ATOM" residue All
+residues_1ivo = read_file(pdbfile, PDBFile)
+pdb = select_residues(residues_1ivo, model="1", chain="A", group="ATOM")
 dmap = MIToS.PDB.distance(pdb, criteria="All") # distance map 
 cmap = contact(pdb, 8.0, criteria="CB") # contact map
 
