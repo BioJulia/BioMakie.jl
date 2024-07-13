@@ -521,7 +521,7 @@ using BioStructures
 struc = retrievepdb("2vb1", dir = "data/") |> Observable
 strucplot = plotstruc!(fig, struc)
 
-struc = read("data/2vb1_mutant1.pdb", BioStructures.PDB) |> Observable
+struc = read("data/2vb1_mutant1.pdb", BioStructures.PDBFormat) |> Observable
 strucplot = plotstruc!(fig, struc)
 
 chain_A = retrievepdb("2vb1", dir = "data/")["A"] |> Observable
@@ -1150,7 +1150,7 @@ using BioStructures
 struc = retrievepdb("2vb1", dir = "data/") |> Observable
 strucplot = plotstruc(struc)
 
-struc = read("data/2vb1_mutant1.pdb", BioStructures.PDB) |> Observable
+struc = read("data/2vb1_mutant1.pdb", BioStructures.PDBFormat) |> Observable
 strucplot = plotstruc(struc)
 
 chain_A = retrievepdb("2hhb", dir = "data/")["A"] |> Observable

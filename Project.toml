@@ -37,7 +37,7 @@ TensorCast = "02d47bb6-7ce6-556a-be16-bb1710789e2b"
 
 [compat]
 BioAlignments = "2, 3"
-BioStructures = "2, 3"
+BioStructures = "4"
 ColorSchemes = "3"
 ColorTypes = "0.11"
 Colors = "0.12"
