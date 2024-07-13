@@ -253,11 +253,11 @@ end
     # MIToS
     downloadpfam("pf00062")
     msa1 = MIToS.MSA.read_file("pf00062.stockholm.gz",Stockholm)
-    @test size(msa1) == (3023, 123)
-    @test length(msa1.annotations.sequences) == 3023
+    @test size(msa1) == (3241, 123)
+    @test length(msa1.annotations.sequences) == 3259
     plotdata = plottingdata(msa1)
     msamatrix = plotdata[:matrix]
-    @test size(msamatrix[]) == (3023, 123)
+    @test size(msamatrix[]) == (3241, 123)
     matrixvals = msavalues(msamatrix[])
     @test firstkey(kideradict) == "A"
     @test firstvalue(kideradict) == [-1.56, -1.67, -0.97, -0.27, -0.93, -0.78, -0.2, -0.08, 0.21, -0.48]
