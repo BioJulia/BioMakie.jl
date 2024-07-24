@@ -194,7 +194,7 @@ function plotmsa!( fig::Figure, msa::Observable{T};
 	ax.yzoomlock[] = true
 	ax.yticklabelspace[] = 10.0
 	
-	points1 = [Point2f0(x,y) for x in widthrange for y in heightrange] |> collect
+	points1 = [Point2f(x,y) for x in widthrange for y in heightrange] |> collect
 	charvec = @lift SplitApplyCombine.flatten($charshow)
 
 	hm = heatmap!(ax, colorvals, show_grid = true, 
@@ -325,7 +325,7 @@ function plotmsa!( figposition::GridPosition, msa::Observable{T};
 	ax.yzoomlock[] = true
 	ax.yticklabelspace[] = 10.0
 	
-	points1 = [Point2f0(x,y) for x in widthrange for y in heightrange] |> collect
+	points1 = [Point2f(x,y) for x in widthrange for y in heightrange] |> collect
 	charvec = @lift SplitApplyCombine.flatten($charshow)
 
 	hm = heatmap!(ax, colorvals, show_grid = true, 
@@ -453,7 +453,7 @@ function plotmsa!( fig::Figure, plotdata::AbstractDict{Symbol,T};
 	ax.yzoomlock[] = true
 	ax.yticklabelspace[] = 10.0
 	
-	points1 = [Point2f0(x,y) for x in widthrange for y in heightrange] |> collect
+	points1 = [Point2f(x,y) for x in widthrange for y in heightrange] |> collect
 	charvec = @lift SplitApplyCombine.flatten($charshow)
 
 	hm = heatmap!(ax, colorvals, show_grid = true, 
@@ -581,7 +581,7 @@ function plotmsa!( figposition::GridPosition, plotdata::AbstractDict{Symbol,T};
 	ax.yzoomlock[] = true
 	ax.yticklabelspace[] = 10.0
 	
-	points1 = [Point2f0(x,y) for x in widthrange for y in heightrange] |> collect
+	points1 = [Point2f(x,y) for x in widthrange for y in heightrange] |> collect
 	charvec = @lift SplitApplyCombine.flatten($charshow)
 
 	hm = heatmap!(ax, colorvals, show_grid = true, 
