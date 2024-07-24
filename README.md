@@ -1,6 +1,7 @@
 <p align="center"><img src="docs/src/assets/biomakiename1.png" width="400" height="79"></p>
 
-**Status:**
+## **Status:**
+## Version 0.4.0 has broken some machinery... fix incoming... use v0.3.0 instead for now to try it out?  **`add BioMakie#v0.3.0`**
 
 [![Latest release](https://img.shields.io/github/release/BioJulia/BioMakie.jl.svg)](https://github.com/BioJulia/BioMakie.jl/releases/latest)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/BioJulia/BioMakie.jl/blob/master/LICENSE.md)
