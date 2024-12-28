@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Database Info · BioMakie.jl</title><meta name="title" content="Database Info · BioMakie.jl"/><meta property="og:title" content="Database Info · BioMakie.jl"/><meta property="twitter:title" content="Database Info · BioMakie.jl"/><meta name="description" content="Documentation for BioMakie.jl."/><meta property="og:description" content="Documentation for BioMakie.jl."/><meta property="twitter:description" content="Documentation for BioMakie.jl."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">BioMakie.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../msaselection/">MSA Selection</a></li><li><a class="tocitem" href="../alphashape/">Alpha Shape</a></li><li class="is-active"><a class="tocitem" href>Database Info</a><ul class="internal"><li><a class="tocitem" href="#Copy-pastable-code-(almost,-you-need-your-OpenAI-API-key)"><span>Copy-pastable code (almost, you need your OpenAI API key)</span></a></li><li><a class="tocitem" href="#Database-information-explanation"><span>Database information explanation</span></a></li><li><a class="tocitem" href="#Acquire-the-data"><span>Acquire the data</span></a></li><li><a class="tocitem" href="#Set-up-the-figure-and-plot-the-structure"><span>Set up the figure and plot the structure</span></a></li><li><a class="tocitem" href="#Set-up-the-text-box-to-prompt-GPT-3.5-turbo"><span>Set up the text box to prompt GPT-3.5-turbo</span></a></li><li><a class="tocitem" href="#Plot-the-text"><span>Plot the text</span></a></li></ul></li><li><a class="tocitem" href="../mutation/">Mutation</a></li><li><a class="tocitem" href="../API/">API</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Database Info</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Database Info</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/BioJulia/BioMakie.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/kool7d/BioMakie.jl/blob/dev/docs/src/dbinfo.md" title="View source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Plotting-database-information"><a class="docs-heading-anchor" href="#Plotting-database-information">Plotting database information</a><a id="Plotting-database-information-1"></a><a class="docs-heading-anchor-permalink" href="#Plotting-database-information" title="Permalink"></a></h1><p>In this demo a structure is plotted along with information about the protein and a text box which can take advantage of OpenAI.jl to generate a description from a prompt.</p><h2 id="Copy-pastable-code-(almost,-you-need-your-OpenAI-API-key)"><a class="docs-heading-anchor" href="#Copy-pastable-code-(almost,-you-need-your-OpenAI-API-key)">Copy-pastable code (almost, you need your OpenAI API key)</a><a id="Copy-pastable-code-(almost,-you-need-your-OpenAI-API-key)-1"></a><a class="docs-heading-anchor-permalink" href="#Copy-pastable-code-(almost,-you-need-your-OpenAI-API-key)" title="Permalink"></a></h2><pre><code class="language-julia hljs">using BioMakie
+using BioStructures
+using GLMakie
+using OrderedCollections
+using JSON3
+using OpenAI
+using TextWrap
+pdb = retrievepdb(&quot;2vb1&quot;)
+pdata = plottingdata(pdb)
+dat = getuniprotdata(&quot;P00698&quot;; include_refs = true)
+txtbuffer = IOBuffer()
+uniprottxt = begin BioMakie.showsummary(txtbuffer, dat); String(take!(txtbuffer)) end
+fig = Figure(resolution = (900, 700))
+layout = fig[1,1] = GridLayout(10, 9)
+plotstruc!(layout[1:10,1:5], pdata; resolution = (600, 700))
+ENV[&quot;APIKEY&quot;] = &quot;{Your API key}&quot;    # Need to set your API key here!
+model = &quot;gpt-3.5-turbo&quot;
+txt = Observable(&quot;&quot;)
+tbox = Textbox(layout[4,6:9]; placeholder = &quot;Ask GPT about this protein...&quot;, width = 350)
+on(tbox.stored_string) do t
+        r = create_chat(
+        ENV[&quot;APIKEY&quot;],
+        model,
+        [Dict(&quot;role&quot; =&gt; &quot;user&quot;, &quot;content&quot;=&gt; t)]
+    )
+    txt[] = wrap(r.response[:choices][begin][:message][:content]; width = 50)
+end
+ax = Axis(layout[1:3,6:9])
+GLMakie.text!(ax, uniprottxt, fontsize = 16, align = (:left, :top))
+xlims!(ax, (0, 1))
+ylims!(ax, (-0.5, 0))
+hidespines!(ax)
+hideydecorations!(ax)
+hidexdecorations!(ax)
+ax = Axis(layout[5:10,6:9])
+GLMakie.text!(ax, txt, fontsize = 16, align = (:left, :top))
+xlims!(ax, (0, 1))
+ylims!(ax, (-0.5, 0))
+hidespines!(ax)
+hideydecorations!(ax)
+hidexdecorations!(ax)</code></pre><p><img src="../assets/dbinfo.gif" alt="dbinfo"/></p><h2 id="Database-information-explanation"><a class="docs-heading-anchor" href="#Database-information-explanation">Database information explanation</a><a id="Database-information-explanation-1"></a><a class="docs-heading-anchor-permalink" href="#Database-information-explanation" title="Permalink"></a></h2><p>First are the regular imports.</p><pre><code class="language-julia hljs">using BioMakie
+using BioStructures
+using GLMakie
+using OrderedCollections
+using JSON3
+using OpenAI
+using TextWrap</code></pre><h2 id="Acquire-the-data"><a class="docs-heading-anchor" href="#Acquire-the-data">Acquire the data</a><a id="Acquire-the-data-1"></a><a class="docs-heading-anchor-permalink" href="#Acquire-the-data" title="Permalink"></a></h2><p>Use BioStructures to retrieve a PDB file, then prepare the plotting data.</p><pre><code class="language-julia hljs">pdb = retrievepdb(&quot;2vb1&quot;)
+pdata = plottingdata(pdb)</code></pre><p>Get the data from the web database using the associated accession ID and read it. Here I use the <code>getuniprotdata</code> function to get the data and save it to a file, then I gather the summary information using <code>showsummary</code> and utilize a <code>IOBuffer</code> to capture the string.</p><pre><code class="language-julia hljs">dat = getuniprotdata(&quot;P00698&quot;; include_refs = true)
+txtbuffer = IOBuffer()
+uniprottxt = begin BioMakie.showsummary(txtbuffer, dat); String(take!(txtbuffer)) end</code></pre><h2 id="Set-up-the-figure-and-plot-the-structure"><a class="docs-heading-anchor" href="#Set-up-the-figure-and-plot-the-structure">Set up the figure and plot the structure</a><a id="Set-up-the-figure-and-plot-the-structure-1"></a><a class="docs-heading-anchor-permalink" href="#Set-up-the-figure-and-plot-the-structure" title="Permalink"></a></h2><pre><code class="language-julia hljs">fig = Figure(resolution = (900, 700))
+layout = fig[1,1] = GridLayout(10, 9)
+fig = plotstruc!(layout[1:10,1:5], pdata; resolution = (600, 700))</code></pre><h2 id="Set-up-the-text-box-to-prompt-GPT-3.5-turbo"><a class="docs-heading-anchor" href="#Set-up-the-text-box-to-prompt-GPT-3.5-turbo">Set up the text box to prompt GPT-3.5-turbo</a><a id="Set-up-the-text-box-to-prompt-GPT-3.5-turbo-1"></a><a class="docs-heading-anchor-permalink" href="#Set-up-the-text-box-to-prompt-GPT-3.5-turbo" title="Permalink"></a></h2><p>First you need to acquire an API key for OpenAI. Then we can set up the text box using that. The <code>on</code> function is used to update the <code>txt</code> Observable with the response when you submit a prompt using the text box.</p><pre><code class="language-julia hljs">ENV[&quot;APIKEY&quot;] = &quot;{Your API key}&quot;
+model = &quot;gpt-3.5-turbo&quot;
+txt = Observable(&quot;&quot;)
+tbox = Textbox(layout[4,6:9]; placeholder = &quot;Ask GPT about this protein...&quot;, width = 350)
+on(tbox.stored_string) do t
+        r = create_chat(
+        ENV[&quot;APIKEY&quot;],
+        model,
+        [Dict(&quot;role&quot; =&gt; &quot;user&quot;, &quot;content&quot;=&gt; t)]
+    )
+    txt[] = wrap(r.response[:choices][begin][:message][:content]; width = 50)
+end</code></pre><h2 id="Plot-the-text"><a class="docs-heading-anchor" href="#Plot-the-text">Plot the text</a><a id="Plot-the-text-1"></a><a class="docs-heading-anchor-permalink" href="#Plot-the-text" title="Permalink"></a></h2><p>We basically plot the text onto a regular axis and hide the decorations, grid, etc.</p><pre><code class="language-julia hljs">ax = Axis(layout[1:3,6:9])
+GLMakie.text!(ax, uniprottxt, fontsize = 16, align = (:left, :top))
+xlims!(ax, (0, 1))
+ylims!(ax, (-0.5, 0))
+hidespines!(ax)
+hideydecorations!(ax)
+hidexdecorations!(ax)
+ax = Axis(layout[5:10,6:9])
+GLMakie.text!(ax, txt, fontsize = 16, align = (:left, :top))
+xlims!(ax, (0, 1))
+ylims!(ax, (-0.5, 0))
+hidespines!(ax)
+hideydecorations!(ax)
+hidexdecorations!(ax)</code></pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../alphashape/">« Alpha Shape</a><a class="docs-footer-nextpage" href="../mutation/">Mutation »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.8.0 on <span class="colophon-date" title="Saturday 28 December 2024 22:07">Saturday 28 December 2024</span>. Using Julia version 1.11.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
