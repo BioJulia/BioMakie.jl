@@ -14,7 +14,7 @@
 
 ## Installation
 
-To install BioMakie, access the Julia package REPL by
+To install BioMakie, access the Julia package manager by
 pressing **`]`** from the Julia REPL, then run **`add BioMakie`**.
 
 ## Contributing and questions
