@@ -21,7 +21,7 @@ firstvalue(dict::AbstractDict) = first(values(dict))
 @testset "Structure plotting" begin
     # BioStructures
     dir = joinpath(tempdir(),"structure")
-    struc = retrievepdb("2VB1"; dir = dir)
+    struc = retrievepdb("2VB1"; dir = dir, format = PDBFormat)
     chn = collectchains(struc[1]["A"])
     resz = collectresidues(struc[1]["A"], standardselector)
     atms = collectatoms(struc[1]["A"], standardselector)
@@ -174,7 +174,7 @@ firstvalue(dict::AbstractDict) = first(values(dict))
     struc_obs = Observable(struc);
     chn_obs = Observable(chn);
     atms_obs = Observable(atms);
-    rezsizes = [size(chn_obs[][i].atoms,1) for i in 1:size(chn_obs[],1)] 
+    rezsizes = [size(chn_obs[][i].atoms,1) for i in 1:size(chn_obs[],1)]
     @test sum(rezsizes) == 2657
     @test length(struc) == 312
 
