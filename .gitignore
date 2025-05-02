@@ -26,3 +26,4 @@ research/
 *.json
 *.CondaPkg
 CondaPkg.toml
+*.gz
