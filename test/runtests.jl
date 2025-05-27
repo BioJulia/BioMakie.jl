@@ -167,6 +167,10 @@ firstvalue(dict::AbstractDict) = first(values(dict))
     @test atmcolors[][5] == RGB{Float64}(0.5,0.5,0.5)
     @test atmcolors[][end] == RGB{Float64}(0.65,0.96,0.7)
 
+    # High-level plot (BioStructures)
+    fig = plotstruc(only(chn))
+    display(fig)
+
     # MIToS
     struc = MIToS.PDB.read_file("$(dir)/2VB1.pdb", MIToS.PDB.PDBFile);
     chn = MIToS.PDB.select_residues(struc, model="1", chain="A", group="ATOM")

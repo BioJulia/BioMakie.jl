@@ -1114,31 +1114,31 @@ function bondshape(twoatoms::Tuple{T}; bondwidth = 0.2) where {T<:BioStructures.
     @assert length(twoatoms) == 2
 	atm1 = defaultatom(twoatoms[1])
 	atm2 = defaultatom(twoatoms[2])
-	pnt1 = GeometryBasics.Point3f0(atm1.coords)
-    pnt2 = GeometryBasics.Point3f0(atm2.coords)
+	pnt1 = GeometryBasics.Point3f(atm1.coords)
+    pnt2 = GeometryBasics.Point3f(atm2.coords)
     return GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth))
 end
 function bondshape(twoatoms::AbstractVector{T}; bondwidth = 0.2) where {T<:BioStructures.AbstractAtom}
     @assert length(twoatoms) == 2
 	atm1 = defaultatom(twoatoms[1])
 	atm2 = defaultatom(twoatoms[2])
-	pnt1 = GeometryBasics.Point3f0(atm1.coords)
-    pnt2 = GeometryBasics.Point3f0(atm2.coords)
+	pnt1 = GeometryBasics.Point3f(atm1.coords)
+    pnt2 = GeometryBasics.Point3f(atm2.coords)
     return GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth))
 end
 function bondshape(twopnts::Vector{T}; bondwidth = 0.2) where {T<:GeometryBasics.AbstractPoint}
     @assert length(twopnts) == 2
-	pnt1 = GeometryBasics.Point3f0(twopnts[1])
-    pnt2 = GeometryBasics.Point3f0(twopnts[2])
+	pnt1 = GeometryBasics.Point3f(twopnts[1])
+    pnt2 = GeometryBasics.Point3f(twopnts[2])
     return GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth))
 end
 function bondshape(twopnts::AbstractMatrix{T}; bondwidth = 0.2) where {T<:AbstractFloat}
     if size(twopnts,1) == 3 && size(twopnts,2) == 2
-		pnt1 = GeometryBasics.Point3f0(twopnts[:,1])
-    	pnt2 = GeometryBasics.Point3f0(twopnts[:,2])
+		pnt1 = GeometryBasics.Point3f(twopnts[:,1])
+    	pnt2 = GeometryBasics.Point3f(twopnts[:,2])
 	elseif size(twopnts,1) == 2 && size(twopnts,2) == 3
-		pnt1 = GeometryBasics.Point3f0(twopnts[1,:])
-    	pnt2 = GeometryBasics.Point3f0(twopnts[2,:])
+		pnt1 = GeometryBasics.Point3f(twopnts[1,:])
+    	pnt2 = GeometryBasics.Point3f(twopnts[2,:])
 	else
 		println("problem making bondshape from matrix")
 	end
@@ -1161,7 +1161,7 @@ Returns a (mesh) cylinder between two atoms or points.
 - bondwidth ------------- 0.2
 """
 function bondshapes(chn::BioStructures.Chain; algo = :knowledgebased, distance = 1.9, bondwidth = 0.2)
-    bshapes = Cylinder3{Float32}[]
+    bshapes = Cylinder{Float32}[]
 	bnds = getbonds(chn; algo = algo, cutoff = distance)
 	atms = BioStructures.collectatoms(chn)
 
@@ -1170,8 +1170,8 @@ function bondshapes(chn::BioStructures.Chain; algo = :knowledgebased, distance =
 			if bnds[i,j] == 1 && i != j
 				atm1 = defaultatom(atms[i])
 				atm2 = defaultatom(atms[j])
-				pnt1 = GeometryBasics.Point3f0(atm1.coords)
-				pnt2 = GeometryBasics.Point3f0(atm2.coords)
+				pnt1 = GeometryBasics.Point3f(atm1.coords)
+				pnt2 = GeometryBasics.Point3f(atm2.coords)
 				push!(bshapes, GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth)))
 			end
 		end
@@ -1180,7 +1180,7 @@ function bondshapes(chn::BioStructures.Chain; algo = :knowledgebased, distance =
     return bshapes
 end
 function bondshapes(struc::BioStructures.MolecularStructure; algo = :knowledgebased, distance = 1.9, bondwidth = 0.2)
-	bshapes = Cylinder3{Float32}[]
+	bshapes = Cylinder{Float32}[]
 	bnds = getbonds(struc; algo = algo, cutoff = distance)
 	atms = BioStructures.collectatoms(struc)
 
@@ -1190,8 +1190,8 @@ function bondshapes(struc::BioStructures.MolecularStructure; algo = :knowledgeba
 				if bnds[k][i,j] == 1 && i != j
 					atm1 = defaultatom(atms[k][i])
 					atm2 = defaultatom(atms[k][j])
-					pnt1 = GeometryBasics.Point3f0(atm1.coords)
-					pnt2 = GeometryBasics.Point3f0(atm2.coords)
+					pnt1 = GeometryBasics.Point3f(atm1.coords)
+					pnt2 = GeometryBasics.Point3f(atm2.coords)
 					push!(bshapes, GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth)))
 				end
 			end
@@ -1201,7 +1201,7 @@ function bondshapes(struc::BioStructures.MolecularStructure; algo = :knowledgeba
     return bshapes
 end
 function bondshapes(resz::Vector{T}; algo = :knowledgebased, distance = 1.9, bondwidth = 0.2) where {T<:BioStructures.AbstractResidue}
-	bshapes = Cylinder3{Float32}[]
+	bshapes = Cylinder{Float32}[]
 	bnds = getbonds(resz; algo = algo, cutoff = distance)
 	atms = BioStructures.collectatoms(resz)
 
@@ -1210,8 +1210,8 @@ function bondshapes(resz::Vector{T}; algo = :knowledgebased, distance = 1.9, bon
 			if bnds[i,j] == 1 && i != j
 				atm1 = defaultatom(atms[i])
 				atm2 = defaultatom(atms[j])
-				pnt1 = GeometryBasics.Point3f0(atm1.coords)
-				pnt2 = GeometryBasics.Point3f0(atm2.coords)
+				pnt1 = GeometryBasics.Point3f(atm1.coords)
+				pnt2 = GeometryBasics.Point3f(atm2.coords)
 				push!(bshapes, GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth)))
 			end
 		end
@@ -1220,7 +1220,7 @@ function bondshapes(resz::Vector{T}; algo = :knowledgebased, distance = 1.9, bon
     return bshapes
 end
 function bondshapes(atms::Vector{T}; algo = :knowledgebased, distance = 1.9, bondwidth = 0.2) where {T<:BioStructures.AbstractAtom}
-	bshapes = Cylinder3{Float32}[]
+	bshapes = Cylinder{Float32}[]
 	bnds = getbonds(atms; algo = algo, cutoff = distance)
 
 	for i in 1:size(bnds,1)
@@ -1228,8 +1228,8 @@ function bondshapes(atms::Vector{T}; algo = :knowledgebased, distance = 1.9, bon
 			if bnds[i,j] == 1 && i != j
 				atm1 = defaultatom(atms[i])
 				atm2 = defaultatom(atms[j])
-				pnt1 = GeometryBasics.Point3f0(atm1.coords)
-				pnt2 = GeometryBasics.Point3f0(atm2.coords)
+				pnt1 = GeometryBasics.Point3f(atm1.coords)
+				pnt2 = GeometryBasics.Point3f(atm2.coords)
 				push!(bshapes, GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth)))
 			end
 		end
@@ -1238,7 +1238,7 @@ function bondshapes(atms::Vector{T}; algo = :knowledgebased, distance = 1.9, bon
     return bshapes
 end
 function bondshapes(resz::Vector{T}; algo = :covalent, distance = 1.9, bondwidth = 0.2) where {T<:MIToS.PDB.PDBResidue}
-    bshapes = Cylinder3{Float32}[]
+    bshapes = Cylinder{Float32}[]
 	bnds = getbonds(resz; algo = algo, cutoff = distance)
 	atms = [bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
 
@@ -1247,8 +1247,8 @@ function bondshapes(resz::Vector{T}; algo = :covalent, distance = 1.9, bondwidth
 			if bnds[i,j] == 1 && i != j
 				atm1 = atms[i]
 				atm2 = atms[j]
-				pnt1 = GeometryBasics.Point3f0(atm1.coordinates)
-				pnt2 = GeometryBasics.Point3f0(atm2.coordinates)
+				pnt1 = GeometryBasics.Point3f(atm1.coordinates)
+				pnt2 = GeometryBasics.Point3f(atm2.coordinates)
 				push!(bshapes, GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth)))
 			end
 		end
@@ -1257,7 +1257,7 @@ function bondshapes(resz::Vector{T}; algo = :covalent, distance = 1.9, bondwidth
     return bshapes
 end
 function bondshapes(chn::BioStructures.Chain, bnds::AbstractMatrix; algo = nothing, distance = nothing, bondwidth = 0.2)
-    bshapes = Cylinder3{Float32}[]
+    bshapes = Cylinder{Float32}[]
 	atms = BioStructures.collectatoms(chn)
 
 	for i in 1:size(bnds,1)
@@ -1265,8 +1265,8 @@ function bondshapes(chn::BioStructures.Chain, bnds::AbstractMatrix; algo = nothi
 			if bnds[i,j] == 1 && i != j
 				atm1 = defaultatom(atms[i])
 				atm2 = defaultatom(atms[j])
-				pnt1 = GeometryBasics.Point3f0(atm1.coords)
-				pnt2 = GeometryBasics.Point3f0(atm2.coords)
+				pnt1 = GeometryBasics.Point3f(atm1.coords)
+				pnt2 = GeometryBasics.Point3f(atm2.coords)
 				push!(bshapes, GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth)))
 			end
 		end
@@ -1275,7 +1275,7 @@ function bondshapes(chn::BioStructures.Chain, bnds::AbstractMatrix; algo = nothi
     return bshapes
 end
 function bondshapes(struc::BioStructures.MolecularStructure, bnds::AbstractMatrix; algo = nothing, cutoff = nothing, bondwidth = 0.2)
-	bshapes = Cylinder3{Float32}[]
+	bshapes = Cylinder{Float32}[]
 	atms = BioStructures.collectatoms(struc)
 
 	for k in 1:size(bnds,1)
@@ -1284,8 +1284,8 @@ function bondshapes(struc::BioStructures.MolecularStructure, bnds::AbstractMatri
 				if bnds[k][i,j] == 1 && i != j
 					atm1 = defaultatom(atms[k][i])
 					atm2 = defaultatom(atms[k][j])
-					pnt1 = GeometryBasics.Point3f0(atm1.coords)
-					pnt2 = GeometryBasics.Point3f0(atm2.coords)
+					pnt1 = GeometryBasics.Point3f(atm1.coords)
+					pnt2 = GeometryBasics.Point3f(atm2.coords)
 					push!(bshapes, GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth)))
 				end
 			end
@@ -1295,7 +1295,7 @@ function bondshapes(struc::BioStructures.MolecularStructure, bnds::AbstractMatri
     return bshapes
 end
 function bondshapes(resz::Vector{T}, bnds::AbstractMatrix; bondwidth = 0.2) where {T<:BioStructures.AbstractResidue}
-	bshapes = Cylinder3{Float32}[]
+	bshapes = Cylinder{Float32}[]
 	atms = BioStructures.collectatoms(resz)
 
 	for i in 1:size(bnds,1)
@@ -1303,8 +1303,8 @@ function bondshapes(resz::Vector{T}, bnds::AbstractMatrix; bondwidth = 0.2) wher
 			if bnds[i,j] == 1 && i != j
 				atm1 = defaultatom(atms[i])
 				atm2 = defaultatom(atms[j])
-				pnt1 = GeometryBasics.Point3f0(atm1.coords)
-				pnt2 = GeometryBasics.Point3f0(atm2.coords)
+				pnt1 = GeometryBasics.Point3f(atm1.coords)
+				pnt2 = GeometryBasics.Point3f(atm2.coords)
 				push!(bshapes, GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth)))
 			end
 		end
@@ -1313,7 +1313,7 @@ function bondshapes(resz::Vector{T}, bnds::AbstractMatrix; bondwidth = 0.2) wher
     return bshapes
 end
 function bondshapes(resz::Vector{T}, bnds::AbstractMatrix; bondwidth = 0.2) where {T<:MIToS.PDB.PDBResidue}
-    bshapes = Cylinder3{Float32}[]
+    bshapes = Cylinder{Float32}[]
 	atms = [bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
 
 	for i in 1:size(bnds,1)
@@ -1321,8 +1321,8 @@ function bondshapes(resz::Vector{T}, bnds::AbstractMatrix; bondwidth = 0.2) wher
 			if bnds[i,j] == 1 && i != j
 				atm1 = atms[i]
 				atm2 = atms[j]
-				pnt1 = GeometryBasics.Point3f0(atm1.coordinates)
-				pnt2 = GeometryBasics.Point3f0(atm2.coordinates)
+				pnt1 = GeometryBasics.Point3f(atm1.coordinates)
+				pnt2 = GeometryBasics.Point3f(atm2.coordinates)
 				push!(bshapes, GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth)))
 			end
 		end
@@ -1331,15 +1331,15 @@ function bondshapes(resz::Vector{T}, bnds::AbstractMatrix; bondwidth = 0.2) wher
     return bshapes
 end
 function bondshapes(atms::Vector{T}, bnds::AbstractMatrix; bondwidth = 0.2) where {T<:BioStructures.AbstractAtom}
-	bshapes = Cylinder3{Float32}[]
+	bshapes = Cylinder{Float32}[]
 
 	for i in 1:size(bnds,1)
 		for j in (i+1):size(bnds,1)
 			if bnds[i,j] == 1 && i != j
 				atm1 = defaultatom(atms[i])
 				atm2 = defaultatom(atms[j])
-				pnt1 = GeometryBasics.Point3f0(atm1.coords)
-				pnt2 = GeometryBasics.Point3f0(atm2.coords)
+				pnt1 = GeometryBasics.Point3f(atm1.coords)
+				pnt2 = GeometryBasics.Point3f(atm2.coords)
 				push!(bshapes, GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth)))
 			end
 		end
@@ -1348,15 +1348,15 @@ function bondshapes(atms::Vector{T}, bnds::AbstractMatrix; bondwidth = 0.2) wher
     return bshapes
 end
 function bondshapes(atms::Vector{T}, bnds::AbstractMatrix; bondwidth = 0.2) where {T<:MIToS.PDB.PDBAtom}
-    bshapes = Cylinder3{Float32}[]
+    bshapes = Cylinder{Float32}[]
 
 	for i in 1:size(bnds,1)
 		for j in (i+1):size(bnds,1)
 			if bnds[i,j] == 1 && i != j
 				atm1 = atms[i]
 				atm2 = atms[j]
-				pnt1 = GeometryBasics.Point3f0(atm1.coordinates)
-				pnt2 = GeometryBasics.Point3f0(atm2.coordinates)
+				pnt1 = GeometryBasics.Point3f(atm1.coordinates)
+				pnt2 = GeometryBasics.Point3f(atm2.coordinates)
 				push!(bshapes, GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth)))
 			end
 		end
@@ -1366,14 +1366,14 @@ function bondshapes(atms::Vector{T}, bnds::AbstractMatrix; bondwidth = 0.2) wher
 end
 function bondshapes(cords::AbstractArray{T}; algo = :covalent, distance = 1.9, bondwidth = 0.2) where {T<:AbstractFloat}
 	@assert size(cords,2) == 3 "coords must be an N x 3 matrix"
-    bshapes = Cylinder3{Float32}[]
+    bshapes = Cylinder{Float32}[]
 	bnds = getbonds(cords; algo = algo, cutoff = distance)
 
 	for i in 1:size(bnds,1)
 		for j in (i+1):size(bnds,1)
 			if bnds[i,j] == 1 && i != j
-				pnt1 = GeometryBasics.Point3f0(cords[i,:])
-				pnt2 = GeometryBasics.Point3f0(cords[j,:])
+				pnt1 = GeometryBasics.Point3f(cords[i,:])
+				pnt2 = GeometryBasics.Point3f(cords[j,:])
 				push!(bshapes, GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth)))
 			end
 		end
@@ -1383,13 +1383,13 @@ function bondshapes(cords::AbstractArray{T}; algo = :covalent, distance = 1.9, b
 end
 function bondshapes(cords::AbstractArray{T}, bnds::AbstractMatrix; bondwidth = 0.2) where {T<:AbstractFloat}
 	@assert size(cords,2) == 3 "coords must be an N x 3 matrix"
-    bshapes = Cylinder3{Float32}[]
+    bshapes = Cylinder{Float32}[]
 
 	for i in 1:size(bnds,1)
 		for j in (i+1):size(bnds,1)
 			if bnds[i,j] == 1 && i != j
-				pnt1 = GeometryBasics.Point3f0(cords[i,:])
-				pnt2 = GeometryBasics.Point3f0(cords[j,:])
+				pnt1 = GeometryBasics.Point3f(cords[i,:])
+				pnt2 = GeometryBasics.Point3f(cords[j,:])
 				push!(bshapes, GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth)))
 			end
 		end
@@ -1399,14 +1399,14 @@ function bondshapes(cords::AbstractArray{T}, bnds::AbstractMatrix; bondwidth = 0
 end
 function bondshapes(cords::AbstractArray{T}, noth::Nothing; algo = :covalent, distance = 1.9, bondwidth = 0.2) where {T<:AbstractFloat}
 	@assert size(cords,2) == 3 "coords must be an N x 3 matrix"
-    bshapes = Cylinder3{Float32}[]
+    bshapes = Cylinder{Float32}[]
 	bnds = getbonds(cords; algo = algo, cutoff = distance)
 
 	for i in 1:size(bnds,1)
 		for j in (i+1):size(bnds,1)
 			if bnds[i,j] == 1 && i != j
-				pnt1 = GeometryBasics.Point3f0(cords[i,:])
-				pnt2 = GeometryBasics.Point3f0(cords[j,:])
+				pnt1 = GeometryBasics.Point3f(cords[i,:])
+				pnt2 = GeometryBasics.Point3f(cords[j,:])
 				push!(bshapes, GeometryBasics.Cylinder(pnt1,pnt2,Float32(bondwidth)))
 			end
 		end

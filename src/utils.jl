@@ -1,10 +1,10 @@
 export protsmiles,
     elecolors,
-    cpkcolors, 
-    aquacolors, 
-    shapelycolors, 
-    leskcolors, 
-    maecolors, 
+    cpkcolors,
+    aquacolors,
+    shapelycolors,
+    leskcolors,
+    maecolors,
     cinemacolors,
     getbiocolors,
     getprotosyn
@@ -85,7 +85,7 @@ cpkcolors = OrderedDict("C" => RGB(200.0,200.0,200.0),
                         "NA" => RGB(0.0,0.0,255.0),
                         "FE" => RGB(255.0,165.0,0.0),
                         "CA" => RGB(128.0,128.0,144.0),
-                        "X" => RGB(255.0,20.0,147.0)			  
+                        "X" => RGB(255.0,20.0,147.0)
 )
 aquacolors = OrderedDict(   "C" => RGB(0.5,0.5,0.5),
                             "N" => RGB(0.472,0.211,0.499),
@@ -197,12 +197,12 @@ cinemacolors = OrderedDict(
     "X" => :gray
 )
 function getbiocolors()
-    return OrderedDict( :elecolors => elecolors, 
-                        :cpkcolors => cpkcolors, 
-                        :aquacolors => aquacolors, 
-                        :shapelycolors => shapelycolors, 
-                        :leskcolors => leskcolors, 
-                        :maecolors => maecolors, 
+    return OrderedDict( :elecolors => elecolors,
+                        :cpkcolors => cpkcolors,
+                        :aquacolors => aquacolors,
+                        :shapelycolors => shapelycolors,
+                        :leskcolors => leskcolors,
+                        :maecolors => maecolors,
                         :cinemacolors => cinemacolors)
 end
 SMILESaa = OrderedDict(
@@ -344,10 +344,10 @@ function surfacearea(coordinates, connectivity)
     return totalarea
 end
 function linesegs(arr::AbstractArray{T,3}) where T<:AbstractFloat
-    new_arr::AbstractArray{Point3f0} = []
+    new_arr::AbstractArray{Point3f} = []
     for i in 1:size(arr,1)
-        push!(new_arr, Makie.Point3f0(arr[i,1,:]))
-        push!(new_arr, Makie.Point3f0(arr[i,2,:]))
+        push!(new_arr, Makie.Point3f(arr[i,1,:]))
+        push!(new_arr, Makie.Point3f(arr[i,2,:]))
     end
     return new_arr |> combinedims |> transpose |> collect
 end
@@ -416,8 +416,8 @@ resletterdict = OrderedDict(
 	"J" => "XLE"
 )
 # Dictionary for Kidera physical property factors, from:
-# Kenta Nakai, Akinori Kidera, Minoru Kanehisa, Cluster analysis of amino acid indices for prediction of protein structure and function, 
-# Protein Engineering, Design and Selection, Volume 2, Issue 2, July 1988, Pages 93–100, https://doi.org/10.1093/protein/2.2.93 
+# Kenta Nakai, Akinori Kidera, Minoru Kanehisa, Cluster analysis of amino acid indices for prediction of protein structure and function,
+# Protein Engineering, Design and Selection, Volume 2, Issue 2, July 1988, Pages 93–100, https://doi.org/10.1093/protein/2.2.93
 kideradict = OrderedDict(
     "A" => [-1.56,-1.67,-0.97,-0.27,-0.93,-0.78,-0.2,-0.08,0.21,-0.48],
     "R" => [0.22,1.27,1.37,1.87,-1.7,0.46,0.92,-0.39,0.23,0.93],
@@ -470,7 +470,7 @@ kideradict = OrderedDict(
     "ASX" => [0.86,-0.145,-0.85,0.81,-0.37,0.26,-0.805,0.85,0.93,-0.515],
     "GLX" => [-0.96,0.215,-0.77,1.135,-0.105,0.495,0.44,-0.165,-0.19,-1.225],
     "XAA" => [0,0,0,0,0,0,0,0,0,0],
-    "XLE" => [-0.885,-0.08,0.775,-0.935,-0.545,-1.01,0.065,-0.125,0.555,-0.425] 
+    "XLE" => [-0.885,-0.08,0.775,-0.935,-0.545,-1.01,0.065,-0.125,0.555,-0.425]
 )
 function kdict(str::AbstractString)
     if length(str) == 3
