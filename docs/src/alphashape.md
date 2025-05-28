@@ -68,10 +68,10 @@ function getspherepoints(cords::Matrix, radius::Real)
 	return [[spheres[i].data...] for i in 1:size(spheres,1)] |> combinedims |> transpose |> collect
 end
 function linesegs(arr::AbstractArray{T,3}) where T<:AbstractFloat
-    new_arr::AbstractArray{Point3f0} = []
+    new_arr::AbstractArray{Point3f} = []
     for i in 1:size(arr,1)
-        push!(new_arr, Makie.Point3f0(arr[i,1,:]))
-        push!(new_arr, Makie.Point3f0(arr[i,2,:]))
+        push!(new_arr, Makie.Point3f(arr[i,1,:]))
+        push!(new_arr, Makie.Point3f(arr[i,2,:]))
     end
     return new_arr |> combinedims |> transpose |> collect
 end
@@ -204,10 +204,10 @@ function getspherepoints(cords::Matrix, radius::Real)
 	return [[spheres[i].data...] for i in 1:size(spheres,1)] |> combinedims |> transpose |> collect
 end
 function linesegs(arr::AbstractArray{T,3}) where T<:AbstractFloat
-    new_arr::AbstractArray{Point3f0} = []
+    new_arr::AbstractArray{Point3f} = []
     for i in 1:size(arr,1)
-        push!(new_arr, Makie.Point3f0(arr[i,1,:]))
-        push!(new_arr, Makie.Point3f0(arr[i,2,:]))
+        push!(new_arr, Makie.Point3f(arr[i,1,:]))
+        push!(new_arr, Makie.Point3f(arr[i,2,:]))
     end
     return new_arr |> combinedims |> transpose |> collect
 end
