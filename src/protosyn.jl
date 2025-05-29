@@ -9,13 +9,13 @@ Pkg.add("OrderedCollections")
 Pkg.add("Distances")
 
 using ProtoSyn, SplitApplyCombine, Colors, Meshes, GeometryBasics, OrderedCollections, Distances
-import BioMakie: distancebonds, covalentbonds, plotstruc!, plotstruc, covalentradii, getbonds, 
+import BioMakie: distancebonds, covalentbonds, plotstruc!, plotstruc, covalentradii, getbonds,
     atomradii, atomradius, getinspectorlabel, atomcolors, rescolors, atomsizes, plottingdata
 
 """
 	distancebonds( atms, atmstates ) -> BitMatrix
 
-Returns a matrix of all bonds in `atms`, where Mat[i,j] = 1 if atoms i and j are bonded. 
+Returns a matrix of all bonds in `atms`, where Mat[i,j] = 1 if atoms i and j are bonded.
 
 This function uses 'bestoccupancy' or 'defaultatom' to ensure only one position per atom.
 
@@ -25,9 +25,9 @@ This function uses 'bestoccupancy' or 'defaultatom' to ensure only one position 
 - H ---------------- true  # include bonds with hydrogen atoms
 - disulfides ------- false # include disulfide bonds
 """
-function distancebonds(atms::Vector{T}, atmstates::Vector{S}; 
-						cutoff = 1.9, 
-						hydrogencutoff = 1.14, 
+function distancebonds(atms::Vector{T}, atmstates::Vector{S};
+						cutoff = 1.9,
+						hydrogencutoff = 1.14,
 						H = true,
 						disulfides = false) where {T<:ProtoSyn.Atom, S<:ProtoSyn.AtomState}
 	numatoms = size(atms, 1)
@@ -90,7 +90,7 @@ end
 """
 	covalentbonds( atms, atmstates ) -> BitMatrix
 
-Returns a matrix of all bonds in `atms`, where Mat[i,j] = 1 if atoms i and j are bonded. 
+Returns a matrix of all bonds in `atms`, where Mat[i,j] = 1 if atoms i and j are bonded.
 
 This function uses 'bestoccupancy' or 'defaultatom' to ensure only one position per atom.
 
@@ -99,8 +99,8 @@ This function uses 'bestoccupancy' or 'defaultatom' to ensure only one position 
 - H ---------------- true  # include bonds with hydrogen atoms
 - disulfides ------- false # include disulfide bonds
 """
-function covalentbonds(atms::Vector{T}, atmstates::Vector{S}; 
-						extradistance = 0.14, 
+function covalentbonds(atms::Vector{T}, atmstates::Vector{S};
+						extradistance = 0.14,
 						H = true,
 						disulfides = false) where {T<:ProtoSyn.Atom, S<:ProtoSyn.AtomState}
 	numatoms = size(atms, 1)
@@ -114,7 +114,7 @@ function covalentbonds(atms::Vector{T}, atmstates::Vector{S};
 		for j in (i+1):numatoms
 			### backbone bonds ###
 			if atms[i].name in ["N","CA","C","O"] && atms[j].name in ["N","CA","C","O"]
-				if euclidean(atmstates[i].t, atmstates[j].t) < (covalentradii[atms[i].symbol] + 
+				if euclidean(atmstates[i].t, atmstates[j].t) < (covalentradii[atms[i].symbol] +
 						covalentradii[atms[j].symbol] + extradistance)
 					bondmatrix[i,j] = 1
 					bondmatrix[j,i] = 1
@@ -126,14 +126,14 @@ function covalentbonds(atms::Vector{T}, atmstates::Vector{S};
 			### residue bonds ###
 			if atms[i].container == atms[j].container
 				if H == true
-					if euclidean(atmstates[i].t, atmstates[j].t) < (covalentradii[atms[i].symbol] + 
+					if euclidean(atmstates[i].t, atmstates[j].t) < (covalentradii[atms[i].symbol] +
 							covalentradii[atms[j].symbol] + extradistance)
 						bondmatrix[i,j] = 1
 						bondmatrix[j,i] = 1
 					end
 				else
 					if !(atms[i].symbol == "H" || atms[j].symbol == "H")
-						if euclidean(atmstates[i].t, atmstates[j].t) < (covalentradii[atms[i].symbol] + 
+						if euclidean(atmstates[i].t, atmstates[j].t) < (covalentradii[atms[i].symbol] +
 								covalentradii[atms[j].symbol] + extradistance)
 							bondmatrix[i,j] = 1
 							bondmatrix[j,i] = 1
@@ -161,10 +161,10 @@ end
 """
 	getbonds( atoms, atomstates ) -> BitMatrix
 
-Returns a matrix of all bonds in `atoms::Vector{ProtoSyn.Atom}`, 
-where Mat[i,j] = 1 if atoms i and j are bonded based on the 
+Returns a matrix of all bonds in `atoms::Vector{ProtoSyn.Atom}`,
+where Mat[i,j] = 1 if atoms i and j are bonded based on the
 atom states which contain coordinate information.
-The default algorithm is acquiring bonds based on the 
+The default algorithm is acquiring bonds based on the
 `bonds` field of the `ProtoSyn.Atom` type.
 
 ### Keyword Arguments:
@@ -253,7 +253,7 @@ function getbonds(atms::Vector{T}, atmstates::Vector{S};
 	# 		end
 	# 	end
 	# 	return bondmatrix
-	
+
 	if algo == :distance
 		return distancebonds(atms, atmstates; cutoff = cutoff, H = H, disulfides = disulfides)
 	elseif algo == :covalent
@@ -463,12 +463,12 @@ end
 """
 	plottingdata( pose )
 
-This function returns an OrderedDict of the main data used for plotting. 
+This function returns an OrderedDict of the main data used for plotting.
 It selects only protein atoms with `ProtoSyn.ProteinSelection` by default.
 
 ### Returns:
-    OrderedDict(:atoms => ..., 
-                :coords => ..., 
+    OrderedDict(:atoms => ...,
+                :coords => ...,
                 :colors => ...,
                 :sizes => ...,
                 :bonds => ...,
@@ -512,8 +512,8 @@ function plottingdata(pose::Observable{T};
     resids = lift(atmcords->[atms[][i].container.id for i in 1:length(atms[])], atmcords)
 	selected = lift(atmcords->[false for i in 1:length(atms[])], atmcords)
 
-    return OrderedDict(:atoms => atms, 
-                        :coords => atmcords, 
+    return OrderedDict(:atoms => atms,
+                        :coords => atmcords,
                         :colors => colrs,
                         :sizes => sizes,
                         :bonds => bonds,
@@ -530,7 +530,7 @@ function plottingdata(pose::ProtoSyn.Pose;
     if colors == :default
         colors = elecolors
     end
-	return plottingdata(Observable(pose); colors = colors, 
+	return plottingdata(Observable(pose); colors = colors,
 						radiustype = radiustype, water = water, selection = selection)
 end
 
@@ -538,7 +538,7 @@ end
     plotstruc!( fig, structure )
     plotstruc!( gridposition, structure )
 
-Plot a protein structure(pose) into a Figure. 
+Plot a protein structure(pose) into a Figure.
 
 # Examples
 ```julia
@@ -551,7 +551,7 @@ strucplot = plotstruc!(fig, pose)
 ```
 
 ### Keyword Arguments:
-- resolution ----- (600,600)
+- size ----- (600,600)
 - gridposition --- (1,1)  # if an MSA is already plotted, (2,1:3) works well
 - plottype ------- :ballandstick, :covalent, or :spacefilling
 - atomcolors ----- elecolors, others in `getbiocolors()`, or provide a Dict like: "N" => :blue
@@ -564,7 +564,7 @@ strucplot = plotstruc!(fig, pose)
 - kwargs... ------ keyword arguments passed to the atom `meshscatter`
 """
 function plotstruc!(fig::Figure, pose::Observable{ProtoSyn.Pose};
-                    resolution = (600,600),
+                    size = (600,600),
                     gridposition = (1,1),
                     plottype = :ballandstick,
                     atomcolors = elecolors,
@@ -603,8 +603,8 @@ function plotstruc!(fig::Figure, pose::Observable{ProtoSyn.Pose};
                 selectedcoords[] = [cords[][i,:] for i in 1:length(sel) if sel[i] == true] |> transpose |> collect
             end
         end
-    end 
-    
+    end
+
     sizs = Observable(Vector{Float32}(undef,length(selected[])) .= 0)
     on(selected; update = true) do sel
         if sum(sel) == 0
@@ -616,18 +616,18 @@ function plotstruc!(fig::Figure, pose::Observable{ProtoSyn.Pose};
 
     pxwidths = fig.scene.px_area[].widths
     needresize = false
-    # the figure needs to be resized if there's a preexisting MSA plot (with default resolution)
+    # the figure needs to be resized if there's a preexisting MSA plot (with default size)
     if pxwidths == [1000,350]
         needresize = true
     end
     if inspectorlabel == :default
-        inspectorlabel = @lift getinspectorlabel($atms, $atmstates)        
+        inspectorlabel = @lift getinspectorlabel($atms, $atmstates)
     end
-    lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
+    lscene = LScene(fig[gridposition...]; height = size[2], width = size[1], show_axis = false)
     if plottype == :spacefilling || plottype == :vanderwaals || plottype == :vdw
         markersize = @lift $sizes .* markerscale
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
-		slc = meshscatter!(lscene, selectedcoords; 
+		slc = meshscatter!(lscene, selectedcoords;
                             color = selectioncolor, markersize = sizs)
         slc.attributes.inspectable[] = false
     elseif plottype == :ballandstick || plottype == :bas
@@ -642,7 +642,7 @@ function plotstruc!(fig::Figure, pose::Observable{ProtoSyn.Pose};
         bndmeshes = @lift normal_mesh.($bndshapes)
         bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
         bmesh.inspectable[] = false
-		slc = meshscatter!(lscene, selectedcoords; 
+		slc = meshscatter!(lscene, selectedcoords;
                             color = selectioncolor, markersize = sizs)
         slc.attributes.inspectable[] = false
     elseif plottype == :covalent || plottype == :cov
@@ -655,7 +655,7 @@ function plotstruc!(fig::Figure, pose::Observable{ProtoSyn.Pose};
 		bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
 		bmesh.inspectable[] = false
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
-		slc = meshscatter!(lscene, selectedcoords; 
+		slc = meshscatter!(lscene, selectedcoords;
                             color = selectioncolor, markersize = sizs)
         slc.attributes.inspectable[] = false
     else
@@ -675,7 +675,7 @@ function plotstruc!(fig::Figure, pose::Observable{ProtoSyn.Pose};
 
     # the window has to be reopened to resize at the moment
     if needresize == true
-        fig.scene.px_area[] = HyperRectangle{2, Int64}([0, 0], [pxwidths[1], pxwidths[2]+resolution[2]])
+        fig.scene.px_area[] = HyperRectangle{2, Int64}([0, 0], [pxwidths[1], pxwidths[2]+size[2]])
         Makie.update_state_before_display!(fig)
     end
     DataInspector(lscene; indicator_linewidth = 0)
@@ -686,7 +686,7 @@ end
     _plotstruc!( fig, plotdata )
     _plotstruc!( gridposition, plotdata )
 
-Plot Pose data into a Figure. 
+Plot Pose data into a Figure.
 
 # Examples
 ```julia
@@ -700,7 +700,7 @@ _plotstruc!(fig, pdata)
 ```
 
 ### Keyword Arguments:
-- resolution ----- (600,600)
+- size ----- (600,600)
 - gridposition --- (1,1)  # if an MSA is already plotted, (2,1:3) works well
 - plottype ------- :ballandstick, :covalent, or :spacefilling
 - atomcolors ----- elecolors, others in `getbiocolors()`, or provide a Dict like: "N" => :blue
@@ -713,7 +713,7 @@ _plotstruc!(fig, pdata)
 - kwargs... ------ keyword arguments passed to the atom `meshscatter`
 """
 function _plotstruc!(fig::Figure, plotdata::AbstractDict{Symbol,T};
-                    resolution = (600,600),
+                    size = (600,600),
                     gridposition = (1,1),
                     plottype = :ballandstick,
                     atomcolors = elecolors, # has no effect since plotdata already has colors
@@ -751,8 +751,8 @@ function _plotstruc!(fig::Figure, plotdata::AbstractDict{Symbol,T};
                 selectedcoords[] = [cords[][i,:] for i in 1:length(sel) if sel[i] == true] |> transpose |> collect
             end
         end
-    end 
-    
+    end
+
     sizs = Observable(Vector{Float32}(undef,length(selected[])) .= 0)
     on(selected; update = true) do sel
         if sum(sel) == 0
@@ -764,18 +764,18 @@ function _plotstruc!(fig::Figure, plotdata::AbstractDict{Symbol,T};
 
     pxwidths = fig.scene.px_area[].widths
     needresize = false
-    # the figure needs to be resized if there's a preexisting MSA plot (with default resolution)
+    # the figure needs to be resized if there's a preexisting MSA plot (with default size)
     if pxwidths == [1000,350]
         needresize = true
     end
     if inspectorlabel == :default
-        inspectorlabel = @lift getinspectorlabel($atms, $atmstates)        
+        inspectorlabel = @lift getinspectorlabel($atms, $atmstates)
     end
-    lscene = LScene(fig[gridposition...]; height = resolution[2], width = resolution[1], show_axis = false)
+    lscene = LScene(fig[gridposition...]; height = size[2], width = size[1], show_axis = false)
     if plottype == :spacefilling || plottype == :vanderwaals || plottype == :vdw
         markersize = @lift $sizes .* markerscale
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
-		slc = meshscatter!(lscene, selectedcoords; 
+		slc = meshscatter!(lscene, selectedcoords;
                             color = selectioncolor, markersize = sizs)
         slc.attributes.inspectable[] = false
     elseif plottype == :ballandstick || plottype == :bas
@@ -787,7 +787,7 @@ function _plotstruc!(fig::Figure, plotdata::AbstractDict{Symbol,T};
         bndmeshes = @lift normal_mesh.($bndshapes)
         bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
         bmesh.inspectable[] = false
-		slc = meshscatter!(lscene, selectedcoords; 
+		slc = meshscatter!(lscene, selectedcoords;
                             color = selectioncolor, markersize = sizs)
         slc.attributes.inspectable[] = false
     elseif plottype == :covalent || plottype == :cov
@@ -797,7 +797,7 @@ function _plotstruc!(fig::Figure, plotdata::AbstractDict{Symbol,T};
 		bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
 		bmesh.inspectable[] = false
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
-		slc = meshscatter!(lscene, selectedcoords; 
+		slc = meshscatter!(lscene, selectedcoords;
                             color = selectioncolor, markersize = sizs)
         slc.attributes.inspectable[] = false
     else
@@ -817,14 +817,14 @@ function _plotstruc!(fig::Figure, plotdata::AbstractDict{Symbol,T};
 
     # the window has to be reopened to resize at the moment
     if needresize == true
-        fig.scene.px_area[] = HyperRectangle{2, Int64}([0, 0], [pxwidths[1], pxwidths[2]+resolution[2]])
+        fig.scene.px_area[] = HyperRectangle{2, Int64}([0, 0], [pxwidths[1], pxwidths[2]+size[2]])
         Makie.update_state_before_display!(fig)
     end
     DataInspector(lscene; indicator_linewidth = 0)
     fig
 end
 function _plotstruc!(figposition::GridPosition, plotdata::AbstractDict{Symbol,T};
-                    resolution = (600,600),
+                    size = (600,600),
                     # gridposition = (1,1),
                     plottype = :ballandstick,
                     atomcolors = elecolors, # has no effect since plotdata already has colors
@@ -862,8 +862,8 @@ function _plotstruc!(figposition::GridPosition, plotdata::AbstractDict{Symbol,T}
                 selectedcoords[] = [cords[][i,:] for i in 1:length(sel) if sel[i] == true] |> transpose |> collect
             end
         end
-    end 
-    
+    end
+
     sizs = Observable(Vector{Float32}(undef,length(selected[])) .= 0)
     on(selected; update = true) do sel
         if sum(sel) == 0
@@ -874,13 +874,13 @@ function _plotstruc!(figposition::GridPosition, plotdata::AbstractDict{Symbol,T}
     end
 
     if inspectorlabel == :default
-        inspectorlabel = @lift getinspectorlabel($atms, $atmstates)        
+        inspectorlabel = @lift getinspectorlabel($atms, $atmstates)
     end
-    lscene = LScene(figposition; height = resolution[2], width = resolution[1], show_axis = false)
+    lscene = LScene(figposition; height = size[2], width = size[1], show_axis = false)
     if plottype == :spacefilling || plottype == :vanderwaals || plottype == :vdw
         markersize = @lift $sizes .* markerscale
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
-		slc = meshscatter!(lscene, selectedcoords; 
+		slc = meshscatter!(lscene, selectedcoords;
                             color = selectioncolor, markersize = sizs)
         slc.attributes.inspectable[] = false
     elseif plottype == :ballandstick || plottype == :bas
@@ -892,7 +892,7 @@ function _plotstruc!(figposition::GridPosition, plotdata::AbstractDict{Symbol,T}
         bndmeshes = @lift normal_mesh.($bndshapes)
         bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
         bmesh.inspectable[] = false
-		slc = meshscatter!(lscene, selectedcoords; 
+		slc = meshscatter!(lscene, selectedcoords;
                             color = selectioncolor, markersize = sizs)
         slc.attributes.inspectable[] = false
     elseif plottype == :covalent || plottype == :cov
@@ -902,7 +902,7 @@ function _plotstruc!(figposition::GridPosition, plotdata::AbstractDict{Symbol,T}
 		bmesh = mesh!(lscene, bndmeshes, color = RGBA(0.5,0.5,0.5,0.8))
 		bmesh.inspectable[] = false
         ms = meshscatter!(lscene, cords; color = colrs, markersize = markersize, inspector_label = inspectorlabel, kwargs...)
-		slc = meshscatter!(lscene, selectedcoords; 
+		slc = meshscatter!(lscene, selectedcoords;
                             color = selectioncolor, markersize = sizs)
         slc.attributes.inspectable[] = false
     else
@@ -923,7 +923,7 @@ function _plotstruc!(figposition::GridPosition, plotdata::AbstractDict{Symbol,T}
     DataInspector(lscene; indicator_linewidth = 0)
     fig
 end
-function plotstruc!(fig::Figure, struc::T; atomcolors = :default, plottype = :ballandstick, 
+function plotstruc!(fig::Figure, struc::T; atomcolors = :default, plottype = :ballandstick,
 					water = false, kwargs...) where {T<:ProtoSyn.Pose}
     if atomcolors == :default
         atomcolors = elecolors
@@ -931,7 +931,7 @@ function plotstruc!(fig::Figure, struc::T; atomcolors = :default, plottype = :ba
 	plotdata = plottingdata(struc; colors = atomcolors, radiustype = plottype, water = water)
 	plotstruc!(fig, plotdata; atomcolors = atomcolors, plottype = plottype, water = water, kwargs...)
 end
-function plotstruc!(figposition::GridPosition, pose::T; atomcolors = :default, plottype = :ballandstick, 
+function plotstruc!(figposition::GridPosition, pose::T; atomcolors = :default, plottype = :ballandstick,
 					water = false, kwargs...) where {T<:Observable{ProtoSyn.Pose}}
     if atomcolors == :default
         atomcolors = elecolors

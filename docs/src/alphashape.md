@@ -79,7 +79,7 @@ struc = retrievepdb("2vb1")
 chn = struc[1]["A"] |> Observable
 atms = collectatoms(struc, standardselector) |> Observable
 cords = @lift coordarray($atms)' |> collect
-fig = Figure(resolution = (800,600))
+fig = Figure(size = (800,600))
 layout = fig[1,1] = GridLayout(10, 9)
 strucname = struc.name[1:4]
 sc_scene = layout[1:10,1:6] = LScene(fig; show_axis = false)
@@ -222,7 +222,7 @@ struc = retrievepdb("2vb1")
 chn = struc[1]["A"] |> Observable
 atms = collectatoms(struc, standardselector) |> Observable
 cords = @lift coordarray($atms)' |> collect
-fig = Figure(resolution = (800,600))
+fig = Figure(size = (800,600))
 layout = fig[1,1] = GridLayout(10, 9)
 ````
 

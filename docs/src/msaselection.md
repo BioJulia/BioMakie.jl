@@ -17,7 +17,7 @@ downloadpfam("pf00062")
 msa1 = read_file("pf00062.stockholm.gz",Stockholm)
 msa2 = Observable(msa1)
 plotdata = plottingdata(msa2)
-fig = Figure(resolution = (1400,400))
+fig = Figure(size = (1400,400))
 msa = plotmsa!(fig, plotdata)
 coldata = lift(plotdata[:selected]) do sel
     try
@@ -76,11 +76,11 @@ plotdata = plottingdata(msa2)
 ````
 
 ## Plot the MSA
-We make the figure resolution a bit bigger than default because we want to
+We make the figure size a bit bigger than default because we want to
 add in the frequency plot on the right.
 
 ````julia
-fig = Figure(resolution = (1400,400))
+fig = Figure(size = (1400,400))
 msa = plotmsa!(fig, plotdata)
 ````
 
