@@ -27,7 +27,7 @@ ProtoSyn.Peptides.assign_default_atom_names!(pose[])
 ProtoSyn.sort_atoms_by_graph!(pose[])
 ProtoSyn.Peptides.Calculators.Electrostatics.assign_default_charges!(pose[], res_lib)
 pdata = plottingdata(pose)
-fig = Figure(resolution = (985,700))
+fig = Figure(size = (985,700))
 layout = fig[1,1] = GridLayout(11,7)
 selected = @lift pdata[:resids][][$(pdata[:selected])] |> unique
 selection_text = lift(selected) do sel
@@ -37,7 +37,7 @@ selection_text = lift(selected) do sel
         return "$(string(pose[].graph[1][sel[1]]))"
     end
 end
-_plotstruc!(layout[1:10,1:5], pdata; resolution = (600,700))
+_plotstruc!(layout[1:10,1:5], pdata; size = (600,700))
 title = Label(layout[1,6:7]; text = "Mutate Residue", fontsize = 30)
 selection_label = Label(layout[2,6:7]; text = "Selection:", fontsize = 20)
 vselection = Label(layout[3,6:7]; text = selection_text, fontsize = 16)

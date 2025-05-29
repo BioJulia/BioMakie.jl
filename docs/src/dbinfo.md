@@ -21,9 +21,9 @@ pdata = plottingdata(pdb)
 dat = getuniprotdata("P00698"; include_refs = true)
 txtbuffer = IOBuffer()
 uniprottxt = begin BioMakie.showsummary(txtbuffer, dat); String(take!(txtbuffer)) end
-fig = Figure(resolution = (900, 700))
+fig = Figure(size = (900, 700))
 layout = fig[1,1] = GridLayout(10, 9)
-plotstruc!(layout[1:10,1:5], pdata; resolution = (600, 700))
+plotstruc!(layout[1:10,1:5], pdata; size = (600, 700))
 ENV["APIKEY"] = "{Your API key}"    # Need to set your API key here!
 model = "gpt-3.5-turbo"
 txt = Observable("")
@@ -89,9 +89,9 @@ uniprottxt = begin BioMakie.showsummary(txtbuffer, dat); String(take!(txtbuffer)
 ## Set up the figure and plot the structure
 
 ````julia
-fig = Figure(resolution = (900, 700))
+fig = Figure(size = (900, 700))
 layout = fig[1,1] = GridLayout(10, 9)
-fig = plotstruc!(layout[1:10,1:5], pdata; resolution = (600, 700))
+fig = plotstruc!(layout[1:10,1:5], pdata; size = (600, 700))
 ````
 
 ## Set up the text box to prompt GPT-3.5-turbo

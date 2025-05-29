@@ -6,12 +6,12 @@ export plottingdata,
 """
 	plottingdata( msa )
 
-Collects data for plotting (residue string matrix, matrix heatmap values, 
-x labels, and y labels) from a multiple sequence alignment (MSA) object. 
+Collects data for plotting (residue string matrix, matrix heatmap values,
+x labels, and y labels) from a multiple sequence alignment (MSA) object.
 
-The MSA object can be a: 
-- `AbstractMultipleSequenceAlignment` from MIToS.MSA, 
-- vector of tuples 'Vector{Tuple{String,String}}' from FastaIO, 
+The MSA object can be a:
+- `AbstractMultipleSequenceAlignment` from MIToS.MSA,
+- vector of tuples 'Vector{Tuple{String,String}}' from FastaIO,
 - vector of FASTA records 'Vector{FASTX.FASTA.Record}' from FASTX.
 """
 function plottingdata(msa::Observable{T}) where {T<:MSA.AbstractMultipleSequenceAlignment}
@@ -21,8 +21,8 @@ function plottingdata(msa::Observable{T}) where {T<:MSA.AbstractMultipleSequence
 	matrixvals = @lift msavalues($msamatrix)
 	selected = Observable("None")
 
-    return OrderedDict(:matrix => msamatrix, 
-                        :xlabels => xlabels, 
+    return OrderedDict(:matrix => msamatrix,
+                        :xlabels => xlabels,
                         :ylabels => ylabels,
 						:matrixvals => matrixvals,
 						:selected => selected)
@@ -38,8 +38,8 @@ function plottingdata(msa::Observable{T}) where {T<:Vector{Tuple{String,String}}
 	matrixvals = @lift msavalues($msamatrix)
 	selected = Observable("None")
 
-    return OrderedDict(:matrix => msamatrix, 
-                        :xlabels => xlabels, 
+    return OrderedDict(:matrix => msamatrix,
+                        :xlabels => xlabels,
                         :ylabels => ylabels,
 						:matrixvals => matrixvals,
 						:selected => selected)
@@ -55,8 +55,8 @@ function plottingdata(msa::Observable{T}) where {T<:Vector{FASTX.FASTA.Record}}
 	matrixvals = @lift msavalues($msamatrix)
 	selected = Observable("None")
 
-    return OrderedDict(:matrix => msamatrix, 
-                        :xlabels => xlabels, 
+    return OrderedDict(:matrix => msamatrix,
+                        :xlabels => xlabels,
                         :ylabels => ylabels,
 						:matrixvals => matrixvals,
 						:selected => selected)
@@ -73,13 +73,13 @@ end
 Returns a matrix of numbers according to the given dictionary,
 where keys are residue letters and values are numbers. This matrix
 is used as input for `plotmsa` for the heatmap colors of the residue
-positions. 
+positions.
 
-Default values for residue letters are from Kidera Factor values. 
+Default values for residue letters are from Kidera Factor values.
 From:
-Kenta Nakai, Akinori Kidera, Minoru Kanehisa, Cluster analysis of amino acid indices 
-for prediction of protein structure and function, Protein Engineering, Design and Selection, 
-Volume 2, Issue 2, July 1988, Pages 93–100, https://doi.org/10.1093/protein/2.2.93 
+Kenta Nakai, Akinori Kidera, Minoru Kanehisa, Cluster analysis of amino acid indices
+for prediction of protein structure and function, Protein Engineering, Design and Selection,
+Volume 2, Issue 2, July 1988, Pages 93–100, https://doi.org/10.1093/protein/2.2.93
 
 kf 2 is Kidera Factor 2 (size/volume-related). The KF dictionary is in `utils.jl`, or
 you can look at the `kideradict` variable.
@@ -96,18 +96,18 @@ function msavalues(msamatrix::AbstractMatrix, resdict = kideradict; kf = 2)
 	else
 		matrixvals = [ Float32(resdict[i]) for i in msamatrix ]
 	end
-	
+
 	return matrixvals
 end
 
 """
     plotmsa!( fig, msa )
 
-Plot a multiple sequence alignment (MSA) into a Figure. 
+Plot a multiple sequence alignment (MSA) into a Figure.
 
 # Example
 ```julia
-fig = Figure(resolution = (1100, 400))
+fig = Figure(size = (1100, 400))
 
 plotmsa!( fig::Figure, msa::T; kwargs... ) where {T<:Union{MSA.AbstractMultipleSequenceAlignment,
 											   Vector{Tuple{String,String}},
@@ -122,7 +122,7 @@ plotmsa!( fig::Figure, msa::T; kwargs... ) where {T<:Union{MSA.AbstractMultipleS
 - markercolor --- :black
 - xticklabelsize - 11
 - yticklabelsize - 11
-- resolution ----- (700,300)
+- size ----- (700,300)
 - kwargs...   					# forwarded to scatter plot
 """
 function plotmsa!( fig::Figure, msa::Observable{T};
@@ -133,7 +133,7 @@ function plotmsa!( fig::Figure, msa::Observable{T};
 				   markercolor = :black,
 				   xticklabelsize = 11,
 				   yticklabelsize = 11,
-				   resolution = (700,300),
+				   size = (700,300),
 				   kwargs... ) where {T<:Union{MSA.AbstractMultipleSequenceAlignment,
 											   Vector{Tuple{String,String}},
 											   Vector{FASTX.FASTA.Record}}}
@@ -145,24 +145,24 @@ function plotmsa!( fig::Figure, msa::Observable{T};
 	matrixvals = plotdata[:matrixvals]
 	selected = plotdata[:selected]
 
-	grid1 = fig[gridposition...] = GridLayout(resolution = resolution)
+	grid1 = fig[gridposition...] = GridLayout(size)
 	ax = Axis(grid1[1:7,3:9]; height = 275, width = 700)
-	
+
 	width1 = sheetsize[1]
 	height1 = sheetsize[2]
 	widthrange = [1:width1...]
 	heightrange = [1:height1...]
 
 	if xlabels[] == nothing
-		xlabels = @lift string.(1:size($matrixvals,2))
+		xlabels = @lift string.(1:Base.size($matrixvals,2))
 	end
 	if ylabels[] == nothing
-		ylabels = @lift string.(1:size($matrixvals,1))
+		ylabels = @lift string.(1:Base.size($matrixvals,1))
 	end
 
-	ylabelsize =  @lift size($ylabels,1) - (height1-1)
+	ylabelsize =  @lift Base.size($ylabels,1) - (height1-1)
 	ylabelrange = @lift $ylabelsize:-1:1
-	xlabelsize =  @lift size($xlabels,1) - (width1-1)
+	xlabelsize =  @lift Base.size($xlabels,1) - (width1-1)
 	xlabelrange = @lift 1:1:$xlabelsize
 
 	sl1 = GLMakie.Slider(grid1[end+1,3:9], range = xlabelrange, startvalue = 1, width = 700)
@@ -193,11 +193,11 @@ function plotmsa!( fig::Figure, msa::Observable{T};
 	ax.xzoomlock[] = true
 	ax.yzoomlock[] = true
 	ax.yticklabelspace[] = 10.0
-	
+
 	points1 = [Point2f(x,y) for x in widthrange for y in heightrange] |> collect
 	charvec = @lift SplitApplyCombine.flatten($charshow)
 
-	hm = heatmap!(ax, colorvals, show_grid = true, 
+	hm = heatmap!(ax, colorvals, show_grid = true,
 			colormap = colorscheme,
 	)
 	sc = scatter!(ax,
@@ -206,7 +206,7 @@ function plotmsa!( fig::Figure, msa::Observable{T};
 			markersize = markersize,
 			color = markercolor,
 			inspector_label = (self, i, p) -> "$(ylabelshow[][Int64(p[2])])\n" *
-				"$(resletterdict[string(charvec[][i])])  $(xlabelshow[][Int64(p[1])]) 	 " * 
+				"$(resletterdict[string(charvec[][i])])  $(xlabelshow[][Int64(p[1])]) 	 " *
 				"value: $(colorvals[][Int64(p[1]),Int64(p[2])])",
 			kwargs...
 	)
@@ -241,10 +241,10 @@ function plotmsa!( fig::Figure, msa::Observable{T};
 			selectedidx[] = -1
 		end
 	end
-	
+
 	xx = vlines!(fig.content[1], selectionlines; color = :blue, linewidth = 4, inspectable = false)
 	xx2 = vlines!(fig.content[1], selectionlines; color = :cyan, linewidth = 3, inspectable = false)
-	
+
 	mouseevents = addmouseevents!(fig.content[1].scene, fig.content[1].scene.plots[2]; priority = 1)
 	onmouseleftclick(mouseevents) do event
 		picked = mouse_selection(fig.content[1].scene)
@@ -252,7 +252,7 @@ function plotmsa!( fig::Figure, msa::Observable{T};
 		selectedidx[] = div(selectedplace,height1[])+1
 		selected[] = showncols[][selectedidx[]]
 	end
-	
+
 	display(fig)
 	fig
 end
@@ -264,7 +264,7 @@ function plotmsa!( figposition::GridPosition, msa::Observable{T};
 				   markercolor = :black,
 				   xticklabelsize = 11,
 				   yticklabelsize = 11,
-				   resolution = (700,300),
+				   size = (700,300),
 				   kwargs... ) where {T<:Union{MSA.AbstractMultipleSequenceAlignment,
 											   Vector{Tuple{String,String}},
 											   Vector{FASTX.FASTA.Record}}}
@@ -276,27 +276,27 @@ function plotmsa!( figposition::GridPosition, msa::Observable{T};
 	matrixvals = plotdata[:matrixvals]
 	selected = plotdata[:selected]
 
-	grid1 = fig[gridposition...] = GridLayout(resolution = (800,300))
-	ax = Axis(grid1[1:7,3:9]; height = 275, width = 700)
-	
+	grid1 = fig[gridposition...] = GridLayout(size)
+	ax = Axis(grid1[1:7,3:9]; height = (size[2] * 23) ÷ 24, width = size[1])
+
 	width1 = sheetsize[1]
 	height1 = sheetsize[2]
 	widthrange = [1:width1...]
 	heightrange = [1:height1...]
 
 	if xlabels[] == nothing
-		xlabels = @lift string.(1:size($matrixvals,2))
+		xlabels = @lift string.(1:Base.size($matrixvals,2))
 	end
 	if ylabels[] == nothing
-		ylabels = @lift string.(1:size($matrixvals,1))
+		ylabels = @lift string.(1:Base.size($matrixvals,1))
 	end
 
-	ylabelsize =  @lift size($ylabels,1) - (height1-1)
+	ylabelsize =  @lift Base.size($ylabels,1) - (height1-1)
 	ylabelrange = @lift $ylabelsize:-1:1
-	xlabelsize =  @lift size($xlabels,1) - (width1-1)
+	xlabelsize =  @lift Base.size($xlabels,1) - (width1-1)
 	xlabelrange = @lift 1:1:$xlabelsize
 
-	sl1 = GLMakie.Slider(grid1[end+1,3:9], range = xlabelrange, startvalue = 1, width = 700)
+	sl1 = GLMakie.Slider(grid1[end+1,3:9], range = xlabelrange, startvalue = 1, width = size[2])
 	sl1.value[] = 1
 	sl2 = GLMakie.Slider(grid1[1:7,10], range = ylabelrange, startvalue = 1, horizontal = false,
 		height = 275)
@@ -324,11 +324,11 @@ function plotmsa!( figposition::GridPosition, msa::Observable{T};
 	ax.xzoomlock[] = true
 	ax.yzoomlock[] = true
 	ax.yticklabelspace[] = 10.0
-	
+
 	points1 = [Point2f(x,y) for x in widthrange for y in heightrange] |> collect
 	charvec = @lift SplitApplyCombine.flatten($charshow)
 
-	hm = heatmap!(ax, colorvals, show_grid = true, 
+	hm = heatmap!(ax, colorvals, show_grid = true,
 			colormap = colorscheme,
 	)
 	sc = scatter!(ax,
@@ -337,7 +337,7 @@ function plotmsa!( figposition::GridPosition, msa::Observable{T};
 			markersize = markersize,
 			color = markercolor,
 			inspector_label = (self, i, p) -> "$(ylabelshow[][Int64(p[2])])\n" *
-				"$(resletterdict[string(charvec[][i])])  $(xlabelshow[][Int64(p[1])]) 	 " * 
+				"$(resletterdict[string(charvec[][i])])  $(xlabelshow[][Int64(p[1])]) 	 " *
 				"value: $(colorvals[][Int64(p[1]),Int64(p[2])])",
 			kwargs...
 	)
@@ -372,10 +372,10 @@ function plotmsa!( figposition::GridPosition, msa::Observable{T};
 			selectedidx[] = -1
 		end
 	end
-	
+
 	xx = vlines!(fig.content[1], selectionlines; color = :blue, linewidth = 4, inspectable = false)
 	xx2 = vlines!(fig.content[1], selectionlines; color = :cyan, linewidth = 3, inspectable = false)
-	
+
 	mouseevents = addmouseevents!(fig.content[1].scene, fig.content[1].scene.plots[2]; priority = 1)
 	onmouseleftclick(mouseevents) do event
 		picked = mouse_selection(fig.content[1].scene)
@@ -395,7 +395,7 @@ function plotmsa!( fig::Figure, plotdata::AbstractDict{Symbol,T};
 				   markercolor = :black,
 				   xticklabelsize = 11,
 				   yticklabelsize = 11,
-				   resolution = (700,300),
+				   size = (700,300),
 				   kwargs... ) where {T<:Observable}
 	#
 	msamatrix = plotdata[:matrix]
@@ -404,24 +404,24 @@ function plotmsa!( fig::Figure, plotdata::AbstractDict{Symbol,T};
 	matrixvals = plotdata[:matrixvals]
 	selected = plotdata[:selected]
 
-	grid1 = fig[gridposition...] = GridLayout(resolution = resolution)
+	grid1 = fig[gridposition...] = GridLayout(size)
 	ax = Axis(grid1[1:7,3:9]; height = 275, width = 700)
-	
+
 	width1 = sheetsize[1]
 	height1 = sheetsize[2]
 	widthrange = [1:width1...]
 	heightrange = [1:height1...]
 
 	if xlabels[] == nothing
-		xlabels = @lift string.(1:size($matrixvals,2))
+		xlabels = @lift string.(1:Base.size($matrixvals,2))
 	end
 	if ylabels[] == nothing
-		ylabels = @lift string.(1:size($matrixvals,1))
+		ylabels = @lift string.(1:Base.size($matrixvals,1))
 	end
 
-	ylabelsize =  @lift size($ylabels,1) - (height1-1)
+	ylabelsize =  @lift Base.size($ylabels,1) - (height1-1)
 	ylabelrange = @lift $ylabelsize:-1:1
-	xlabelsize =  @lift size($xlabels,1) - (width1-1)
+	xlabelsize =  @lift Base.size($xlabels,1) - (width1-1)
 	xlabelrange = @lift 1:1:$xlabelsize
 
 	sl1 = GLMakie.Slider(grid1[end+1,3:9], range = xlabelrange, startvalue = 1, width = 700)
@@ -452,11 +452,11 @@ function plotmsa!( fig::Figure, plotdata::AbstractDict{Symbol,T};
 	ax.xzoomlock[] = true
 	ax.yzoomlock[] = true
 	ax.yticklabelspace[] = 10.0
-	
+
 	points1 = [Point2f(x,y) for x in widthrange for y in heightrange] |> collect
 	charvec = @lift SplitApplyCombine.flatten($charshow)
 
-	hm = heatmap!(ax, colorvals, show_grid = true, 
+	hm = heatmap!(ax, colorvals, show_grid = true,
 			colormap = colorscheme,
 	)
 	sc = scatter!(ax,
@@ -465,7 +465,7 @@ function plotmsa!( fig::Figure, plotdata::AbstractDict{Symbol,T};
 			markersize = markersize,
 			color = markercolor,
 			inspector_label = (self, i, p) -> "$(ylabelshow[][Int64(p[2])])\n" *
-				"$(resletterdict[string(charvec[][i])])  $(xlabelshow[][Int64(p[1])]) 	 " * 
+				"$(resletterdict[string(charvec[][i])])  $(xlabelshow[][Int64(p[1])]) 	 " *
 				"value: $(colorvals[][Int64(p[1]),Int64(p[2])])",
 			kwargs...
 	)
@@ -500,10 +500,10 @@ function plotmsa!( fig::Figure, plotdata::AbstractDict{Symbol,T};
 			selectedidx[] = -1
 		end
 	end
-	
+
 	xx = vlines!(fig.content[1], selectionlines; color = :blue, linewidth = 4, inspectable = false)
 	xx2 = vlines!(fig.content[1], selectionlines; color = :cyan, linewidth = 3, inspectable = false)
-	
+
 	mouseevents = addmouseevents!(fig.content[1].scene, fig.content[1].scene.plots[2]; priority = 1)
 	onmouseleftclick(mouseevents) do event
 		picked = mouse_selection(fig.content[1].scene)
@@ -523,7 +523,7 @@ function plotmsa!( figposition::GridPosition, plotdata::AbstractDict{Symbol,T};
 				   markercolor = :black,
 				   xticklabelsize = 11,
 				   yticklabelsize = 11,
-				   resolution = (700,300),
+				   size = (700,300),
 				   kwargs... ) where {T}
 	#
 	msamatrix = plotdata[:matrix]
@@ -532,24 +532,24 @@ function plotmsa!( figposition::GridPosition, plotdata::AbstractDict{Symbol,T};
 	matrixvals = plotdata[:matrixvals]
 	selected = plotdata[:selected]
 
-	grid1 = fig[gridposition...] = GridLayout(resolution = resolution)
+	grid1 = fig[gridposition...] = GridLayout(size = size)
 	ax = Axis(grid1[1:7,3:9]; height = 275, width = 700)
-	
+
 	width1 = sheetsize[1]
 	height1 = sheetsize[2]
 	widthrange = [1:width1...]
 	heightrange = [1:height1...]
 
 	if xlabels[] == nothing
-		xlabels = @lift string.(1:size($matrixvals,2))
+		xlabels = @lift string.(1:Base.size($matrixvals,2))
 	end
 	if ylabels[] == nothing
-		ylabels = @lift string.(1:size($matrixvals,1))
+		ylabels = @lift string.(1:Base.size($matrixvals,1))
 	end
 
-	ylabelsize =  @lift size($ylabels,1) - (height1-1)
+	ylabelsize =  @lift Base.size($ylabels,1) - (height1-1)
 	ylabelrange = @lift $ylabelsize:-1:1
-	xlabelsize =  @lift size($xlabels,1) - (width1-1)
+	xlabelsize =  @lift Base.size($xlabels,1) - (width1-1)
 	xlabelrange = @lift 1:1:$xlabelsize
 
 	sl1 = GLMakie.Slider(grid1[end+1,3:9], range = xlabelrange, startvalue = 1, width = 700)
@@ -580,11 +580,11 @@ function plotmsa!( figposition::GridPosition, plotdata::AbstractDict{Symbol,T};
 	ax.xzoomlock[] = true
 	ax.yzoomlock[] = true
 	ax.yticklabelspace[] = 10.0
-	
+
 	points1 = [Point2f(x,y) for x in widthrange for y in heightrange] |> collect
 	charvec = @lift SplitApplyCombine.flatten($charshow)
 
-	hm = heatmap!(ax, colorvals, show_grid = true, 
+	hm = heatmap!(ax, colorvals, show_grid = true,
 			colormap = colorscheme,
 	)
 	sc = scatter!(ax,
@@ -593,7 +593,7 @@ function plotmsa!( figposition::GridPosition, plotdata::AbstractDict{Symbol,T};
 			markersize = markersize,
 			color = markercolor,
 			inspector_label = (self, i, p) -> "$(ylabelshow[][Int64(p[2])])\n" *
-				"$(resletterdict[string(charvec[][i])])  $(xlabelshow[][Int64(p[1])]) 	 " * 
+				"$(resletterdict[string(charvec[][i])])  $(xlabelshow[][Int64(p[1])]) 	 " *
 				"value: $(colorvals[][Int64(p[1]),Int64(p[2])])",
 			kwargs...
 	)
@@ -628,10 +628,10 @@ function plotmsa!( figposition::GridPosition, plotdata::AbstractDict{Symbol,T};
 			selectedidx[] = -1
 		end
 	end
-	
+
 	xx = vlines!(fig.content[1], selectionlines; color = :blue, linewidth = 4, inspectable = false)
 	xx2 = vlines!(fig.content[1], selectionlines; color = :cyan, linewidth = 3, inspectable = false)
-	
+
 	mouseevents = addmouseevents!(fig.content[1].scene, fig.content[1].scene.plots[2]; priority = 1)
 	onmouseleftclick(mouseevents) do event
 		picked = mouse_selection(fig.content[1].scene)
@@ -661,19 +661,19 @@ end
 	plotmsa( plotdata )
 
 Plot a multiple sequence alignment (MSA). Returns a Figure, or
-a Figure and Observables for interaction. 
+a Figure and Observables for interaction.
 
 # Examples
 ```julia
 MIToS.Pfam.downloadpfam("PF00062")	# download PF00062 MSA
-msa = MIToS.MSA.read_file("PF00062.stockholm.gz", Stockholm, 
+msa = MIToS.MSA.read_file("PF00062.stockholm.gz", Stockholm,
 	generatemapping =true, useidcoordinates=true)
 
 plotmsa( msa; kwargs... )
 ```
 
 ### Keyword Arguments:
-- figresolution ----- (1000,350)	# because `resolution` applies to the MSA plot
+- figsize ----- (1000,350)	# because `size` applies to the MSA plot
 - sheetsize --------- [40,20]
 - gridposition ------ (1,1:3)
 - colorscheme ------- :buda
@@ -683,15 +683,15 @@ plotmsa( msa; kwargs... )
 - yticklabelsize ---- 11
 - kwargs...    						# forwarded to scatter plot
 """
-function plotmsa(msa; figresolution = (1000,350), kwargs...)
-	fig = Figure(resolution = figresolution)
+function plotmsa(msa; figsize = (1000,350), kwargs...)
+	fig = Figure(size = figsize)
 	plotmsa!(fig, Observable(msa); kwargs...)
 end
-function plotmsa(msa::Observable; figresolution = (1000,350), kwargs...)
-	fig = Figure(resolution = figresolution)
+function plotmsa(msa::Observable; figsize = (1000,350), kwargs...)
+	fig = Figure(size = figsize)
 	plotmsa!(fig, msa; kwargs...)
 end
-function plotmsa(plotdata::T; figresolution = (1000,350), kwargs...) where {T<:AbstractDict}
-	fig = Figure(resolution = figresolution)
+function plotmsa(plotdata::T; figsize = (1000,350), kwargs...) where {T<:AbstractDict}
+	fig = Figure(size = figsize)
 	plotmsa!(fig, plotdata; kwargs...)
 end
