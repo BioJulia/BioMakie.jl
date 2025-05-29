@@ -614,7 +614,7 @@ function plotstruc!(fig::Figure, pose::Observable{ProtoSyn.Pose};
         end
     end
 
-    pxwidths = fig.scene.px_area[].widths
+    pxwidths = fig.scene.viewport[].widths
     needresize = false
     # the figure needs to be resized if there's a preexisting MSA plot (with default size)
     if pxwidths == [1000,350]
@@ -675,7 +675,7 @@ function plotstruc!(fig::Figure, pose::Observable{ProtoSyn.Pose};
 
     # the window has to be reopened to resize at the moment
     if needresize == true
-        fig.scene.px_area[] = HyperRectangle{2, Int64}([0, 0], [pxwidths[1], pxwidths[2]+size[2]])
+        fig.scene.viewport[] = HyperRectangle{2, Int64}([0, 0], [pxwidths[1], pxwidths[2]+size[2]])
         Makie.update_state_before_display!(fig)
     end
     DataInspector(lscene; indicator_linewidth = 0)
@@ -762,7 +762,7 @@ function _plotstruc!(fig::Figure, plotdata::AbstractDict{Symbol,T};
         end
     end
 
-    pxwidths = fig.scene.px_area[].widths
+    pxwidths = fig.scene.viewport[].widths
     needresize = false
     # the figure needs to be resized if there's a preexisting MSA plot (with default size)
     if pxwidths == [1000,350]
@@ -817,7 +817,7 @@ function _plotstruc!(fig::Figure, plotdata::AbstractDict{Symbol,T};
 
     # the window has to be reopened to resize at the moment
     if needresize == true
-        fig.scene.px_area[] = HyperRectangle{2, Int64}([0, 0], [pxwidths[1], pxwidths[2]+size[2]])
+        fig.scene.viewport[] = HyperRectangle{2, Int64}([0, 0], [pxwidths[1], pxwidths[2]+size[2]])
         Makie.update_state_before_display!(fig)
     end
     DataInspector(lscene; indicator_linewidth = 0)
