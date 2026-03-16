@@ -145,7 +145,7 @@ function plotmsa!( fig::Figure, msa::Observable{T};
 	matrixvals = plotdata[:matrixvals]
 	selected = plotdata[:selected]
 
-	grid1 = fig[gridposition...] = GridLayout(size)
+	grid1 = fig[gridposition...] = GridLayout(size=size)
 	ax = Axis(grid1[1:7,3:9]; height = 275, width = 700)
 
 	width1 = sheetsize[1]
@@ -165,9 +165,9 @@ function plotmsa!( fig::Figure, msa::Observable{T};
 	xlabelsize =  @lift Base.size($xlabels,1) - (width1-1)
 	xlabelrange = @lift 1:1:$xlabelsize
 
-	sl1 = GLMakie.Slider(grid1[end+1,3:9], range = xlabelrange, startvalue = 1, width = 700)
+	sl1 = Slider(grid1[end+1,3:9], range = xlabelrange, startvalue = 1, width = 700)
 	sl1.value[] = 1
-	sl2 = GLMakie.Slider(grid1[1:7,10], range = ylabelrange, startvalue = 1, horizontal = false,
+	sl2 = Slider(grid1[1:7,10], range = ylabelrange, startvalue = 1, horizontal = false,
 		height = 275)
 	sl2.value[] = 1
 
@@ -197,7 +197,7 @@ function plotmsa!( fig::Figure, msa::Observable{T};
 	points1 = [Point2f(x,y) for x in widthrange for y in heightrange] |> collect
 	charvec = @lift SplitApplyCombine.flatten($charshow)
 
-	hm = heatmap!(ax, colorvals, show_grid = true,
+	hm = heatmap!(ax, colorvals,
 			colormap = colorscheme,
 	)
 	sc = scatter!(ax,
@@ -230,7 +230,7 @@ function plotmsa!( fig::Figure, msa::Observable{T};
 	DataInspector(ax)
 
 	selectedidx = Observable(-1)
-	selectionlines = @lift $selectedidx == -1 ? Vector{Float64}(undef,0) : [$selectedidx-0.5,$selectedidx+0.5]
+	selectionlines = @lift $selectedidx == -1 ? [NaN] : [$selectedidx-0.5,$selectedidx+0.5]
 	showncols = @lift $(fig.content[1].xticks)[2]
 	showncols[]
 	on(showncols) do scols
@@ -247,7 +247,7 @@ function plotmsa!( fig::Figure, msa::Observable{T};
 
 	mouseevents = addmouseevents!(fig.content[1].scene, fig.content[1].scene.plots[2]; priority = 1)
 	onmouseleftclick(mouseevents) do event
-		picked = mouse_selection(fig.content[1].scene)
+		picked = pick(fig.content[1].scene)
 		selectedplace = [picked...][2]
 		selectedidx[] = div(selectedplace,height1[])+1
 		selected[] = showncols[][selectedidx[]]
@@ -276,7 +276,7 @@ function plotmsa!( figposition::GridPosition, msa::Observable{T};
 	matrixvals = plotdata[:matrixvals]
 	selected = plotdata[:selected]
 
-	grid1 = fig[gridposition...] = GridLayout(size)
+	grid1 = fig[gridposition...] = GridLayout(size=size)
 	ax = Axis(grid1[1:7,3:9]; height = (size[2] * 23) ÷ 24, width = size[1])
 
 	width1 = sheetsize[1]
@@ -296,9 +296,9 @@ function plotmsa!( figposition::GridPosition, msa::Observable{T};
 	xlabelsize =  @lift Base.size($xlabels,1) - (width1-1)
 	xlabelrange = @lift 1:1:$xlabelsize
 
-	sl1 = GLMakie.Slider(grid1[end+1,3:9], range = xlabelrange, startvalue = 1, width = size[2])
+	sl1 = Slider(grid1[end+1,3:9], range = xlabelrange, startvalue = 1, width = size[2])
 	sl1.value[] = 1
-	sl2 = GLMakie.Slider(grid1[1:7,10], range = ylabelrange, startvalue = 1, horizontal = false,
+	sl2 = Slider(grid1[1:7,10], range = ylabelrange, startvalue = 1, horizontal = false,
 		height = 275)
 	sl2.value[] = 1
 
@@ -328,7 +328,7 @@ function plotmsa!( figposition::GridPosition, msa::Observable{T};
 	points1 = [Point2f(x,y) for x in widthrange for y in heightrange] |> collect
 	charvec = @lift SplitApplyCombine.flatten($charshow)
 
-	hm = heatmap!(ax, colorvals, show_grid = true,
+	hm = heatmap!(ax, colorvals,  
 			colormap = colorscheme,
 	)
 	sc = scatter!(ax,
@@ -378,7 +378,7 @@ function plotmsa!( figposition::GridPosition, msa::Observable{T};
 
 	mouseevents = addmouseevents!(fig.content[1].scene, fig.content[1].scene.plots[2]; priority = 1)
 	onmouseleftclick(mouseevents) do event
-		picked = mouse_selection(fig.content[1].scene)
+		picked = pick(fig.content[1].scene)
 		selectedplace = [picked...][2]
 		selectedidx[] = div(selectedplace,height1[])+1
 		selected[] = showncols[][selectedidx[]]
@@ -404,7 +404,7 @@ function plotmsa!( fig::Figure, plotdata::AbstractDict{Symbol,T};
 	matrixvals = plotdata[:matrixvals]
 	selected = plotdata[:selected]
 
-	grid1 = fig[gridposition...] = GridLayout(size)
+	grid1 = fig[gridposition...] = GridLayout(size=size)
 	ax = Axis(grid1[1:7,3:9]; height = 275, width = 700)
 
 	width1 = sheetsize[1]
@@ -424,9 +424,9 @@ function plotmsa!( fig::Figure, plotdata::AbstractDict{Symbol,T};
 	xlabelsize =  @lift Base.size($xlabels,1) - (width1-1)
 	xlabelrange = @lift 1:1:$xlabelsize
 
-	sl1 = GLMakie.Slider(grid1[end+1,3:9], range = xlabelrange, startvalue = 1, width = 700)
+	sl1 = Slider(grid1[end+1,3:9], range = xlabelrange, startvalue = 1, width = 700)
 	sl1.value[] = 1
-	sl2 = GLMakie.Slider(grid1[1:7,10], range = ylabelrange, startvalue = 1, horizontal = false,
+	sl2 = Slider(grid1[1:7,10], range = ylabelrange, startvalue = 1, horizontal = false,
 		height = 275)
 	sl2.value[] = 1
 
@@ -456,18 +456,18 @@ function plotmsa!( fig::Figure, plotdata::AbstractDict{Symbol,T};
 	points1 = [Point2f(x,y) for x in widthrange for y in heightrange] |> collect
 	charvec = @lift SplitApplyCombine.flatten($charshow)
 
-	hm = heatmap!(ax, colorvals, show_grid = true,
+	hm = heatmap!(ax, colorvals, 
 			colormap = colorscheme,
 	)
-	sc = scatter!(ax,
-			points1,
-			marker = charvec,
-			markersize = markersize,
-			color = markercolor,
-			inspector_label = (self, i, p) -> "$(ylabelshow[][Int64(p[2])])\n" *
-				"$(resletterdict[string(charvec[][i])])  $(xlabelshow[][Int64(p[1])]) 	 " *
-				"value: $(colorvals[][Int64(p[1]),Int64(p[2])])",
-			kwargs...
+	 sc = scatter!(ax,
+	 		points1,
+	 		marker = charvec,
+	 		markersize = markersize,
+	 		color = markercolor,
+	 		inspector_label = (self, i, p) -> "$(ylabelshow[][Int64(p[2])])\n" *
+	 			"$(resletterdict[string(charvec[][i])])  $(xlabelshow[][Int64(p[1])]) 	 " *
+	 			"value: $(colorvals[][Int64(p[1]),Int64(p[2])])",
+	 		kwargs...
 	)
 	hl = hlines!(ax,
 		.-(heightrange, 0.5),
@@ -482,7 +482,7 @@ function plotmsa!( fig::Figure, plotdata::AbstractDict{Symbol,T};
 	hl.inspectable[] = false
 	vl.inspectable[] = false
 
-	ax.xgridvisible = true
+	#ax.xgridvisible = true
 	ax.xaxisposition[] = :top
 	ax.xticklabelrotation[] = 1f0
 	deregister_interaction!(fig.current_axis.x,:rectanglezoom)
@@ -501,12 +501,12 @@ function plotmsa!( fig::Figure, plotdata::AbstractDict{Symbol,T};
 		end
 	end
 
-	xx = vlines!(fig.content[1], selectionlines; color = :blue, linewidth = 4, inspectable = false)
-	xx2 = vlines!(fig.content[1], selectionlines; color = :cyan, linewidth = 3, inspectable = false)
+	#xx = vlines!(fig.content[1], selectionlines; color = :blue, linewidth = 4, inspectable = false)
+	#xx2 = vlines!(fig.content[1], selectionlines; color = :cyan, linewidth = 3, inspectable = false)
 
 	mouseevents = addmouseevents!(fig.content[1].scene, fig.content[1].scene.plots[2]; priority = 1)
 	onmouseleftclick(mouseevents) do event
-		picked = mouse_selection(fig.content[1].scene)
+		picked =pick(fig.content[1].scene)
 		selectedplace = [picked...][2]
 		selectedidx[] = div(selectedplace,height1[])+1
 		selected[] = showncols[][selectedidx[]]
@@ -532,7 +532,7 @@ function plotmsa!( figposition::GridPosition, plotdata::AbstractDict{Symbol,T};
 	matrixvals = plotdata[:matrixvals]
 	selected = plotdata[:selected]
 
-	grid1 = fig[gridposition...] = GridLayout(size = size)
+	grid1 = fig[gridposition...] = GridLayout(size=size)
 	ax = Axis(grid1[1:7,3:9]; height = 275, width = 700)
 
 	width1 = sheetsize[1]
@@ -552,9 +552,9 @@ function plotmsa!( figposition::GridPosition, plotdata::AbstractDict{Symbol,T};
 	xlabelsize =  @lift Base.size($xlabels,1) - (width1-1)
 	xlabelrange = @lift 1:1:$xlabelsize
 
-	sl1 = GLMakie.Slider(grid1[end+1,3:9], range = xlabelrange, startvalue = 1, width = 700)
+	sl1 = Slider(grid1[end+1,3:9], range = xlabelrange, startvalue = 1, width = 700)
 	sl1.value[] = 1
-	sl2 = GLMakie.Slider(grid1[1:7,10], range = ylabelrange, startvalue = 1, horizontal = false,
+	sl2 = Slider(grid1[1:7,10], range = ylabelrange, startvalue = 1, horizontal = false,
 		height = 275)
 	sl2.value[] = 1
 
@@ -584,7 +584,7 @@ function plotmsa!( figposition::GridPosition, plotdata::AbstractDict{Symbol,T};
 	points1 = [Point2f(x,y) for x in widthrange for y in heightrange] |> collect
 	charvec = @lift SplitApplyCombine.flatten($charshow)
 
-	hm = heatmap!(ax, colorvals, show_grid = true,
+	hm = heatmap!(ax, colorvals, 
 			colormap = colorscheme,
 	)
 	sc = scatter!(ax,
@@ -634,7 +634,7 @@ function plotmsa!( figposition::GridPosition, plotdata::AbstractDict{Symbol,T};
 
 	mouseevents = addmouseevents!(fig.content[1].scene, fig.content[1].scene.plots[2]; priority = 1)
 	onmouseleftclick(mouseevents) do event
-		picked = mouse_selection(fig.content[1].scene)
+		picked = pick(fig.content[1].scene)
 		selectedplace = [picked...][2]
 		selectedidx[] = div(selectedplace,height1[])+1
 		selected[] = showncols[][selectedidx[]]

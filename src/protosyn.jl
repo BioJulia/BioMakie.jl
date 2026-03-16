@@ -676,7 +676,7 @@ function plotstruc!(fig::Figure, pose::Observable{ProtoSyn.Pose};
     # the window has to be reopened to resize at the moment
     if needresize == true
         fig.scene.viewport[] = HyperRectangle{2, Int64}([0, 0], [pxwidths[1], pxwidths[2]+size[2]])
-        Makie.update_state_before_display!(fig)
+        notify(scene.fig.viewport)
     end
     DataInspector(lscene; indicator_linewidth = 0)
     fig
@@ -818,7 +818,8 @@ function _plotstruc!(fig::Figure, plotdata::AbstractDict{Symbol,T};
     # the window has to be reopened to resize at the moment
     if needresize == true
         fig.scene.viewport[] = HyperRectangle{2, Int64}([0, 0], [pxwidths[1], pxwidths[2]+size[2]])
-        Makie.update_state_before_display!(fig)
+        notify(fig.scene.viewport)
+
     end
     DataInspector(lscene; indicator_linewidth = 0)
     fig
