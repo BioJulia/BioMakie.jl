@@ -41,6 +41,9 @@ struc = read("2vb1.pdb", BioStructures.PDBFormat) |> Observable
 fig = Figure()
 plotstruc!(fig, struc; plottype = :ballandstick, gridposition = (1,1), atomcolors = aquacolors)
 plotstruc!(fig, struc; plottype = :covalent, gridposition = (1,2))
+
+# generates a 3d interactive view of the figure
+display(fig)    
 ```
 <p align="center"><img src="docs/src/assets/2vb1crop.png"></p>
 

@@ -69,9 +69,16 @@ elecolors = OrderedDict("C" => :gray,
                         "H" => :white,
                         "O" => :red,
                         "S" => :yellow,
+                        "P" => :orange,
+                        "I" => :purple,
                         "ZN" => :gray,
                         "CL" => :gray,
-                        "X" => :gray
+                        "X" => :gray,
+                        "a" => :lightgreen,
+                        "c" => :green,
+                        "g" => :orange,
+                        "t" => :red,
+                        "u" => :brown
 )
 cpkcolors = OrderedDict("C" => RGB(200.0,200.0,200.0),
                         "N" => RGB(143.0,143.0,255.0),
@@ -92,6 +99,8 @@ aquacolors = OrderedDict(   "C" => RGB(0.5,0.5,0.5),
                             "H" => RGB(0.65,0.96,0.70),
                             "O" => RGB(0.111,0.37,0.999),
                             "S" => RGB(0.992,0.753,0.525),
+                            "P" => RGB(1.0,0.647,0.0),
+                            "I" => RGB(0.5,0.0,0.5),
                             "ZN" => RGB(0.5,0.5,0.5),
                             "CL" => RGB(0.5,0.5,0.5),
                             "X" => RGB(0.5,0.5,0.5)
@@ -280,14 +289,14 @@ end
 function resmass(res::BioStructures.Residue)
     total = 0.0
     for atm in res
-        total+=atomicmasses["$(element(atm, strip=true))"]
+        total+=get(atomicmasses, "$(element(atm, strip=true))", 0.0f0)
     end
     return total
 end
 function resvdw(res::BioStructures.Residue)
     total = 0.0
     for atm in res
-        total+=vdw["$(element(atm, strip=true))"]
+        total+=get(vanderwaalsradii, "$(element(atm, strip=true))", 1.5f0)
     end
     return total
 end

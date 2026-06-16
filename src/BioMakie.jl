@@ -38,6 +38,8 @@ GLMakie.activate!()
 
 include("../src/utils.jl")
 include("../src/chemdata.jl")
+include("../src/hresbonds.jl")
+include("../src/heavyresbonds.jl")
 include("../src/bonds.jl")
 include("../src/structure.jl")
 include("../src/dbinfo.jl")

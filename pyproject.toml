@@ -1,0 +1,8 @@
+[project]
+name = "BioMakie"
+version = "0.4.4"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "gemmi>=0.7.5",
+]

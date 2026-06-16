@@ -19,57 +19,57 @@ Collect atom radii based on element for plotting.
 """
 function atomradii(atoms::Vector{T}; radiustype = :ballandstick) where T<:BioStructures.AbstractAtom
 	if radiustype == :covalent || radiustype == :cov
-		return [covalentradii[BioStructures.element(x)] for x in atoms]
+		return [get(covalentradii, BioStructures.element(x), 0.77f0) for x in atoms]
 	elseif radiustype == :vanderwaals || radiustype == :vdw || radiustype == :spacefilling
-		return [vanderwaalsradii[BioStructures.element(x)] for x in atoms]
+		return [get(vanderwaalsradii, BioStructures.element(x), 1.5f0) for x in atoms]
     elseif radiustype == :ballandstick || radiustype == :bas
-		return [covalentradii[BioStructures.element(x)] for x in atoms]
+		return [get(covalentradii, BioStructures.element(x), 0.77f0) for x in atoms]
 	else
         println("radiustype not recognized, using covalent radii")
-		return [covalentradii[BioStructures.element(x)] for x in atoms]
+		return [get(covalentradii, BioStructures.element(x), 0.77f0) for x in atoms]
 	end
 end
 function atomradii(atoms::Observable{T}; radiustype = :ballandstick) where T<:BioStructures.AbstractAtom
     if radiustype == :covalent || radiustype == :cov
-        radii = @lift [covalentradii[BioStructures.element(x)] for x in $atoms]
+        radii = @lift [get(covalentradii, BioStructures.element(x), 0.77f0) for x in $atoms]
         return radii
     elseif radiustype == :vanderwaals || radiustype == :vdw || radiustype == :spacefilling
-        radii = @lift [vanderwaalsradii[BioStructures.element(x)] for x in $atoms]
+        radii = @lift [get(vanderwaalsradii, BioStructures.element(x), 1.5f0) for x in $atoms]
         return radii
     elseif radiustype == :ballandstick || radiustype == :bas
-        radii = @lift [covalentradii[BioStructures.element(x)] for x in $atoms]
+        radii = @lift [get(covalentradii, BioStructures.element(x), 0.77f0) for x in $atoms]
         return radii
     else
         println("radiustype not recognized, using covalent radii")
-        radii = @lift [covalentradii[BioStructures.element(x)] for x in $atoms]
+        radii = @lift [get(covalentradii, BioStructures.element(x), 0.77f0) for x in $atoms]
         return radii
     end
 end
 function atomradii(atoms::Vector{T}; radiustype = :ballandstick) where T<:MIToS.PDB.PDBAtom
 	if radiustype == :covalent || radiustype == :cov
-		return [covalentradii[x.element] for x in atoms]
+		return [get(covalentradii, x.element, 0.77f0) for x in atoms]
 	elseif radiustype == :vanderwaals || radiustype == :vdw || radiustype == :spacefilling
-		return [vanderwaalsradii[x.element] for x in atoms]
+		return [get(vanderwaalsradii, x.element, 1.5f0) for x in atoms]
     elseif radiustype == :ballandstick || radiustype == :bas
-		return [covalentradii[x.element] for x in atoms]
+		return [get(covalentradii, x.element, 0.77f0) for x in atoms]
 	else
         println("radiustype not recognized, using covalent radii")
-		return [covalentradii[x.element] for x in atoms]
+		return [get(covalentradii, x.element, 0.77f0) for x in atoms]
 	end
 end
 function atomradii(atoms::Observable{T}; radiustype = :ballandstick) where T<:Vector{MIToS.PDB.PDBResidue}
     if radiustype == :covalent || radiustype == :cov
-        radii = @lift [covalentradii[x.element] for x in $atoms]
+        radii = @lift [get(covalentradii, x.element, 0.77f0) for x in $atoms]
         return radii
     elseif radiustype == :vanderwaals || radiustype == :vdw || radiustype == :spacefilling
-        radii = @lift [vanderwaalsradii[x.element] for x in $atoms]
+        radii = @lift [get(vanderwaalsradii, x.element, 1.5f0) for x in $atoms]
         return radii
     elseif radiustype == :ballandstick || radiustype == :bas
-        radii = @lift [covalentradii[x.element] for x in $atoms]
+        radii = @lift [get(covalentradii, x.element, 0.77f0) for x in $atoms]
         return radii
     else
         println("radiustype not recognized, using covalent radii")
-        radii = @lift [covalentradii[x.element] for x in $atoms]
+        radii = @lift [get(covalentradii, x.element, 0.77f0) for x in $atoms]
         return radii
     end
 end
@@ -84,14 +84,14 @@ Collect atom radius based on element for plotting.
 """
 function atomradius(atom::T; radiustype = :ballandstick) where T<:BioStructures.AbstractAtom
     if radiustype == :covalent || radiustype == :cov
-		return covalentradii[BioStructures.element(atom)]
+		return get(covalentradii, BioStructures.element(atom), 0.77f0)
 	elseif radiustype == :vanderwaals || radiustype == :vdw || radiustype == :spacefilling
-		return vanderwaalsradii[BioStructures.element(atom)]
+		return get(vanderwaalsradii, BioStructures.element(atom), 1.5f0)
     elseif radiustype == :ballandstick || radiustype == :bas
-		return covalentradii[BioStructures.element(atom)]
+		return get(covalentradii, BioStructures.element(atom), 0.77f0)
 	else
         println("radiustype not recognized, using covalent radii")
-		return covalentradii[BioStructures.element(atom)]
+		return get(covalentradii, BioStructures.element(atom), 0.77f0)
 	end
 end
 function atomradius(atom::Observable{T}) where T<:BioStructures.AbstractAtom
@@ -112,14 +112,14 @@ function atomradius(atom::Observable{T}) where T<:BioStructures.AbstractAtom
 end
 function atomradius(atom::T; radiustype = :ballandstick) where T<:MIToS.PDB.PDBAtom
     if radiustype == :covalent || radiustype == :cov
-        return covalentradii[atom.element]
+        return get(covalentradii, atom.element, 0.77f0)
     elseif radiustype == :vanderwaals || radiustype == :vdw || radiustype == :spacefilling
-        return vanderwaalsradii[atom.element]
+        return get(vanderwaalsradii, atom.element, 1.5f0)
     elseif radiustype == :ballandstick || radiustype == :bas
-		return covalentradii[atom.element]
+		return get(covalentradii, atom.element, 0.77f0)
     else
         println("radiustype not recognized, using covalent radii")
-        return covalentradii[atom.element]
+        return get(covalentradii, atom.element, 0.77f0)
     end
 end
 function atomradius(atom::Observable{T}) where T<:MIToS.PDB.PDBAtom
@@ -223,7 +223,7 @@ function atomcolors(struc::BioStructures.StructuralElementOrList; colors = eleco
     if colors == :default
         colors = elecolors
     end
-    colrs = [colors[BioStructures.element(x)] for x in atms]
+    colrs = [get(colors, BioStructures.element(x), :gray) for x in atms]
     return colrs
 end
 function atomcolors(struc::Observable{T}; colors = elecolors) where {T<:BioStructures.StructuralElementOrList}
@@ -231,7 +231,7 @@ function atomcolors(struc::Observable{T}; colors = elecolors) where {T<:BioStruc
     if colors == :default
         colors = elecolors
     end
-    colrs = @lift [colors[BioStructures.element(x)] for x in $atms]
+    colrs = @lift [get(colors, BioStructures.element(x), :gray) for x in $atms]
     return colrs
 end
 function atomcolors(resz::Vector{MIToS.PDB.PDBResidue}; colors = elecolors)
@@ -239,7 +239,7 @@ function atomcolors(resz::Vector{MIToS.PDB.PDBResidue}; colors = elecolors)
     if colors == :default
         colors = elecolors
     end
-    colrs = [colors[x.element] for x in atms]
+    colrs = [get(colors, x.element, :gray) for x in atms]
     return colrs
 end
 function atomcolors(resz::Observable{T}; colors = elecolors) where {T<:Vector{MIToS.PDB.PDBResidue}}
@@ -247,21 +247,21 @@ function atomcolors(resz::Observable{T}; colors = elecolors) where {T<:Vector{MI
     if colors == :default
         colors = elecolors
     end
-    colrs = @lift [colors[x.element] for x in $atms]
+    colrs = @lift [get(colors, x.element, :gray) for x in $atms]
     return colrs
 end
 function atomcolors(atms::Vector{MIToS.PDB.PDBAtom}; colors = elecolors)
     if colors == :default
         colors = elecolors
     end
-    colrs = [colors[x.element] for x in atms]
+    colrs = [get(colors, x.element, :gray) for x in atms]
     return colrs
 end
 function atomcolors(atms::Observable{T}; colors = elecolors) where {T<:Vector{MIToS.PDB.PDBAtom}}
     if colors == :default
         colors = elecolors
     end
-    colrs = @lift [colors[x.element] for x in $atms]
+    colrs = @lift [get(colors, x.element, :gray) for x in $atms]
     return colrs
 end
 
@@ -292,23 +292,23 @@ end
 function rescolors(resz::Vector{MIToS.PDB.PDBResidue}; colors = maecolors)
     atms = [MIToS.PDB.bestoccupancy(resz[i].atoms) for i in 1:length(resz)] |> flatten
 	resnames = [[resz[i].id.name for j in 1:size(MIToS.PDB.bestoccupancy(resz[i].atoms),1)] for i in 1:length(resz)] |> flatten
-    colrs = [colors[resletterdict[resnames[j]]] for j in 1:length(resnames)]
+    colrs = [@trycatch(colors[resletterdict[resnames[j]]], :gray) for j in 1:length(resnames)]
     return colrs
 end
 function rescolors(resz::Observable{T}; colors = maecolors) where {T<:Vector{MIToS.PDB.PDBResidue}}
     atms = @lift [MIToS.PDB.bestoccupancy($resz[i].atoms) for i in 1:length($resz)] |> flatten
 	resnames = @lift [[$resz[i].id.name for j in 1:size(MIToS.PDB.bestoccupancy($resz[i].atoms),1)] for i in 1:length($resz)] |> flatten
-    colrs = @lift [colors[resletterdict[$resnames[j]]] for j in 1:length($resnames)]
+    colrs = @lift [@trycatch(colors[resletterdict[$resnames[j]]], :gray) for j in 1:length($resnames)]
     return colrs
 end
 function rescolors(atms::Vector{MIToS.PDB.PDBAtom}; colors = maecolors)
     resnames = [atms[i].residue.name for i in 1:length(atms)]
-    colrs = [colors[resletterdict[resnames[j]]] for j in 1:length(resnames)]
+    colrs = [@trycatch(colors[resletterdict[resnames[j]]], :gray) for j in 1:length(resnames)]
     return colrs
 end
 function rescolors(atms::Observable{T}; colors = maecolors) where {T<:Vector{MIToS.PDB.PDBAtom}}
     resnames = @lift [$atms[i].residue.name for i in 1:length($atms)]
-    colrs = @lift [colors[resletterdict[$resnames[j]]] for j in 1:length($resnames)]
+    colrs = @lift [@trycatch(colors[resletterdict[$resnames[j]]], :gray) for j in 1:length($resnames)]
     return colrs
 end
 
@@ -406,7 +406,10 @@ function plottingdata(struc::Observable{T};
         colrs = @lift to_color.(rescolors($struc; colors = colors))
     end
     sizes = @lift atomradii($atms; radiustype = radiustype)
-    bonds = @lift getbonds($struc)
+    # Compute bonds over the same (possibly water-filtered) atom set used for `atms`/coords,
+    # so bond indices line up with the coordinate array. Using `$struc` here would index the
+    # full atom list (incl. water) and overflow the filtered coordinate matrix in bondshapes.
+    bonds = @lift getbonds($atms)
 
     resids = lift(atms) do a
         [x.residue.number for x in a]

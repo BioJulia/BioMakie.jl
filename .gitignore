@@ -27,3 +27,5 @@ research/
 *.CondaPkg
 CondaPkg.toml
 *.gz
+/src/h*bonds.jl
+uv.lock

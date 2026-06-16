@@ -10,7 +10,8 @@ Pkg.add("Distances")
 
 using ProtoSyn, SplitApplyCombine, Colors, Meshes, GeometryBasics, OrderedCollections, Distances
 import BioMakie: distancebonds, covalentbonds, plotstruc!, plotstruc, covalentradii, getbonds,
-    atomradii, atomradius, getinspectorlabel, atomcolors, rescolors, atomsizes, plottingdata
+    atomradii, atomradius, getinspectorlabel, atomcolors, rescolors, atomsizes, plottingdata,
+    backboneconnectoratoms
 
 """
 	distancebonds( atms, atmstates ) -> BitMatrix
@@ -39,7 +40,7 @@ function distancebonds(atms::Vector{T}, atmstates::Vector{S};
 
 	for i in 1:numatoms
 		for j in (i+1):numatoms
-			if atms[i].name in ["N","CA","C","O"] && atms[j].name in ["N","CA","C","O"]
+			if atms[i].name in backboneconnectoratoms && atms[j].name in backboneconnectoratoms
 				if euclidean(atmstates[i].t, atmstates[j].t) < cutoff
 					bondmatrix[i,j] = 1
 					bondmatrix[j,i] = 1
@@ -113,7 +114,7 @@ function covalentbonds(atms::Vector{T}, atmstates::Vector{S};
 	for i in 1:numatoms
 		for j in (i+1):numatoms
 			### backbone bonds ###
-			if atms[i].name in ["N","CA","C","O"] && atms[j].name in ["N","CA","C","O"]
+			if atms[i].name in backboneconnectoratoms && atms[j].name in backboneconnectoratoms
 				if euclidean(atmstates[i].t, atmstates[j].t) < (covalentradii[atms[i].symbol] +
 						covalentradii[atms[j].symbol] + extradistance)
 					bondmatrix[i,j] = 1
